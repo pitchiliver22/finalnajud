@@ -56,24 +56,34 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <label for="zipcode" class="form-label">Zip Code *</label>
-                    <input type="text" class="form-control" id="zipcode" name="zipcode" required pattern="\d{4}"
-                        title="Please enter a valid 5-digit zip code." placeholder="e.g. 1234">
+                    <input type="text" class="form-control" id="zipcode" name="zipcode" pattern="\d*"
+                        title="Please enter numbers only"
+                        onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="4"
+                        placeholder="e.g. 1234">
                 </div>
                 <div class="col-md-6">
                     <label for="province" class="form-label">Province *</label>
-                    <input type="text" class="form-control" id="province" name="province" required>
+                    <input type="text" class="form-control" id="province" name="province"
+                        placeholder="e.g. Pit-os Kambinocut" pattern="[A-Za-z\s]*"
+                        title="Only letters and spaces are allowed" required>
                 </div>
                 <div class="col-md-6">
                     <label for="city" class="form-label">City *</label>
-                    <input type="text" class="form-control" id="city" name="city" required>
+                    <input type="text" class="form-control" id="city" name="city"
+                        placeholder="e.g. Cebu City" pattern="[A-Za-z\s]*" title="Only letters and spaces are allowed"
+                        required>
                 </div>
                 <div class="col-md-6">
                     <label for="barangay" class="form-label">Barangay *</label>
-                    <input type="text" class="form-control" id="barangay" name="barangay" required>
+                    <input type="text" class="form-control" id="barangay" name="barangay"
+                        placeholder="e.g. Babag II" pattern="[A-Za-z\s]*" title="Only letters and spaces are allowed"
+                        required>
                 </div>
                 <div class="col-md-6">
                     <label for="streetaddress" class="form-label">Street Address *</label>
-                    <input type="text" class="form-control" id="streetaddress" name="streetaddress" required>
+                    <input type="text" class="form-control" id="streetaddress" name="streetaddress"
+                        placeholder="e.g. Naga Street" pattern="[A-Za-z\s]*" title="Only letters and spaces are allowed"
+                        required>
                 </div>
                 <input type="hidden" id="address_id" name="address_id" value="{{ auth()->user()->id }}">
                 <div class="col-12">

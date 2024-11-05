@@ -17,7 +17,7 @@
 <body>
     <div class="container my-5">
         <h1 class="text-center mb-4">Payment Form</h1>
-        <form action="/proofofpayment" method="POST" enctype="multipart/form-data">
+        <form action="/payment_process" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="form-group">
                 <label for="fee-type">Fee Type</label>
@@ -28,6 +28,16 @@
                 <label for="amount">Amount</label>
                 <input type="number" class="form-control" id="amount" name="amount" placeholder="500" readonly
                     required>
+            </div>
+            <div class="form-group mt-3">
+                <label for="level">Year Level</label>
+                <select class="form-control" id="level" name="level" required>
+                    <option value="">Select Grade</option>
+                    <option value="K">Kindergarten</option>
+                    @for ($i = 1; $i <= 10; $i++)
+                        <option value="Grade {{ $i }}">Grade {{ $i }}</option>
+                    @endfor
+                </select>
             </div>
             <div class="form-group">
                 <label for="payment-proof">Payment Proof (Image)</label>
@@ -42,8 +52,8 @@
                 <textarea class="form-control" id="payment-details" name="payment-details" rows="3"
                     placeholder="Enter payment details" required></textarea>
             </div>
-            <input type="hidden" name="payment_id" value="1"> <!-- Example hidden payment_id -->
-            <button type="submit" class="btn btn-primary btn-block">Submit Payment</button>
+            <input type="hidden" name="payment_id" value="{{ auth()->user()->id }}">
+            <button type="submit" class="btn btn-primary btfn-block">Submit Payment</button>
         </form>
     </div>
 
@@ -51,7 +61,6 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        // Add custom file input label update
         $('.custom-file-input').on('change', function() {
             let fileName = $(this).val().split('\\').pop();
             $(this).next('.custom-file-label').addClass("selected").html(fileName);

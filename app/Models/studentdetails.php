@@ -30,5 +30,9 @@ class studentdetails extends Model
         'guardian_occupation',
         'guardian_contact',
         'details_id',
+        'status'
     ];
+
+    const STATUS_PENDING = 'pending';
+    const STATUS_APPROVED = 'approved';
 }

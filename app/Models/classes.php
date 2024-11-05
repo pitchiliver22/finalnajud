@@ -11,6 +11,7 @@ class classes extends Model
     protected $table = 'classes';
     protected $fillable = [
         'grade',
+        'adviser',
         'section',
         'edpcode',
         'room',
@@ -20,5 +21,10 @@ class classes extends Model
         'unit',
         'time',
         'days',
+        'status',
+        'assign_id',
     ];
+
+    const STATUS_PENDING = 'not assign';
+    const STATUS_APPROVED = 'assigned';
 }

@@ -13,5 +13,9 @@ class required_docs extends Model
         'type',
         'documents',
         'required_id',
+        'status'
     ];
+
+    const STATUS_PENDING = 'pending';
+    const STATUS_APPROVED = 'approved';
 }

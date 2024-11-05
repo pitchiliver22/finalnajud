@@ -15,9 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('fee_type');
             $table->string('amount');
+            $table->string('level');
             $table->string('payment_proof');
             $table->text('payment_details');
             $table->unsignedBigInteger('payment_id');
+
+            $table->string('status')->default('pending');
+            
             $table->timestamps();
             $table->foreign('payment_id')->references('id')->on('users');
         });

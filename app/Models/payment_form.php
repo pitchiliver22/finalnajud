@@ -14,7 +14,14 @@ class payment_form extends Model
         'fee_type',
         'amount',
         'payment_proof',
+        'level',
         'payment_details',
         'payment_id',
+        'status',
     ];
+
+
+    const STATUS_PENDING = 'pending';
+    const STATUS_APPROVED = 'approved';
+    const STATUS_REJECTED = 'rejected';
 }

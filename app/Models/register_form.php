@@ -15,6 +15,11 @@ class register_form extends Model
         'middlename',
         'suffix',
         'email',
-        'password'
+        'password',
+        'status'
+
     ];
+
+    const STATUS_PENDING = 'pending';
+    const STATUS_APPROVED = 'approved';
 }

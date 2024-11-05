@@ -8,10 +8,26 @@
         </div>
     </div>
 
-
     <div class="container" style="width: 80%; height: auto; border: 1px solid #ccc; padding: 20px;">
-        <form action="/gradesubmit" method="GET">
+        <form action="/gradesubmit" method="POST">
             @csrf
+            <input type="hidden" name="edp_code" value="{{ $edpcode }}">
+            <input type="hidden" name="subject" value="{{ $subject }}">
+            <input type="hidden" name="fullname" value="{{ $fullName }}">
+            <input type="hidden" name="section" value="{{ $section }}">
+            <input type="hidden" name="payment_id" value="{{ $paymentForm->payment_id ?? '' }}">
+            <!-- New hidden input -->
+
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="fee-list">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4>STUDENT GRADES</h4>
@@ -20,8 +36,8 @@
                             <input type="text" class="form-control" placeholder="Search by EDP Code..."
                                 aria-label="Search" name="search" id="search-input">
                             <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="button" onclick="searchByEdpCode()">
-                                    Search</button>
+                                <button class="btn btn-outline-secondary" type="button"
+                                    onclick="searchByEdpCode()">Search</button>
                             </div>
                             <button type="button" class="btn btn-outline-secondary"
                                 onclick="refreshPage()">Refresh</button>
@@ -32,124 +48,58 @@
                     <table class="table table-striped" id="student-table">
                         <thead>
                             <tr>
-                                <th>Full Name</th>
+                                <th>Fullname</th>
                                 <th>Section</th>
-                                <th>Student ID</th>
-                                <th>Edp Code</th>
+                                <th>Edpcode</th>
                                 <th>Subject</th>
-                                <th>1st Quarter Grade</th>
-                                <th>2nd Quarter Grade</th>
-                                <th>3rd Quarter Grade</th>
-                                <th>4th Quarter Grade</th>
-                                <th>Final Grade</th>
-
+                                <th>Grade Level</th>
+                                <th>1st Quarter</th>
+                                <th>2nd Quarter</th>
+                                <th>3rd Quarter</th>
+                                <th>4th Quarter</th>
+                                <th>Overall Grade</th>
                             </tr>
                         </thead>
                         <tbody>
-
                             <tr>
-                                <td> Oliver pacatang </td>
-                                <td>Grade 10</td>
-                                <td>2314324</td>
-                                <td>4343</td>
-                                <td>English</td>
-                                <td><input type="number" class="form-control" value="78" name="firstquarter">
+                                <td>{{ $fullName }}</td>
+                                <td>{{ $assign->section }}</td>
+                                <td>{{ $edpcode }}</td>
+                                <td>{{ $subject }}</td>
+                                <td>{{ $paymentForm->level ?? 'N/A' }}</td>
+                                <td>
+                                    <input type="number" class="form-control" name="1st_quarter" min="0"
+                                        max="100" step="0.01" required oninput="calculateOverall()">
                                 </td>
-                                <td><input type="number" class="form-control" value="89" name="secondquarter">
+                                <td>
+                                    <input type="number" class="form-control" name="2nd_quarter" min="0"
+                                        max="100" step="0.01" required oninput="calculateOverall()">
                                 </td>
-                                <td><input type="number" class="form-control" value="90" name="thirdquarter">
+                                <td>
+                                    <input type="number" class="form-control" name="3rd_quarter" min="0"
+                                        max="100" step="0.01" required oninput="calculateOverall()">
                                 </td>
-                                <td><input type="number" class="form-control" value="78" name="fourthquarter">
+                                <td>
+                                    <input type="number" class="form-control" name="4th_quarter" min="0"
+                                        max="100" step="0.01" required oninput="calculateOverall()">
                                 </td>
-                                <td><input type="number" class="form-control" value="83.75" name="grade"></td>
-
+                                <td>
+                                    <input type="number" class="form-control" name="overall_grade" min="0"
+                                        max="100" step="0.01" required readonly>
+                                </td>
                             </tr>
-
-                            <tr>
-                                <td>claire dungog </td>
-                                <td>Grade 10</td>
-                                <td>435435</td>
-                                <td>4343</td>
-                                <td>English</td>
-                                <td><input type="number" class="form-control" value="87" name="firstquarter">
-                                </td>
-                                <td><input type="number" class="form-control" value="90" name="secondquarter">
-                                </td>
-                                <td><input type="number" class="form-control" value="78" name="thirdquarter">
-                                </td>
-                                <td><input type="number" class="form-control" value="90" name="fourthquarter">
-                                </td>
-                                <td><input type="number" class="form-control" value="86.25" name="grade"></td>
-
-                            </tr>
-
-                            <tr>
-                                <td> Johrnhay batan </td>
-                                <td>Grade 10</td>
-                                <td>2314324</td>
-                                <td>4343</td>
-                                <td>English</td>
-                                <td><input type="number" class="form-control" value="88" name="firstquarter">
-                                </td>
-                                <td><input type="number" class="form-control" value="87" name="secondquarter">
-                                </td>
-                                <td><input type="number" class="form-control" value="89" name="thirdquarter">
-                                </td>
-                                <td><input type="number" class="form-control" value="90" name="fourthquarter">
-                                </td>
-                                <td><input type="number" class="form-control" value="88.5" name="grade"></td>
-
-                            </tr>
-
-                            <tr>
-                                <td> Moises Belacura </td>
-                                <td>Grade 10</td>
-                                <td>2314324</td>
-                                <td>4343</td>
-                                <td>English</td>
-                                <td><input type="number" class="form-control" value="89" name="firstquarter">
-                                </td>
-                                <td><input type="number" class="form-control" value="89" name="secondquarter">
-                                </td>
-                                <td><input type="number" class="form-control" value="90" name="thirdquarter">
-                                </td>
-                                <td><input type="number" class="form-control" value="78" name="fourthquarter">
-                                </td>
-                                <td><input type="number" class="form-control" value="86.5" name="grade"></td>
-
-                            </tr>
-
-                            <tr>
-                                <td> Bernie Lambo </td>
-                                <td>Grade 10</td>
-                                <td>2314324</td>
-                                <td>4343</td>
-                                <td>English</td>
-                                <td><input type="number" class="form-control" value="76" name="firstquarter">
-                                </td>
-                                <td><input type="number" class="form-control" value="89" name="secondquarter">
-                                </td>
-                                <td><input type="number" class="form-control" value="95" name="thirdquarter">
-                                </td>
-                                <td><input type="number" class="form-control" value="98" name="fourthquarter">
-                                </td>
-                                <td><input type="number" class="form-control" value="89.5" name="grade"></td>
-
-                            </tr>
-
-
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            <div class="text-center">
+                <button type="submit" name="submit" class="btn btn-danger btn-lg">Submit Grades</button>
+            </div>
         </form>
     </div>
-
-    <div class="text-center">
-        <a href="#" class="btn btn-danger btn-lg">Submit</a>
-    </div>
-
 </div>
+
 <script>
     function searchByEdpCode() {
         var searchInput = document.getElementById("search-input").value.toLowerCase();
@@ -157,13 +107,10 @@
         var rows = studentTable.getElementsByTagName("tr");
 
         for (var i = 1; i < rows.length; i++) {
-            var edpCodeCell = rows[i].getElementsByTagName("td")[3];
-            var edpCode = edpCodeCell.textContent.toLowerCase();
-
-            if (edpCode.includes(searchInput)) {
-                rows[i].style.display = "";
-            } else {
-                rows[i].style.display = "none";
+            var edpCodeCell = rows[i].getElementsByTagName("td")[2]; // EDP Code is in the third column
+            if (edpCodeCell) {
+                var edpCode = edpCodeCell.textContent.toLowerCase();
+                rows[i].style.display = edpCode.includes(searchInput) ? "" : "none";
             }
         }
     }
@@ -171,5 +118,21 @@
     function refreshPage() {
         location.reload();
     }
+
+    function calculateOverall() {
+        // Get values from the quarter inputs
+        const firstQuarter = parseFloat(document.querySelector('input[name="1st_quarter"]').value) || 0;
+        const secondQuarter = parseFloat(document.querySelector('input[name="2nd_quarter"]').value) || 0;
+        const thirdQuarter = parseFloat(document.querySelector('input[name="3rd_quarter"]').value) || 0;
+        const fourthQuarter = parseFloat(document.querySelector('input[name="4th_quarter"]').value) || 0;
+
+        // Calculate the overall grade (here we use average)
+        const overallGrade = (firstQuarter + secondQuarter + thirdQuarter + fourthQuarter) / 4;
+
+        // Set the overall grade input value
+        document.querySelector('input[name="overall_grade"]').value = overallGrade.toFixed(
+            2); // Limit to 2 decimal places
+    }
 </script>
+
 @include('templates.teacherfooter')

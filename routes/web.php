@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Datacontroller;
 use App\Http\Controllers\Pagecontroller;
+use App\Http\Controllers\PDFController;
 use App\Http\Controllers\Usercontroller;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,6 +25,8 @@ Route::get('register_consent', [Pagecontroller::class, 'register_consent']);
 Route::get('/studentdetails', [PageController::class, 'studentdetails'])->name('studentdetails')->middleware('auth');
 Route::post('studentdetails', [Datacontroller::class, 'studentdetailspost'])->middleware('auth');
 
+Route::post('/update-profile', [Datacontroller::class, 'updateProfile'])->name('update.profile');
+
 Route::get('address_contact', [Pagecontroller::class, 'address_contact'])->middleware('auth');
 Route::post('address_contact', [Datacontroller::class, 'address_contactpost'])->middleware('auth');
 
@@ -31,21 +35,25 @@ Route::get('previous_school', [Pagecontroller::class, 'previous_school'])->middl
 Route::post('previous_school', [Datacontroller::class, 'previous_schoolpost'])->middleware('auth');
 
 Route::get('required_documents', [Pagecontroller::class, 'required_documents'])->middleware('auth');
-Route::post('required_documents', [Datacontroller::class, 'required_documentspost'])->middleware('auth');
+Route::post('required_documents', [Datacontroller::class, 'required_documents_post'])->middleware('auth');
 
 Route::get('payment_process', [Pagecontroller::class, 'payment_process']);
+Route::post('payment_process', [Datacontroller::class, 'payment_processpost']);
 
-
+//student
 Route::get('studentdashboard', [Pagecontroller::class, 'studentdashboard'])->middleware('auth');
-
 Route::get('studentprofile', [Pagecontroller::class, 'studentprofile']);
+Route::get('studentprofile', [Usercontroller::class, 'studentprofile'])->middleware('auth');
 
 Route::get('studentclassload', [Pagecontroller::class, 'studentclassload']);
+Route::get('studentclassload', [UserController::class, 'studentClassLoad'])->middleware('auth');
 
+
+Route::get('/student-class-load/pdf', [PDFController::class, 'generatePDF'])->name('student.classload.pdf');
 Route::get('enrollmentstep', [Pagecontroller::class, 'enrollmentstep']);
 
 
-Route::get('studentgrades', [Pagecontroller::class, 'studentgrades']);
+Route::get('studentgrades', [PageController::class, 'studentgrades'])->middleware('auth');
 Route::get('studentassessment', [Pagecontroller::class, 'studentassessment']);
 
 
@@ -54,7 +62,13 @@ Route::get('teacher', [Pagecontroller::class, 'teacher']);
 Route::get('teachernotification', [Pagecontroller::class, 'teachernotification']);
 Route::get('teacherprofile', [Pagecontroller::class, 'teacherprofile']);
 Route::get('teacherclassload', [Pagecontroller::class, 'teacherclassload']);
+Route::get('teacherclassload', [Usercontroller::class, 'teacherclassload']);
+
+
 Route::get('gradesubmit', [Pagecontroller::class, 'gradesubmit']);
+Route::post('gradesubmit', [Datacontroller::class, 'gradesubmitpost']);
+Route::get('gradesubmit/{id}', [Usercontroller::class, 'gradesubmit']);
+
 Route::get('teacherattendance', [Pagecontroller::class, 'teacherattendance']);
 Route::get('teachercorevalue', [Pagecontroller::class, 'teachercorevalue']);
 
@@ -63,8 +77,38 @@ Route::get('teachercorevalue', [Pagecontroller::class, 'teachercorevalue']);
 //principal
 Route::get('principal', [Pagecontroller::class, 'principal']);
 Route::get('sectioning', [Pagecontroller::class, 'sectioning']);
-Route::get('principalclassload', [Pagecontroller::class, 'principalclassload']);
+Route::get('sectioning/{id}', [Usercontroller::class, 'sectioning']);
 
+Route::get('principalteacher', [Pagecontroller::class, 'principalteacher']);
+Route::get('/principalteacher', [Datacontroller::class, 'showTeachers'])->name('teachers.show');
+Route::post('principalteacher', [Datacontroller::class, 'teachersubjectpost']);
+
+Route::get('submittedgrades', [Pagecontroller::class, 'submittedgrades']);
+
+
+
+Route::get('assigning', [Pagecontroller::class, 'assigning']);
+Route::get('assigning/{id}', [Usercontroller::class, 'assigning']);
+Route::post('assigning', [Datacontroller::class, 'assigning']);
+
+Route::post('/assigning/{id}', [Datacontroller::class, 'approveAssigning']);
+
+
+Route::get('principalclassload', [Pagecontroller::class, 'principalclassload']);
+Route::post('principalclassload', [Datacontroller::class, 'classloadpost']);
+
+
+Route::get('/get-subject/{teacherId}', [UserController::class, 'getSubject']);
+Route::get('/update_class/{id}', [UserController::class, 'update_class']);
+Route::put('/update_class/{id}', [Datacontroller::class, 'updateClass'])->name('update_class');
+Route::get('/delete_class/{id}', [UserController::class, 'delete_class']);
+
+
+
+
+Route::get('publishgrade', [Pagecontroller::class, 'publishgrade']);
+Route::get('publishgrade/{id}', [Usercontroller::class, 'publishgrade']);
+Route::post('publishgrade/{id}', [Datacontroller::class, 'publish'])->name('grades.publish');
 
 //accounting 
 Route::get('accounting', [Pagecontroller::class, 'accounting']);
@@ -76,8 +120,15 @@ Route::get('createassessmet', [Pagecontroller::class, 'createassessmet']);
 
 //record
 Route::get('record', [Pagecontroller::class, 'record']);
+Route::get('studententries', [Pagecontroller::class, 'studententries']);
+Route::get('showdetails', [Pagecontroller::class, 'showdetails']);
+Route::get('showdetails/{id}', [Usercontroller::class, 'showStudentDetails']);
 Route::get('studentapplicant', [Pagecontroller::class, 'studentapplicant']);
 Route::get('studentapplicant/{id}', [Usercontroller::class, 'studentapplicant']);
+Route::post('studentapplicant', [Datacontroller::class, 'studentapplicant']);
+
+Route::get('approvedaccount', [Pagecontroller::class, 'approvedaccount']);
+Route::get('approvedaccount/{id}', [Usercontroller::class, 'approvedaccount']);
 
 Route::get('recordapproval', [Pagecontroller::class, 'recordapproval']);
 Route::post('recordapproval', [Datacontroller::class, 'recordapprovalpost']);
@@ -87,8 +138,13 @@ Route::get('recordapproval/{id}', [Usercontroller::class, 'recordapproval']);
 //cashier
 Route::get('cashier', [Pagecontroller::class, 'cashier']);
 Route::get('cashierstudentfee', [Pagecontroller::class, 'cashierstudentfee']);
+Route::post('cashierstudentfee', [Datacontroller::class, 'cashierstudentfeepost']);
+Route::get('approvedpayment', [Pagecontroller::class, 'approvedpayment']);
+Route::get('cashierstudentfee/{id}', [Usercontroller::class, 'cashierstudentfee']);
 Route::get('proofofpayment', [Pagecontroller::class, 'proofofpayment']);
-Route::post('proofofpayment', [Datacontroller::class, 'proofofpaymentpost']);
+Route::get('/proofofpayment/{payment_form}', [Usercontroller::class, 'proofofpayment']);
+
+Route::post('/proofofpayment/{id}', [DataController::class, 'approvePayment']);
 
 //admin
 Route::get('admin', [Pagecontroller::class, 'admin']);
@@ -102,13 +158,7 @@ Route::get('adminstudent', [Pagecontroller::class, 'adminstudent']);
 Route::get('adminreport', [Pagecontroller::class, 'adminreport']);
 Route::get('adminprofile', [Pagecontroller::class, 'adminprofile']);
 
-
-
-
-
-
-
-
+Route::get('/enrollmentstep', [DataController::class, 'enrollmentStep'])->name('enrollment.step');
 
 Route::get('updatedetails', [Pagecontroller::class, 'updatedetails'])->middleware('auth');
 Route::post('updatedetails', [Datacontroller::class, 'updatedetailspost'])->middleware('auth');
@@ -123,6 +173,11 @@ Route::get('updatedocuments', [Pagecontroller::class, 'updatedocuments'])->middl
 Route::post('updatedocuments', [Datacontroller::class, 'updatedocumentspost'])->middleware('auth');
 Route::get('updatedocuments/{id}', [Usercontroller::class, 'updatedocuments'])->middleware('auth')->name('updatedocuments');
 
+
+
+
+//delete image
+Route::delete('/documents/{id}', [Datacontroller::class, 'destroy']);
 
 
 Route::get('updateschool', [Pagecontroller::class, 'updateschool'])->middleware('auth');

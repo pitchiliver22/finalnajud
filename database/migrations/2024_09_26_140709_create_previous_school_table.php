@@ -15,7 +15,6 @@ return new class extends Migration
 
             $table->id();
             $table->string('second_school_name');
-            $table->string('second_last_strand');
             $table->string('second_last_year_level');
             $table->string('second_school_year_from');
             $table->string('second_school_year_to');
@@ -29,6 +28,8 @@ return new class extends Migration
 
             $table->unsignedBigInteger('school_id');
             $table->foreign('school_id')->references('id')->on('users');
+
+            $table->string('status')->default('pending');
 
             $table->timestamps();
         });

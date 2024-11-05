@@ -7,92 +7,56 @@
             <h1>Student Grades</h1>
         </div>
     </div>
+
     <h2>Grades S.Y 2024-2025</h2>
-    <table class="table-primary">
-        <tr>
-            <th>Subject</th>
-            <th>1st quarter</th>
-            <th>2nd quarter</th>
-            <th>3rd quarter</th>
-            <th>4th quarter</th>
-            <th>Final Grade</th>
-        </tr>
-        <tr>
-            <td>Biology</td>
-            <td>85</td>
-            <td>89</td>
-            <td>98</td>
-            <td>78</td>
-            <td>82.5</td>
-        </tr>
-        <tr>
-            <td>Chemistry</td>
-            <td>79</td>
-            <td>89</td>
-            <td>85</td>
-            <td>89</td>
-            <td>85.5</td>
-
-        </tr>
-        <tr>
-            <td>Science</td>
-            <td>92</td>
-            <td>85</td>
-            <td>79</td>
-            <td>89</td>
-            <td>86.25</td>
-        </tr>
-        <tr>
-            <td>Social Studies</td>
-            <td>88</td>
-            <td>89</td>
-            <td>98</td>
-            <td>78</td>
-            <td>88.25</td>
-        </tr>
-        <tr>
-            <td>Art</td>
-            <td>90</td>
-            <td>85</td>
-            <td>86</td>
-            <td>82</td>
-            <td>85.75</td>
-        </tr>
-        <tr>
-            <td>English</td>
-            <td>87</td>
-            <td>94</td>
-            <td>81</td>
-            <td>78</td>
-            <td>85</td>
-        </tr>
-        <tr>
-            <td>Mathematics</td>
-            <td>95</td>
-            <td>95</td>
-            <td>85</td>
-            <td>75</td>
-            <td>87.5</td>
-        </tr>
-
-        <tr>
-            <td>Physics</td>
-            <td>95</td>
-            <td>95</td>
-            <td>85</td>
-            <td>75</td>
-            <td>87.5</td>
-        </tr>
-        <tr>
-            <td>General Average</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td style="color: green;">87</td>
-        </tr>
-    </table>
-
+    <form action="/studentgrades" method="GET">
+        @csrf
+        @if ($gradesApproved)
+            <table class="table-primary">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>EDP Code</th>
+                        <th>Section</th>
+                        <th>1st Quarter</th>
+                        <th>2nd Quarter</th>
+                        <th>3rd Quarter</th>
+                        <th>4th Quarter</th>
+                        <th>Final Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($grades as $grade)
+                        <tr>
+                            <td>{{ $grade->subject }}</td>
+                            <td>{{ $grade->edp_code }}</td>
+                            <td>{{ $grade->section }}</td>
+                            <td>{{ $grade->{'1st_quarter'} }}</td>
+                            <td>{{ $grade->{'2nd_quarter'} }}</td>
+                            <td>{{ $grade->{'3rd_quarter'} }}</td>
+                            <td>{{ $grade->{'4th_quarter'} }}</td>
+                            <td>{{ $grade->overall_grade }}</td>
+                        </tr>
+                    @endforeach
+                    <tr>
+                        <td>General Average</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ number_format($grades->avg('overall_grade'), 2) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        @else
+            <div class="alert alert-warning mt-3">
+                <strong>Notice:</strong> Your grades are currently under evaluation by the principal. Please check back
+                later.
+            </div>
+        @endif
+    </form>
 </div>
 
 <style>
@@ -100,11 +64,12 @@
         width: 100%;
         border-collapse: collapse;
         background-color: #f2f2f2;
+        margin-top: 20px;
     }
 
     .table-primary th,
     .table-primary td {
-        padding: 8px;
+        padding: 12px;
         text-align: left;
         border-bottom: 1px solid #ddd;
     }
@@ -113,5 +78,35 @@
         background-color: #4CAF50;
         color: white;
     }
+
+    /* Responsive design */
+    @media (max-width: 600px) {
+
+        .table-primary th,
+        .table-primary td {
+            display: block;
+            text-align: right;
+        }
+
+        .table-primary th {
+            text-align: left;
+            position: relative;
+        }
+
+        .table-primary th::after {
+            content: ":";
+            position: absolute;
+            right: 0;
+        }
+    }
+
+    .alert {
+        padding: 15px;
+        background-color: #f9edbe;
+        color: #856404;
+        border: 1px solid #ffeeba;
+        border-radius: 5px;
+    }
 </style>
+
 @include('templates.studentfooter')

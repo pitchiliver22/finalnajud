@@ -21,7 +21,7 @@ return new class extends Migration
             $table->unsignedBigInteger('address_id');
             $table->timestamps();
 
-
+            $table->string('status')->default('pending');
 
             $table->foreign('address_id')->references('id')->on('users');
         });

@@ -15,6 +15,10 @@ class address extends Model
         'city',
         'barangay',
         'streetaddress',
-        'address_id'
+        'address_id',
+        'status'
     ];
+
+    const STATUS_PENDING = 'pending';
+    const STATUS_APPROVED = 'approved';
 }

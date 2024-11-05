@@ -103,17 +103,13 @@
         <p>If your NSO / PSA Birth Certificate original copy is not clear/legible, you are required to upload a Local
             Civil Registrar (LCR).</p>
         <p>If you have an ESC Grantee Certificate, please include it in your uploads.</p>
-        <p>2x2 ID Picture</p>
         <p>Please upload at least one (1) document.</p>
 
-        angelscript
-
-        Copy
         <form action="/required_documents" method="POST" enctype="multipart/form-data">
-            @csrf <!-- Include this line for CSRF protection in Laravel -->
+            @csrf
             <div class="file-input">
                 <label for="document-upload">Select Document</label>
-                <select id="document-type" name="type" required> <!-- Set name attribute -->
+                <select name="type[]" required>
                     <option value="" disabled selected>Select document type</option>
                     <option value="2x2 ID Picture">2x2 ID Picture</option>
                     <option value="Birth Certificate">Birth Certificate</option>
@@ -121,16 +117,14 @@
                     <option value="ESC Grantee Certificate">ESC Grantee Certificate</option>
                     <option value="Other">Other</option>
                 </select>
-                <input type="file" id="document-upload" name="documents" accept=".pdf,.jpg,.png" required>
+                <input type="file" name="documents[]" accept=".pdf,.jpg,.png" required>
                 <div class="error-message" id="file-error"></div>
             </div>
             <input type="hidden" id="required_id" name="required_id" value="{{ auth()->user()->id }}">
-
-
             <div id="additional-uploads"></div>
-
             <button type="button" class="add-upload-button" onclick="addAnotherUpload()">Add Another Upload</button>
-            <button type="submit" name="submit" class="btn btn-success" onclick="validateAndSubmit()">Upload</button>
+            <button type="submit" name="submit" class="btn btn-success" id="submit-button">Upload</button>
+
         </form>
     </div>
 
@@ -142,44 +136,44 @@
             fileError.textContent = '';
 
             // Check if at least one file is selected
-            if (formData.getAll('documents').length === 0) {
+            if (formData.getAll('documents[]').length === 0) {
                 fileError.textContent = 'Please select at least one file to upload.';
-                return;
+                return false; // Prevent form submission
             }
 
-            // Check if at least one document type is selected
-            if (formData.getAll('type').length === 0) {
-                fileError.textContent = 'Please select at least one document type.';
-                return;
-            }
+            // Disable the submit button to prevent multiple submissions
+            document.getElementById('submit-button').disabled = true;
 
             // Submit the form using AJAX
             fetch('/required_documents', {
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}', // Laravel CSRF token
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
                     },
                 })
                 .then(response => {
                     if (!response.ok) {
                         return response.json().then(err => {
-                            throw err.errors; // Handle validation errors
+                            throw err.errors;
                         });
                     }
-                    return response.json(); // Return the JSON response
+                    return response.json();
                 })
                 .then(data => {
-                    alert(data.message); // Success message
-                    form.reset(); // Reset the form
-                    document.getElementById('additional-uploads').innerHTML = ''; // Clear additional uploads
+                    alert(data.message);
+                    // Redirect to payment process after successful upload
+                    window.location.href = '/payment_process';
                 })
                 .catch(errors => {
-                    // Display validation errors
+                    fileError.textContent = ''; // Clear previous errors
                     for (let key in errors) {
                         fileError.textContent += errors[key].join(', ') + ' ';
                     }
+                    document.getElementById('submit-button').disabled = false; // Re-enable the button
                 });
+
+            return false; // Prevent default form submission
         }
 
         function addAnotherUpload() {
@@ -192,7 +186,8 @@
             newUpload.appendChild(label);
 
             const select = document.createElement('select');
-            select.name = 'type'; // Ensure name is set for multiple document types
+            select.name = 'type[]';
+            select.required = true; // Ensure each new upload has a type
             select.innerHTML = `
                 <option value="" disabled selected>Select document type</option>
                 <option value="2x2 ID Picture">2x2 ID Picture</option>
@@ -205,9 +200,9 @@
 
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
-            fileInput.name = 'documents'; // Ensure the name is the same to allow multiple uploads
+            fileInput.name = 'documents[]';
             fileInput.accept = '.pdf,.jpg,.png';
-            fileInput.required = true;
+            fileInput.required = true; // Ensure each file input is required
             newUpload.appendChild(fileInput);
 
             const errorMessage = document.createElement('div');

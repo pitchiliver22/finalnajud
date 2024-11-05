@@ -13,7 +13,6 @@ class previous_school extends Model
     protected $fillable = [
 
         'second_school_name',
-        'second_last_strand',
         'second_last_year_level',
         'second_school_year_from',
         'second_school_year_to',
@@ -26,5 +25,10 @@ class previous_school extends Model
         'primary_school_type',
 
         'school_id',
+
+        'status'
     ];
+
+    const STATUS_PENDING = 'pending';
+    const STATUS_APPROVED = 'approved';
 }

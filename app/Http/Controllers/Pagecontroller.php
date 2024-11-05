@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\address;
+use App\Models\assign;
+use App\Models\classes;
+use App\Models\grade;
+use App\Models\payment_form;
 use App\Models\previous_school;
 use App\Models\register_form;
 use App\Models\required_docs;
 use App\Models\studentdetails;
+use App\Models\teacher;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,14 +26,17 @@ class Pagecontroller extends Controller
     }
     public function login()
     {
+        //  sweetalert()->success('Welcome to our system called BESIS: Basic Ed Student Information System!');
         return view('login');
     }
     public function partialaccount()
     {
+        sweetalert()->warning('This is your partial account so please fill up all the details asked.');
         return view('partialaccount');
     }
     public function register_consent()
     {
+        sweetalert()->info('This is optional only but we need the consent of your parents first.');
         return view('register_consent');
     }
 
@@ -65,6 +73,7 @@ class Pagecontroller extends Controller
     }
     public function studentclassload()
     {
+
         return view('studentclassload');
     }
 
@@ -83,7 +92,20 @@ class Pagecontroller extends Controller
 
     public function studentgrades()
     {
-        return view('studentgrades');
+        $userId = Auth::id();
+
+        // Fetch all approved grades for the authenticated user based on the grade_id
+        $grades = Grade::where('grade_id', $userId) // Check if the authenticated user's ID matches the grade_id
+            ->where('status', 'approved') // Only fetch approved grades
+            ->get(['subject', 'edp_code', 'section', '1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter', 'overall_grade']); // Specify the fields you need
+
+        // Check if there are any approved grades
+        $gradesApproved = $grades->isNotEmpty();
+
+        return view('studentgrades', [
+            'grades' => $grades, // Pass the collection of approved grades
+            'gradesApproved' => $gradesApproved,
+        ]);
     }
 
     public function studentassessment()
@@ -110,7 +132,21 @@ class Pagecontroller extends Controller
     }
     public function gradesubmit()
     {
-        return view('gradesubmit');
+        $userId = Auth::id();
+        $assign = assign::findOrFail($userId);
+
+        $student = register_form::findOrFail($assign->class_id);
+
+
+        $fullName = "{$student->firstname} {$student->middlename} {$student->lastname}";
+
+        return view('gradesubmit', [
+            'assign' => $assign,
+            'edpcode' => $assign->edpcode,
+            'subject' => $assign->subject,
+            'section' => $assign->section,
+            'fullName' => $fullName,
+        ]);
     }
     public function teacherattendance()
     {
@@ -118,7 +154,14 @@ class Pagecontroller extends Controller
     }
     public function teachercorevalue()
     {
-        return view('teachercorevalue');
+        $assign = assign::findOrFail('class_id');
+
+        $student = grade::where('grade_id', $assign->class_id);
+
+        return view('teachercorevalue', [
+            'student' => $student,
+            'assign' => $assign
+        ]);
     }
 
     //principal
@@ -126,13 +169,31 @@ class Pagecontroller extends Controller
     {
         return view('principal');
     }
-    public function sectioning()
-    {
-        return view('sectioning');
-    }
+
     public function principalclassload()
     {
-        return view('principalclassload');
+        $class = classes::all();
+        $teachers = teacher::all();
+        return view('principalclassload', compact('class', 'teachers'));
+    }
+
+    public function submittedgrades()
+    {
+        $assigns = assign::all();
+        $grades = grade::all();
+
+        $data = [
+            'title' => 'Submitted Grades',
+            'assigns' => $assigns,
+            'grades' => $grades
+        ];
+
+        return view('submittedgrades', $data);
+    }
+
+    public function publishgrade()
+    {
+        return view('publishgrade');
     }
 
     //accounting
@@ -158,13 +219,44 @@ class Pagecontroller extends Controller
     //record
     public function record()
     {
-        return view('record');
+        // Count pending and approved accounts
+        $pendingCount = register_form::where('status', 'pending')->count();
+        $approvedCount = register_form::where('status', 'approved')->count();
+
+        // Fetch student information
+        $students = studentdetails::all(); // You can adjust this to filter or paginate if needed
+
+        return view('record', compact('students', 'pendingCount', 'approvedCount'));
+    }
+    public function studententries()
+    {
+
+        $studentDetails = studentdetails::all();
+        $previousSchools = previous_school::all();
+        $addresses = address::all();
+        $requiredDocs = required_docs::all();
+
+        // Pass all datasets to the view
+        return view('studententries', compact('studentDetails', 'previousSchools', 'addresses', 'requiredDocs'));
+    }
+    public function showdetails()
+    {
+        return view('showdetails');
     }
     public function studentapplicant()
     {
-        $account = register_form::all();
+
+        $account = register_form::where('status', register_form::STATUS_PENDING)->get();
 
         return view('studentapplicant', compact('account'));
+    }
+
+    public function approvedaccount()
+    {
+        // Fetch only approved accounts
+        $account = register_form::where('status', 'approved')->get();
+
+        return view('approvedaccount', compact('account'));
     }
     public function  recordapproval()
     {
@@ -185,12 +277,58 @@ class Pagecontroller extends Controller
     }
     public function cashierstudentfee()
     {
-        return view('cashierstudentfee');
+        $students = register_form::all();
+        $payments = payment_form::all();
+
+        return view('cashierstudentfee', [
+            'students' => $students,
+            'payments' => $payments,
+        ]);
+    }
+    public function approvedpayment()
+    {
+        $students = register_form::all();
+        $payments = payment_form::all();
+
+        return view('approvedpayment', [
+            'students' => $students,
+            'payments' => $payments,
+        ]);
+    }
+
+    public function sectioning()
+    {
+        $students = register_form::all();
+        $payments = payment_form::all();
+
+        return view('sectioning', [
+            'students' => $students,
+            'payments' => $payments,
+        ]);
+    }
+
+    public function assigning()
+    {
+        $students = register_form::all();
+        $payments = payment_form::all();
+        $classes = classes::all();
+
+        return view('assigning', [
+            'students' => $students,
+            'payments' => $payments,
+            'classes' => $classes
+        ]);
     }
 
     public function proofofpayment()
     {
-        return view('proofofpayment');
+        $students = register_form::all();
+        $payments = payment_form::all();
+
+        return view('cashierstudentfee', [
+            'students' => $students,
+            'payments' => $payments,
+        ]);
     }
 
     //admin
@@ -281,5 +419,9 @@ class Pagecontroller extends Controller
         $school = previous_school::findOrFail($user->school_id);
 
         return view('updateschool', compact('school'));
+    }
+    public function principalteacher()
+    {
+        return view('principalteacher');
     }
 }

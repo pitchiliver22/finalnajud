@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('fullname');
             $table->string('section');
-            $table->string('student_id');
             $table->string('edp_code');
             $table->string('subject');
             $table->decimal('1st_quarter', 5, 2);
@@ -23,6 +22,9 @@ return new class extends Migration
             $table->decimal('3rd_quarter', 5, 2);
             $table->decimal('4th_quarter', 5, 2);
             $table->decimal('overall_grade', 5, 2);
+            $table->string('status');
+            $table->unsignedBigInteger('grade_id');
+            $table->foreign('grade_id')->references('id')->on('payment_form');
             $table->timestamps();
         });
     }
@@ -32,6 +34,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('grade', function (Blueprint $table) {
+            $table->dropForeign(['grade_id']);
+        });
         Schema::dropIfExists('grade');
     }
 };

@@ -12,7 +12,6 @@ class grade extends Model
     protected $fillable = [
         'fullname',
         'section',
-        'student_id',
         'edp_code',
         'subject',
         '1st_quarter',
@@ -20,5 +19,10 @@ class grade extends Model
         '3rd_quarter',
         '4th_quarter',
         'overall_grade',
+        'status',
+        'grade_id'
     ];
+
+    const STATUS_PENDING = 'pending';
+    const STATUS_APPROVED = 'approved';
 }

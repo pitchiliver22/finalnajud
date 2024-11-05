@@ -10,7 +10,7 @@
 
 
     <div class="container my-5">
-        <form action="/teacherattendance" method="GET">
+        <form action="/teachercorevalue" method="GET">
             @csrf
             <div class="card">
                 <div class="card-body">
@@ -33,7 +33,6 @@
                                 <tr>
                                     <th>Full Name</th>
                                     <th>Section</th>
-                                    <th>Student ID</th>
                                     <th>Grade Level</th>
                                     <th>Respect</th>
                                     <th>Excellence</th>
@@ -44,11 +43,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>Oliver pacatang</td>
-                                    <td>Diamond</td>
-                                    <td>2314324</td>
-
-                                    <td>Grade 2</td>
+                                    <td>{{ $student->fullname }}</td>
+                                    <td>{{ $student->section }}</td>
+                                    <td>{{ $assign->grade }}</td>
 
                                     <td><input type="text" class="form-control" value="AO" name="firstquarter">
                                     </td>
@@ -61,79 +58,7 @@
                                     <td><input type="text" class="form-control" value="AO" name="attendance">
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>claire dungog</td>
-                                    <td>Diamond</td>
-                                    <td>435435</td>
 
-                                    <td>Grade 2</td>
-                                    <td><input type="text" class="form-control" value="AO" name="firstquarter">
-                                    </td>
-                                    <td><input type="text" class="form-control" value="SO" name="secondquarter">
-                                    </td>
-                                    <td><input type="text" class="form-control" value="SO" name="thirdquarter">
-                                    </td>
-                                    <td><input type="text" class="form-control" value="SO" name="fourthquarter">
-                                    </td>
-                                    <td><input type="text" class="form-control" value="AO" name="attendance">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Johrnhay batan</td>
-                                    <td>Diamond</td>
-                                    <td>2314324</td>
-
-                                    <td>Grade 2</td>
-                                    <td><input type="text" class="form-control" value="AO" name="firstquarter">
-                                    </td>
-                                    <td><input type="text" class="form-control" value="AO" name="secondquarter">
-                                    </td>
-                                    <td><input type="text" class="form-control" value="AO" name="thirdquarter">
-                                    </td>
-                                    <td><input type="text" class="form-control" value="AO" name="fourthquarter">
-                                    </td>
-                                    <td><input type="text" class="form-control" value="SO" name="attendance">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Moises Belacura</td>
-                                    <td>Diamond</td>
-                                    <td>2314324</td>
-
-                                    <td>Grade 2</td>
-                                    <td><input type="text" class="form-control" value="AO" name="firstquarter">
-                                    </td>
-                                    <td><input type="text" class="form-control" value="AO" name="secondquarter">
-                                    </td>
-                                    <td><input type="text" class="form-control" value="AO" name="thirdquarter">
-                                    </td>
-                                    <td><input type="text" class="form-control" value="SO"
-                                            name="fourthquarter">
-                                    </td>
-                                    <td><input type="text" class="form-control" value="SO" name="attendance">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Bernie Lambo</td>
-                                    <td>Diamond</td>
-                                    <td>2314324</td>
-
-                                    <td>Grade 2</td>
-                                    <td><input type="text" class="form-control" value="AO"
-                                            name="firstquarter">
-                                    </td>
-                                    <td><input type="text" class="form-control" value="AO"
-                                            name="secondquarter">
-                                    </td>
-                                    <td><input type="text" class="form-control" value="AO"
-                                            name="thirdquarter">
-                                    </td>
-                                    <td><input type="text" class="form-control" value="AO"
-                                            name="fourthquarter">
-                                    </td>
-                                    <td><input type="text" class="form-control" value="SO" name="attendance">
-                                    </td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>

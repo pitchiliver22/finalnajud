@@ -4,10 +4,9 @@
     <div class="w3-teal">
         <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
         <div class="w3-container">
-            <h1>RECORD DASHBOARD</h1>
+            <h1 class="text-center">RECORD DASHBOARD</h1>
         </div>
     </div>
-
 
     <div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="mySidebar">
         <button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Close &times;</button>
@@ -24,7 +23,79 @@
         </a>
     </div>
 
-    asdsads
+    <div class="container mt-4 mb-5">
+        <div class="row">
+            <!-- Account Summary Card -->
+            <div class="col-md-12 mb-4">
+                <div class="card border-primary shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Account Summary</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <p class="h4">Pending Accounts: <span class="text-warning">{{ $pendingCount }}</span></p>
+                        <p class="h4">Approved Accounts: <span class="text-success">{{ $approvedCount }}</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Information Card -->
+            <div class="col-md-12 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0">Student Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            @foreach ($students as $student)
+                                <li class="list-group-item">{{ $student->firstname }} {{ $student->lastname }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
+
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+    }
+
+    .w3-teal {
+        background-color: #007bff;
+    }
+
+    .card {
+        border-radius: 8px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .list-group-item {
+        transition: background-color 0.3s;
+    }
+
+    .list-group-item:hover {
+        background-color: #e9ecef;
+    }
+
+    h1,
+    h5 {
+        margin: 0;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+</style>
+
 @include('templates.recordfooter')

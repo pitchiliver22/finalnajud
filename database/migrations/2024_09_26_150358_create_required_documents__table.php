@@ -18,6 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('required_id');
             $table->timestamps();
             $table->foreign('required_id')->references('id')->on('users');
+
+            $table->string('status')->default('pending');
         });
     }
 

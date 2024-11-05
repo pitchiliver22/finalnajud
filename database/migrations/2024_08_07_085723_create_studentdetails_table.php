@@ -35,6 +35,8 @@ return new class extends Migration
             $table->unsignedBigInteger('details_id');
             $table->foreign('details_id')->references('id')->on('users');
 
+            $table->string('status')->default('pending');
+
             $table->timestamps();
         });
     }

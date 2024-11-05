@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Required Documents Upload</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -9,194 +11,180 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
     </script>
     <style>
-        .upload-container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
+        .image-container {
+            display: inline-block;
+            position: relative;
+            margin: 15px;
+        }
+
+        .image-container img {
+            width: 2in;
+            height: 2in;
+            object-fit: cover;
             border: 1px solid #ccc;
             border-radius: 5px;
-            background-color: #f9f9f9;
+            cursor: pointer;
         }
 
-        .file-input {
-            display: flex;
+        .delete-button {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #image-modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
             align-items: center;
-            margin-bottom: 20px;
+            z-index: 1000;
         }
 
-        .file-input label {
-            display: inline-block;
-            font-weight: bold;
-            margin-right: 10px;
-            width: 150px;
+        #modal-image {
+            max-width: 90%;
+            max-height: 90%;
+            width: auto;
+            height: auto;
         }
 
-        .file-input select {
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-            width: 200px;
-            margin-right: 10px;
-        }
-
-        .file-input input[type="file"] {
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-            width: 300px;
-        }
-
-        .error-message {
-            color: red;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-
-        .submit-button {
-            display: block;
-            margin: 20px 0 0 0;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
+        #selected-image img {
+            margin: 5px;
             cursor: pointer;
-            font-size: 16px;
         }
 
-        #additional-uploads {
-            margin-top: 20px;
-        }
-
-        #additional-uploads .file-input {
-            margin-bottom: 10px;
-        }
-
-        .add-upload-button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-            display: inline-block;
-        }
-
-        .btn-upload {
-            display: inline-block;
-            margin-left: 10px;
+        #image-modal.open {
+            display: flex;
+            /* Show modal when open */
         }
     </style>
 </head>
 
-
-
 <body>
-    <div class="upload-container">
-        <h2>Required Documents Upload</h2>
-        <p>Scanned copies must be clear and legible. Each file must not exceed 10MB.</p>
-        <p>Accepted file formats for 2x2 ID Picture are jpg/png; all documents should be in pdf format.</p>
-        <p>If your NSO / PSA Birth Certificate original copy is not clear/legible, you are required to upload a Local
-            Civil Registrar (LCR).</p>
-        <p>If you have an ESC Grantee Certificate, please include it in your uploads.</p>
-        <p>2x2 ID Picture</p>
-        <p>Please upload at least one (1) document.</p>
-
-        <form action="/updatedocuments" method="POST" enctype="multipart/form-data">
-            @csrf <!-- Include this line for CSRF protection in Laravel -->
-            <div class="file-input">
-                <label for="document-type">Select Document Type</label>
-                <input type="text" name="type" id="document-type" value="{{ $docs->type ?? '' }}" required>
-
-                <div class="col-md-6 mt-3">
-                    @if ($docs && $docs->documents)
-                        @php
-                            $imagePath = asset('documents/' . $docs->documents);
-                        @endphp
-                        <img src="{{ $imagePath }}" alt="Uploaded Document" class="img-fluid rounded"
-                            onerror="this.style.display='none';">
-                        <p>Image Path: {{ $imagePath }}</p> <!-- Debug line -->
-                    @else
-                        <img src="https://via.placeholder.com/640x480.png/003366?text=No+Image" alt="No Image Available"
-                            class="img-fluid rounded">
-                    @endif
-                </div>
-
-                <div class="error-message" id="file-error"></div>
+    <form action="/updatedocuments" method="POST" enctype="multipart/form-data" class="container mt-4">
+        @csrf
+        <div class="upload-container mb-4 p-4 border rounded bg-light shadow-sm">
+            <h2 class="mb-3">Required Documents Upload</h2>
+            <p class="text-muted">Scanned copies must be clear and legible. Each file must not exceed 10MB.</p>
+            <div class="file-input mb-3">
+                <label for="document-upload" class="form-label">Select Document</label>
+                <select name="type[]" class="form-select">
+                    <option value="" disabled selected>Select document type</option>
+                    <option value="2x2 ID Picture">2x2 ID Picture</option>
+                    <option value="Birth Certificate">Birth Certificate</option>
+                    <option value="LCR">Local Civil Registrar (LCR)</option>
+                    <option value="ESC Grantee Certificate">ESC Grantee Certificate</option>
+                    <option value="Other">Other</option>
+                </select>
+                <input type="file" name="documents[]" accept=".pdf,.jpg,.png" class="form-control mt-2">
+                <div class="error-message text-danger" id="file-error"></div>
             </div>
-
             <input type="hidden" id="required_id" name="required_id" value="{{ auth()->user()->id }}">
-
             <div id="additional-uploads"></div>
+            <button type="button" class="btn btn-secondary mb-2" onclick="addAnotherUpload()">Add Another
+                Upload</button>
+            <button type="submit" name="submit" class="btn btn-success" id="submit-button">Upload</button>
+        </div>
 
-            <button type="button" class="add-upload-button" onclick="addAnotherUpload()">Add Another Upload</button>
-            <button type="submit" name="submit" class="btn btn-success" onclick="validateAndSubmit()">Upload</button>
-        </form>
-    </div>
+        <div class="upload-container mb-4 p-4 border rounded bg-light shadow-sm">
+            <h2 class="mb-3">Uploaded Documents</h2>
+            <label for="document-type" class="form-label">Select Document Type</label>
+            <select id="document-type" class="form-select" onchange="showImageByType()">
+                <option value="" disabled selected>Select document type</option>
+                <option value="2x2 ID Picture">2x2 ID Picture</option>
+                <option value="Birth Certificate">Birth Certificate</option>
+                <option value="LCR">Local Civil Registrar (LCR)</option>
+                <option value="ESC Grantee Certificate">ESC Grantee Certificate</option>
+                <option value="Other">Other</option>
+            </select>
+            <div id="selected-image-container" class="text-center my-4">
+                <p>Selected Document:</p>
+                <div id="selected-image" class="d-flex justify-content-center flex-wrap"></div>
+            </div>
+        </div>
+
+        <!-- Modal for enlarged image -->
+        <div id="image-modal" class="modal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Enlarged Document</h5>
+                        <button type="button" class="btn-close" onclick="closeModal()"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img id="modal-image" src="" alt="Enlarged Document" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" name="done" class="btn btn-success" id="done-button">Done</button>
+    </form>
 
     <script>
-        function validateAndSubmit() {
-            const form = document.querySelector('form');
-            const formData = new FormData(form);
-            const fileError = document.getElementById('file-error');
-            fileError.textContent = '';
+        const imagesData = @json($docs); // Assuming you pass the $docs variable to the view
 
-            // Check if at least one file is selected
-            if (formData.getAll('documents').length === 0) {
-                fileError.textContent = 'Please select at least one file to upload.';
-                return;
-            }
+        function openModal(imageSrc) {
+            const modal = document.getElementById('image-modal');
+            const modalImage = document.getElementById('modal-image');
+            modalImage.src = imageSrc;
+            modal.classList.add('open'); // Add class to open modal
+        }
 
-            // Check if document type is selected
-            if (!formData.get('type')) {
-                fileError.textContent = 'Please select a document type.';
-                return;
-            }
+        function closeModal() {
+            const modal = document.getElementById('image-modal');
+            modal.classList.remove('open'); // Remove class to close modal
+        }
 
-            // Submit the form using AJAX
-            fetch('/updatedocuments', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}', // Laravel CSRF token
-                    },
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => {
-                            throw err.errors; // Handle validation errors
-                        });
-                    }
-                    return response.json(); // Return the JSON response
-                })
-                .then(data => {
-                    alert(data.message); // Success message
-                    form.reset(); // Reset the form
-                    document.getElementById('additional-uploads').innerHTML = ''; // Clear additional uploads
-                })
-                .catch(errors => {
-                    // Display validation errors
-                    for (let key in errors) {
-                        fileError.textContent += errors[key].join(', ') + ' ';
-                    }
+        function showImageByType() {
+            const selectedType = document.getElementById('document-type').value;
+            const selectedImageContainer = document.getElementById('selected-image');
+            selectedImageContainer.innerHTML = '';
+
+            const filteredImages = imagesData.filter(doc => doc.type === selectedType && doc.documents.match(
+                /\.(jpg|jpeg|png)$/));
+
+            if (filteredImages.length > 0) {
+                filteredImages.forEach(doc => {
+                    const img = document.createElement('img');
+                    img.src = `/storage/${doc.documents}`;
+                    img.style.width = '300px';
+                    img.style.height = '300px';
+                    img.classList.add('img-thumbnail', 'm-2');
+                    img.onclick = function() {
+                        openModal(img.src);
+                    };
+
+                    selectedImageContainer.appendChild(img);
                 });
+            } else {
+                selectedImageContainer.innerHTML = '<p class="text-muted">No image available for this type.</p>';
+            }
         }
 
         function addAnotherUpload() {
             const additionalUploads = document.getElementById('additional-uploads');
             const newUpload = document.createElement('div');
-            newUpload.className = 'file-input mt-3';
+            newUpload.className = 'file-input mb-3';
 
             const label = document.createElement('label');
             label.textContent = 'Select Document';
+            label.className = 'form-label';
             newUpload.appendChild(label);
 
             const select = document.createElement('select');
-            select.name = 'type[]'; // Use array syntax for multiple types
+            select.name = 'type[]';
+            select.className = 'form-select';
             select.required = true;
             select.innerHTML = `
                 <option value="" disabled selected>Select document type</option>
@@ -210,14 +198,11 @@
 
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
-            fileInput.name = 'documents[]'; // Use array syntax for multiple uploads
+            fileInput.name = 'documents[]';
             fileInput.accept = '.pdf,.jpg,.png';
+            fileInput.className = 'form-control mt-2';
             fileInput.required = true;
             newUpload.appendChild(fileInput);
-
-            const errorMessage = document.createElement('div');
-            errorMessage.className = 'error-message';
-            newUpload.appendChild(errorMessage);
 
             additionalUploads.appendChild(newUpload);
         }

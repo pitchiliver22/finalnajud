@@ -14,15 +14,19 @@ return new class extends Migration
         Schema::create('classes', function (Blueprint $table) {
             $table->id();
             $table->string('grade');
+            $table->string('adviser');
             $table->string('section');
             $table->string('edpcode');
             $table->string('room');
             $table->string('subject');
             $table->text('description');
-            $table->string('type');
+            $table->string('type')->nullable();
             $table->string('unit');
             $table->string('time');
             $table->string('days');
+            $table->string('status');
+            $table->unsignedBigInteger('assign_id')->nullable();
+
 
             $table->timestamps();
         });
