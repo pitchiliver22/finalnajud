@@ -10,6 +10,7 @@ use App\Models\payment_form;
 use App\Models\previous_school;
 use App\Models\register_form;
 use App\Models\required_docs;
+use App\Models\section;
 use App\Models\studentdetails;
 use App\Models\teacher;
 use Illuminate\Http\Request;
@@ -358,28 +359,7 @@ class Usercontroller extends Controller
             'subject' => $assign->subject, // Assuming this is how you access the subject
             'section' => $assign->section
         ]);
-    }
-
-    public function studentClassLoad()
-    {
-        $userId = Auth::id();
-
-        $assignedClasses = assign::where('class_id', $userId)->get();
-
-        $student = register_form::find($userId);
-        if (!$student) {
-            return redirect()->back()->withErrors('Student not found.');
-        }
-
-        $proof = payment_form::where('payment_id', $userId)->first();
-
-        return view('studentclassload', [
-            'assignedClasses' => $assignedClasses,
-            'student' => $student,
-            'proof' => $proof,
-        ]);
-    }
-
+}
     public function submittedgrades()
     {
         return view('submittedgrades');
@@ -452,5 +432,25 @@ public function getTeachersByGrade($grade) {
     return response()->json([
         'teachers' => $teachers
     ]);
+}
+
+public function getTeachersBySubjectAndGrade(Request $request)
+{
+    $selectedSubject = $request->input('subject');
+    $selectedGrade = $request->input('grade');
+
+    $teachers = teacher::where('grade', $selectedGrade)
+        ->where('subject', 'LIKE', '%' . $selectedSubject . '%')
+        ->get(['id', 'name']);
+
+    return response()->json($teachers);
+}
+
+public function deleteSection($id)
+{
+    $section = section::findOrFail($id);
+    $section->delete();
+
+    return redirect()->back()->with('success', 'Section deleted successfully.');
 }
 }

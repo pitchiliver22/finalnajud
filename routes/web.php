@@ -55,11 +55,9 @@ Route::get('studentdashboard', [Pagecontroller::class, 'studentdashboard'])->mid
 Route::get('studentprofile', [Pagecontroller::class, 'studentprofile']);
 Route::get('studentprofile', [Usercontroller::class, 'studentprofile'])->middleware('auth');
 
-Route::get('studentclassload', [Pagecontroller::class, 'studentclassload']);
-Route::get('studentclassload', [UserController::class, 'studentClassLoad'])->middleware('auth');
-
-
+Route::get('studentclassload', [Pagecontroller::class, 'studentclassload'])->middleware('auth');
 Route::get('/student-class-load/pdf', [PDFController::class, 'generatePDF'])->name('student.classload.pdf');
+
 Route::get('enrollmentstep', [Pagecontroller::class, 'enrollmentstep']);
 
 
@@ -90,8 +88,8 @@ Route::get('sectioning', [Pagecontroller::class, 'sectioning']);
 Route::get('sectioning/{id}', [Usercontroller::class, 'sectioning']);
 
 Route::get('principalteacher', [Pagecontroller::class, 'principalteacher']);
-Route::get('/principalteacher', [Datacontroller::class, 'showTeachers'])->name('teachers.show');
-Route::post('principalteacher', [Datacontroller::class, 'teachersubjectpost']);
+Route::get('/principalteacher', [DataController::class, 'showTeachers'])->name('principalteacher');
+Route::post('/principalteacher', [DataController::class, 'teachersubjectpost']);
 
 Route::get('submittedgrades', [Pagecontroller::class, 'submittedgrades']);
 
@@ -113,9 +111,12 @@ Route::get('principalclassload', [Pagecontroller::class, 'principalclassload']);
 Route::post('principalclassload', [Datacontroller::class, 'classloadpost']);
 Route::get('/get-teachers/{grade}', [UserController::class, 'getTeachersByGrade']);
 Route::get('/principalclassload', [Datacontroller::class, 'principalclassload'])->name('principalclassload');
+Route::get('/get-teachers', [Usercontroller::class, 'getTeachersBySubjectAndGrade']);
+
 
 Route::get('createsection', [Pagecontroller::class, 'createsection']);
 Route::post('createsection', [Datacontroller::class, 'createsectionpost']);
+Route::delete('section/{id}', [Usercontroller::class, 'deleteSection'])->name('section.delete');
 
 
 Route::get('/get-subject/{teacherId}', [UserController::class, 'getSubject']);

@@ -41,113 +41,139 @@
     <div class="w3-teal">
         <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
         <div class="w3-container">
-            <h1>PRINCIPAL CLASSLOAD</h1>
+            <h1>Classload for {{ $selectedSection }} Grade: {{ $selectedGrade }}</h1>
         </div>
     </div>
 
     <div class="container">
         <h1>Classload</h1>
 
-        @if ($errors->any())
-            <div class="error-message">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        @if (session('warning'))
+        <div class="alert alert-warning">
+            {{ session('warning') }}
+        </div>
+    @endif
+    
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            {{ $errors->first() }}
+        </div>
+    @endif
 
         <form action="/principalclassload" method="POST" id="myForm">
             @csrf
             <div class="row">
                 <div class="col">
                     <label for="grade">Grade</label>
-                    <input class="form-control" id="grade" name="grade" value="{{ old('grade', isset($sections) && count($sections) > 0 ? $sections[0]->grade : '') }}" readonly>
+                    <input class="form-control" id="grade" name="grade" value="{{ old('grade', $selectedGrade) }}" readonly>
                 </div>
                 <div class="col">
                     <label for="section">Section</label>
-                    <input class="form-control" id="section" name="section" value="{{ old('section', isset($sections) && count($sections) > 0 ? $sections[0]->section : '') }}" readonly>
+                    <input class="form-control" id="section" name="section" value="{{ old('section', $selectedSection) }}" readonly>
                 </div>
             </div>
+        
             <div class="row">
                 <div class="col">
                     <label for="room">Room</label>
-                    <input type="text" class="form-control" id="room" name="room" placeholder="208, ME 105, ETC." maxlength="5" required>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="room" 
+                        name="room" 
+                        placeholder="Room Number" 
+                        required 
+                       
+                    >
                 </div>
+                
                 <div class="col">
                     <label for="subject">Subject</label>
-                    <select class="form-control" id="subject" name="subject" required>
+                    <select 
+                        class="form-control" 
+                        id="subject" 
+                        name="subject" 
+                        required 
+                        onchange="updateTeachers()"
+                    >
                         <option value="">Select Subject</option>
-                        @foreach ($sections as $sec) <!-- Loop through sections -->
-                            @foreach ($teachers as $teacher)
-                                @if ($teacher->grade === $sec->grade) <!-- Match the grade -->
-                                    @foreach (explode(',', $teacher->subject) as $subject)
-                                        <option value="{{ trim($subject) }}" {{ old('subject') === trim($subject) ? 'selected' : '' }}>
-                                            {{ trim($subject) }}
-                                        </option>
-                                    @endforeach
-                                @endif
+                        @foreach ($teachers as $teacher)
+                            @foreach (explode(',', $teacher->subject) as $subject)
+                                <option 
+                                    value="{{ trim($subject) }}" 
+                                    {{ old('subject', $selectedSubject) == trim($subject) ? 'selected' : '' }}
+                                >
+                                    {{ trim($subject) }}
+                                </option>
                             @endforeach
                         @endforeach
                     </select>
                 </div>
+                
                 <div class="col">
                     <label for="assignedTeacher">Assigned Teacher</label>
-                    <select class="form-control" id="assignedTeacher" name="adviser" required>
+                    <select 
+                        class="form-control" 
+                        id="assignedTeacher" 
+                        name="adviser" 
+                        required
+                    >
                         <option value="">Select Teacher</option>
-                        @foreach ($sections as $sec) <!-- Loop through sections -->
-                            @foreach ($teachers as $teacher)
-                                @if ($teacher->grade === $sec->grade) <!-- Match the grade -->
-                                    <option value="{{ $teacher->id }}" {{ old('adviser') == $teacher->id ? 'selected' : '' }}>
-                                        {{ $teacher->name }}
-                                    </option>
-                                @endif
-                            @endforeach
+                        @foreach ($teachers as $teacher)
+                            @if (strpos($teacher->subject, old('subject', $selectedSubject)) !== false && $teacher->grade == $selectedGrade)
+                                <option 
+                                    value="{{ $teacher->id }}" 
+                                    {{ old('adviser') == $teacher->id ? 'selected' : '' }}
+                                >
+                                    {{ $teacher->name }}
+                                </option>
+                            @endif
                         @endforeach
                     </select>
                 </div>
             </div>
 
-            <div class="col">
-                <label for="description">Description</label>
-                <textarea class="form-control" id="description" name="description" placeholder="e.g. FILIPINO IS ALL ABOUT-" rows="2" required></textarea>
+            <div class="row">
+                <div class="col">
+                    <label for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description" placeholder="e.g. FILIPINO IS ALL ABOUT-" rows="2" required>{{ old('description') }}</textarea>
+                </div>
             </div>
 
             <div class="row">
                 <div class="col">
                     <label for="edpcode">Edp Code</label>
-                    <input type="text" class="form-control" id="edpcode" name="edpcode" placeholder="41121" maxlength="5" pattern="\d*" title="Please enter numbers only" required>
+                    <input type="text" class="form-control" id="edpcode" name="edpcode" placeholder="41121" maxlength="5" pattern="\d*" title="Please enter numbers only" required value="{{ old('edpcode') }}">
                 </div>
                 <div class="col">
                     <label for="type">Type</label>
                     <select class="form-control" id="type" name="type" required>
                         <option value="">Select Type</option>
-                        <option value="Lec">Lec</option>
-                        <option value="Lab">Lab</option>
+                        <option value="Lec" {{ old('type') == 'Lec' ? 'selected' : '' }}>Lec</option>
+                        <option value="Lab" {{ old('type') == 'Lab' ? 'selected' : '' }}>Lab</option>
                     </select>
                 </div>
                 <div class="col">
                     <label for="unit">Unit</label>
-                    <input type="text" class="form-control" id="unit" name="unit" placeholder="(Available units: 1/2/3)" required maxlength="1" pattern="\d{1,3}" title="Please enter 1 to 3 numbers">
+                    <input type="text" class="form-control" id="unit" name="unit" placeholder="(Available units: 1/2/3)" required maxlength="1" pattern="\d{1,3}" title="Please enter 1 to 3 numbers" value="{{ old('unit') }}">
                 </div>
             </div>
 
             <div class="row align-items-center">
                 <div class="col">
                     <label for="startTime">Start Time:</label>
-                    <input type="time" class="form-control" id="startTime" name="startTime" required>
+                    <input type="time" class="form-control" id="startTime" name="startTime" required value="{{ old('startTime') }}">
                 </div>
                 <div class="col">
                     <label for="endTime">End Time:</label>
-                    <input type="time" class="form-control" id="endTime" name="endTime" required>
+                    <input type="time" class="form-control" id="endTime" name="endTime" required value="{{ old('endTime') }}">
                 </div>
             </div>
-            
+
             <div class="row">
                 <div class="col">
                     <label for="days">Days</label>
-                    <input type="text" class="form-control" id="days" name="days" placeholder="e.g. MWF/ TTH/ SAT" pattern="[A-Za-z\s]+" title="Please enter letters only" maxlength="4" required>
+                    <input type="text" class="form-control" id="days" name="days" placeholder="e.g. MWF/ TTH/ SAT" pattern="[A-Za-z\s]+" title="Please enter letters only" maxlength="4" required value="{{ old('days') }}">
                 </div>
             </div>
             <br>
@@ -185,22 +211,22 @@
                 </tr>
             </thead>
             <tbody id="classTableBody">
-                @foreach ($class as $class)
+                @foreach ($schedules as $schedule)
                     <tr>
-                        <td>{{ $class->grade }}</td>
-                        <td>{{ $class->adviser }}</td>
-                        <td>{{ $class->section }}</td>
-                        <td>{{ $class->room }}</td>
-                        <td>{{ $class->edpcode }}</td>
-                        <td>{{ $class->subject }}</td>
-                        <td>{{ $class->description }}</td>
-                        <td>{{ $class->type }}</td>
-                        <td>{{ $class->unit }}</td>
-                        <td>{{ $class->time }}</td>
-                        <td>{{ $class->days }}</td>
+                        <td>{{ $schedule->grade }}</td>
+                        <td>{{ $schedule->adviser }}</td>
+                        <td>{{ $schedule->section }}</td>
+                        <td>{{ $schedule->room }}</td>
+                        <td>{{ $schedule->edpcode }}</td>
+                        <td>{{ $schedule->subject }}</td>
+                        <td>{{ $schedule->description }}</td>
+                        <td>{{ $schedule->type }}</td>
+                        <td>{{ $schedule->unit }}</td>
+                        <td>{{ $schedule->time }}</td>
+                        <td>{{ $schedule->days }}</td>
                         <td>
-                            <a href="/update_class/{{ $class->id }}" class="btn btn-primary btn-sm">Edit</a>
-                            <a href="/delete_class/{{ $class->id }}" class="btn btn-danger btn-sm">Delete</a>
+                            <a href="/update_class/{{ $schedule->id }}" class="btn btn-primary btn-sm">Edit</a>
+                            <a href="/delete_class/{{ $schedule->id }}" class="btn btn-danger btn-sm">Delete</a>
                         </td>
                     </tr>
                 @endforeach
@@ -211,29 +237,51 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
-    let scheduleCount = {}; // Object to track schedule counts by section
+    let scheduleCount = {};
 
     document.getElementById('myForm').onsubmit = function(event) {
         const section = document.getElementById('section').value;
-        const selectedSubject = document.getElementById('subject').value;
 
-        // Initialize schedule count for this section if it doesn't exist
         if (!scheduleCount[section]) {
-            scheduleCount[section] = 0; // Initialize if it doesn't exist
+            scheduleCount[section] = 0;
         }
 
-        // Increment the count
         scheduleCount[section]++;
 
-        // Check if the count has reached 8
-        if (scheduleCount[section] > 8) {
-            alert('You have reached the maximum of 8 schedules for this section.');
-            event.preventDefault(); // Prevent form submission
-            return; // Stop further processing
+        if (scheduleCount[section] > 10) {
+            alert('You have reached the maximum of 10 schedules for this section.');
+            event.preventDefault();
+            return;
         }
 
         toastr.success('Classload added successfully.');
     };
+
+    function updateTeachers() {
+        const subjectSelect = document.getElementById('subject');
+        const selectedSubject = subjectSelect.value;
+        const teacherSelect = document.getElementById('assignedTeacher');
+        teacherSelect.innerHTML = '<option value="">Select Teacher</option>'; // Clear previous options
+
+        const selectedGrade = document.getElementById('grade').value;
+
+        if (selectedSubject) {
+            fetch(`/get-teachers?subject=${selectedSubject}&grade=${selectedGrade}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(teacher => {
+                        teacherSelect.innerHTML += `<option value="${teacher.id}">${teacher.name}</option>`;
+                    });
+                    
+                    // Retain the selected teacher if it was submitted
+                    const selectedAdviser = '{{ old('adviser') }}'; // Use old value
+                    if (selectedAdviser) {
+                        teacherSelect.value = selectedAdviser;
+                    }
+                })
+                .catch(error => console.error('Error fetching teachers:', error));
+        }
+    }
 </script>
 
 @include('templates.principalfooter')

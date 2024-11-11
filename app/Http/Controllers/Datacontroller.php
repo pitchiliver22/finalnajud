@@ -762,7 +762,7 @@ public function address_contactpost(Request $request)
 
     public function classloadpost(Request $request)
     {
-        // Validate incoming request
+        // Validate the incoming request data
         $validatedData = $request->validate([
             'grade' => 'required',
             'adviser' => 'required|exists:teachers,id',
@@ -778,47 +778,48 @@ public function address_contactpost(Request $request)
             'days' => 'required',
         ]);
     
-        // Construct time range
+        // Create a time string from start and end time
         $time = $validatedData['startTime'] . ' - ' . $validatedData['endTime'];
     
-        // Fetch the teacher's name
+        // Retrieve the selected teacher
         $teacher = Teacher::find($validatedData['adviser']);
         if (!$teacher) {
             return redirect('/principalclassload')->withErrors(['error' => 'Selected teacher not found.'])->withInput();
         }
         $teacherName = trim($teacher->name);
     
-        // Check how many schedules are already assigned to this section
+        // Check existing schedules for the specified section
         $existingSchedules = classes::where('grade', $validatedData['grade'])
-            ->where('section', $validatedData['section'])
+            ->where('section', strtoupper($validatedData['section'])) // Ensure case consistency
             ->count();
     
-        if ($existingSchedules >= 8) {
-            return redirect('/principalclassload')->withErrors(['error' => 'Maximum of 8 schedules reached for this section.'])->withInput()->with([
-                'sections' => section::all(), // Fetch sections again
-                'teachers' => teacher::all(), // Fetch teachers again if needed
+        // Handle warnings and maximum schedule checks
+        if ($existingSchedules >= 10) {
+            return redirect('/principalclassload')->withErrors(['error' => 'Maximum of 10 schedules reached for this section.'])->withInput()->with([
+                'sections' => section::all(),
+                'teachers' => teacher::all(),
+                'selectedGrade' => $validatedData['grade'],
+                'selectedSection' => strtoupper($validatedData['section']),
+                'selectedSubject' => strtoupper($validatedData['subject']),
+                'selectedAdviser' => $validatedData['adviser'],
             ]);
         }
     
-        // Prepare section data
-        $sectionData = [
-            'grade' => $validatedData['grade'],
-            'adviser' => $teacherName,
-            'section' => strtoupper($validatedData['section']),
-            'edpcode' => strtoupper($validatedData['edpcode']),
-            'subject' => strtoupper($validatedData['subject']),
-            'room' => strtoupper($validatedData['room']),
-            'description' => strtoupper($validatedData['description']),
-            'type' => $validatedData['type'],
-            'unit' => strtoupper($validatedData['unit']),
-            'time' => $time,
-            'days' => strtoupper($validatedData['days']),
-        ];
+        if ($existingSchedules == 8) {
+            // Set a warning if there are already 8 schedules
+            return redirect('/principalclassload')->with('warning', 'Warning: The section has reached 8 schedules. Maximum is 10.')->withInput()->with([
+                'sections' => section::all(),
+                'teachers' => teacher::all(),
+                'selectedGrade' => $validatedData['grade'],
+                'selectedSection' => strtoupper($validatedData['section']),
+                'selectedSubject' => strtoupper($validatedData['subject']),
+                'selectedAdviser' => $validatedData['adviser'],
+            ]);
+        }
     
-        // Insert into the section table
-        section::create($sectionData);
+        
     
-        // Prepare validated data for the class entry
+        // Prepare class entry data
         $classData = [
             'grade' => $validatedData['grade'],
             'adviser' => $teacherName,
@@ -834,49 +835,68 @@ public function address_contactpost(Request $request)
             'status' => 'not assigned',
         ];
     
-        // Check for conflicts
-        $subjectConflict = classes::where('subject', $classData['subject'])->exists();
-        $scheduleConflict = classes::where('days', $classData['days'])
+        // Check for conflicts: same subject and same teacher
+        $subjectTeacherConflict = classes::where('subject', $classData['subject'])
+            ->where('adviser', $classData['adviser']) // Check if the same teacher is assigned to the same subject
+            ->where('days', $classData['days'])
             ->where('time', $classData['time'])
-            ->where('subject', '!=', $classData['subject'])
+            ->where('section', $classData['section'])
             ->exists();
     
-        // Handle conflicts
-        if ($subjectConflict) {
-            return redirect('/principalclassload')->withErrors(['error' => 'Conflict detected: The subject is already assigned to another teacher.'])->withInput();
+        // Handle conflict for same subject and same teacher
+        if ($subjectTeacherConflict) {
+            return redirect('/principalclassload')->withErrors(['error' => 'Conflict detected: This teacher is already scheduled to teach the same subject at this time.'])->withInput()->with([
+                'sections' => section::all(),
+                'teachers' => teacher::all(),
+                'selectedGrade' => $validatedData['grade'],
+                'selectedSection' => strtoupper($validatedData['section']),
+                'selectedSubject' => strtoupper($validatedData['subject']),
+                'selectedAdviser' => $validatedData['adviser'],
+            ]);
         }
     
-        if ($scheduleConflict) {
-            return redirect('/principalclassload')->withErrors(['error' => 'Conflict detected: Another subject is scheduled at the same time and on the same days.'])->withInput();
-        }
-    
-       
+        // Create the class entry
         classes::create($classData);
     
-       
         return redirect('/principalclassload')->with([
-            'sections' => section::all(), 
-            'teachers' => teacher::all(), 
-        ])->withInput()->with('success', 'Classload added successfully.');
+            'sections' => section::all(),
+            'teachers' => teacher::all(),
+            'selectedGrade' => $validatedData['grade'],
+            'selectedSection' => strtoupper($validatedData['section']),
+            'selectedSubject' => strtoupper($validatedData['subject']),
+            'selectedAdviser' => $validatedData['adviser'],
+        ])->with('success', 'Classload added successfully.');
+    }
+    public function principalclassload(Request $request)
+    {
+        // Get selected values from the request
+        $selectedGrade = $request->input('grade', session('selectedGrade'));
+        $selectedSection = $request->input('section', session('selectedSection'));
+        $selectedSubject = $request->input('subject', session('selectedSubject'));
+    
+        // Get all classes
+        $class = classes::all();
+    
+        // Get teachers filtered by the selected subject and grade
+        $teachers = teacher::where('grade', $selectedGrade)
+                           ->where('subject', 'LIKE', '%' . $selectedSubject . '%')
+                           ->get();
+    
+        // Initialize schedules variable
+        $schedules = []; // Default to an empty array
+    
+        // Retrieve schedules based on the selected grade and section
+        if ($selectedGrade && $selectedSection) {
+            $schedules = classes::where('grade', $selectedGrade)
+                                 ->where('section', $selectedSection)
+                                 ->get();
+        }
+    
+        return view('principalclassload', compact('class', 'teachers', 'schedules', 'selectedGrade', 'selectedSection', 'selectedSubject'));
     }
 
 
-    public function principalclassload(Request $request)
-{
 
-    $selectedGrade = $request->input('grade');
-    $selectedSection = $request->input('section');
-
-
-    $sections = section::where('grade', $selectedGrade)
-                       ->where('section', $selectedSection)
-                       ->get();
-
-    $class = classes::all();
-    $teachers = teacher::all();
-
-    return view('principalclassload', compact('class', 'teachers', 'sections'));
-}
 
     public function update_class(Request $request, $id)
     {
@@ -1211,53 +1231,71 @@ public function section(Request $request)
     }
     
     public function teachersubjectpost(Request $request)
-    {
-        $validatedData = $request->validate([
-            'name' => 'required|exists:users,id', 
-            'grade' => 'required|string',
-            'subject' => 'required|array', // Change to array to accept multiple subjects
-            'subject.*' => 'string', // Validate each subject as a string
+{
+    $validatedData = $request->validate([
+        'name' => 'required|exists:users,id', 
+        'grade' => 'required|string',
+        'subject' => 'required|array', // Change to array to accept multiple subjects
+        'subject.*' => 'string', // Validate each subject as a string
+    ]);
+
+    // Fetch the teacher by ID from the User table
+    $user = User::find($validatedData['name']);
+
+    // Check if the teacher's record already exists
+    $teacherRecord = Teacher::where('name', trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname))
+                            ->where('grade', $validatedData['grade'])
+                            ->first();
+
+    if ($teacherRecord) {
+        // Update existing record with new subjects
+        $existingSubjects = explode(', ', $teacherRecord->subject);
+        $newSubjects = $validatedData['subject'];
+        $allSubjects = array_unique(array_merge($existingSubjects, $newSubjects)); // Merge and remove duplicates
+
+        $teacherRecord->subject = implode(', ', $allSubjects); // Concatenate subjects
+        $teacherRecord->updated_at = now();
+        $teacherRecord->save();
+    } else {
+        // Create a new record
+        teacher::create([
+            'name' => trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname),
+            'subject' => implode(', ', $validatedData['subject']), // Store subjects as a single string
+            'grade' => $validatedData['grade'],
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
-    
-        // Fetch the teacher by ID from the User table
-        $user = User::find($validatedData['name']);
-    
-        // Check if the teacher's record already exists
-        $teacherRecord = teacher::where('name', trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname))
-                                ->where('grade', $validatedData['grade'])
-                                ->first();
-    
-        if ($teacherRecord) {
-            // Update existing record with new subjects
-            $existingSubjects = explode(', ', $teacherRecord->subject);
-            $newSubjects = $validatedData['subject'];
-            $allSubjects = array_unique(array_merge($existingSubjects, $newSubjects)); // Merge and remove duplicates
-    
-            $teacherRecord->subject = implode(', ', $allSubjects); // Concatenate subjects
-            $teacherRecord->updated_at = now();
-            $teacherRecord->save();
-        } else {
-            // Create a new record
-            teacher::create([
-                'name' => trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname),
-                'subject' => implode(', ', $validatedData['subject']), // Store subjects as a single string
-                'grade' => $validatedData['grade'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
-    
-        return redirect()->back()->with('success', 'Teacher assigned successfully.');
     }
 
+    // Fetch teachers again to pass back to the view
+    $teachers = User::where('role', 'teacher')->get()->map(function ($user) {
+        return [
+            'id' => $user->id,
+            'name' => trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname),
+            'assigned' => teacher::where('name', trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname))->exists(),
+        ];
+    });
+
+    return redirect()->route('principalteacher')->with([
+        'teachers' => $teachers,
+        'success' => 'Teacher assigned successfully.',
+    ]);
+}
 
     public function createsectionpost(Request $request)
     {
-     
         $validatedData = $request->validate([
             'section' => 'required|string|max:255',
             'grade' => 'required|string|max:255',
         ]);
+    
+        // Check for duplicate section regardless of grade
+        $existingSection = section::where('section', $validatedData['section'])->first();
+    
+        if ($existingSection) {
+            // Redirect back with an error message
+            return redirect()->back()->withErrors(['section' => 'This section already exists.']);
+        }
     
         // Create a new section schedule
         $section = section::create([

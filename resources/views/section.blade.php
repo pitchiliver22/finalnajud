@@ -8,7 +8,7 @@
         </div>
     </div>
 
-    <div class="container" style="width: 80%; height: auto; border: 1px solid #ccc; padding: 20px;">
+    <div class="container">
         <style>
             body {
                 font-family: 'Arial', sans-serif;
@@ -42,13 +42,11 @@
             }
 
             .alert-success {
-                background-color: #28a745;
-                /* Green */
+                background-color: #28a745; /* Green */
             }
 
             .alert-danger {
-                background-color: #dc3545;
-                /* Red */
+                background-color: #dc3545; /* Red */
             }
 
             .info-row {
@@ -87,8 +85,7 @@
                 overflow-x: auto;
             }
 
-            th,
-            td {
+            th, td {
                 border: 1px solid #ddd;
                 padding: 12px;
                 text-align: left;
@@ -112,8 +109,19 @@
                 background-color: #ffffff;
             }
 
-            input[type="checkbox"] {
-                margin-right: 10px;
+            button {
+                background-color: #2980b9;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+                transition: background-color 0.3s;
+            }
+
+            button:hover {
+                background-color: #1a6b8f;
             }
 
             @media (max-width: 600px) {
@@ -133,8 +141,7 @@
                     white-space: nowrap;
                 }
 
-                th,
-                td {
+                th, td {
                     min-width: 120px;
                     padding: 10px 5px;
                 }
@@ -154,108 +161,104 @@
             }
         </style>
 
-        <div class="container">
-            @if (session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @elseif (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <form action="/section" method="POST">
+            @csrf
+            <input type="hidden" name="grade" value="{{ $proof->level }}">
+            <input type="hidden" name="payment_id" value="{{ $proof->id }}">
+            <div class="info-row">
+                <div>
+                    <span class="label">Name:</span> {{ $students->firstname }} {{ $students->middlename }} {{ $students->lastname }} {{ $students->suffix }}
                 </div>
-            @elseif (session('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
-                </div>
-            @endif
+                <div><span class="label">1st Semester S.Y. 2024 - 2025</span></div>
+            </div>
+            <div class="info-row">
+                <div><span class="label">Year Level:</span> {{ $proof->level }}</div>
+            </div>
 
-            <form action="/section" method="POST">
-                @csrf
-                <input type="hidden" name="grade" value="{{ $proof->level }}">
-                <input type="hidden" name="payment_id" value="{{ $proof->id }}">
-                <div class="info-row">
-                    <div>
-                        <span class="label">Name:</span> {{ $students->firstname }} {{ $students->middlename }}
-                        {{ $students->lastname }} {{ $students->suffix }}
-                    </div>
-                    <div><span class="label">1st Semester S.Y. 2024 - 2025</span></div>
-                </div>
-                <div class="info-row">
-                    <div><span class="label">Year Level:</span> {{ $proof->level }}</div>
-                </div>
+            <h2>Assign Classes</h2>
+            <input type="text" id="searchInput" onkeyup="searchClasses()" placeholder="Search for classes..." aria-label="Search for classes">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="display: none;">Select</th>
+                        <th style="display: none;">Year Level</th>
+                        <th style="display: none;">Teacher</th>
+                        <th style="display: none;">Section</th>
+                        <th>EDP Code</th>
+                        <th>Subject</th>
+                        <th>Description</th>
+                        <th>Type</th>
+                        <th>Units</th>
+                        <th>Days</th>
+                        <th>Time</th>
+                        <th>Room</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="classTableBody">
+                    @foreach ($classes as $class)
+                        @if ($class->grade === $proof->level)
+                            <tr>
+                                <td style="display: none;">
+                                    <input type="checkbox" name="selected_classes[]" value="{{ $class->edpcode }}" checked style="display: none;">
+                                </td>
+                                <td style="display: none;">{{ $class->grade }}</td>
+                                <td style="display: none;">{{ $class->adviser }}</td>
+                                <td style="display: none;">{{ $class->section }}</td>
+                                <td>{{ $class->edpcode }}</td>
+                                <td>{{ $class->subject }}</td>
+                                <td>{{ $class->description }}</td>
+                                <td>{{ $class->type }}</td>
+                                <td>{{ $class->unit }}</td>
+                                <td>{{ $class->days }}</td>
+                                <td>{{ $class->time }}</td>
+                                <td>{{ $class->room }}</td>
+                                <td>Active</td>
+                            </tr>
+                        @endif
+                    @endforeach
+                </tbody>
+            </table>
+            <br>
+            <button type="submit">Assign Selected Classes</button>
+        </form>
+    </div>
 
-                <h2>Assign Classes</h2>
-                <input type="text" id="searchInput" onkeyup="searchClasses()" placeholder="Search for classes..."
-                    aria-label="Search for classes">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="display: none;">Select</th>
-                            <th style="display: none;">Year Level</th>
-                            <th style="display: none;">Teacher</th>
-                            <th style="display: none;">Section</th>
-                            <th>EDP Code</th>
-                            <th>Subject</th>
-                            <th>Description</th>
-                            <th>Type</th>
-                            <th>Units</th>
-                            <th>Days</th>
-                            <th>Time</th>
-                            <th>Room</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="classTableBody">
-                        @foreach ($classes as $class)
-                            @if ($class->grade === $proof->level)
-                                <tr>
-                                    <td style="display: none;">
-                                        <input type="checkbox" name="selected_classes[]" value="{{ $class->edpcode }}" checked style="display: none;">
-                                    </td>
-                                    <<td style="display: none;">{{ $class->grade }}</td>
-                                    <td style="display: none;">{{ $class->adviser }}</td>
-                                    <td style="display: none;">{{ $class->section }}</td>
-                                    <td>{{ $class->edpcode }}</td>
-                                    <td>{{ $class->subject }}</td>
-                                    <td>{{ $class->description }}</td>
-                                    <td>{{ $class->type }}</td>
-                                    <td>{{ $class->unit }}</td>
-                                    <td>{{ $class->days }}</td>
-                                    <td>{{ $class->time }}</td>
-                                    <td>{{ $class->room }}</td>
-                                    <td>Active</td>
-                                </tr>
-                            @endif
-                        @endforeach
-                    </tbody>
-                </table>
- <br>
-                <button type="submit" class="button">Assign Selected Classes</button>
-            </form>
-        </div>
+    <script>
+        function searchClasses() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('classTableBody');
+            const rows = table.getElementsByTagName('tr');
 
-        <script>
-            function searchClasses() {
-                const input = document.getElementById('searchInput');
-                const filter = input.value.toLowerCase();
-                const table = document.getElementById('classTableBody');
-                const rows = table.getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let rowContainsSearchTerm = false;
 
-                for (let i = 0; i < rows.length; i++) {
-                    const cells = rows[i].getElementsByTagName('td');
-                    let rowContainsSearchTerm = false;
-
-                    for (let j = 1; j < cells.length; j++) { // Start from 1 to skip the checkbox column
-                        if (cells[j]) {
-                            const cellText = cells[j].textContent || cells[j].innerText;
-                            if (cellText.toLowerCase().includes(filter)) {
-                                rowContainsSearchTerm = true;
-                                break;
-                            }
+                for (let j = 1; j < cells.length; j++) { // Start from 1 to skip the checkbox column
+                    if (cells[j]) {
+                        const cellText = cells[j].textContent || cells[j].innerText;
+                        if (cellText.toLowerCase().includes(filter)) {
+                            rowContainsSearchTerm = true;
+                            break;
                         }
                     }
-
-                    rows[i].style.display = rowContainsSearchTerm ? "" : "none";
                 }
+
+                rows[i].style.display = rowContainsSearchTerm ? "" : "none";
             }
-        </script>
-    </div>
+        }
+    </script>
 </div>
 
 @include('templates.principalfooter')

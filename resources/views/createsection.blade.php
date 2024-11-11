@@ -7,8 +7,9 @@
             <h1>Section Information</h1>
         </div>
     </div>
+    <br><br>
 
-    <div class="container" style="max-width: 600px; margin: auto; padding: 20px;">
+    <div class="container">
         <style>
             body {
                 font-family: 'Arial', sans-serif;
@@ -18,11 +19,15 @@
             }
 
             .container {
-                background: white;
+                max-width: 1200px;
+                margin: auto;
                 padding: 20px;
+                background: white;
                 border-radius: 10px;
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-                border: 1px solid #ccc;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
             }
 
             h1, h2 {
@@ -31,6 +36,37 @@
                 margin-bottom: 20px;
                 font-size: 24px;
                 font-weight: 600;
+            }
+
+            .alert {
+                background-color: #f8d7da; /* Light red background */
+                color: #721c24; /* Dark red text */
+                padding: 15px;
+                border: 1px solid #f5c6cb; /* Light red border */
+                border-radius: 5px;
+                width: 100%; /* Full width of the container */
+                margin-bottom: 20px; /* Space below the alert */
+                display: flex;
+                flex-direction: column; /* Stack items vertically */
+            }
+
+            .alert ul {
+                list-style-type: none; /* Remove bullet points */
+                margin: 0;
+                padding: 0;
+            }
+
+            .alert li {
+                margin: 5px 0; /* Space between error messages */
+            }
+
+            .form-section, .table-section {
+                flex: 1;
+                min-width: 300px;
+                background: #f9f9f9;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             }
 
             label {
@@ -57,40 +93,124 @@
                 font-size: 16px;
                 cursor: pointer;
                 margin-top: 10px;
+                transition: background-color 0.3s;
             }
 
             button:hover {
                 background-color: #0056b3;
             }
 
-            @media (max-width: 600px) {
-                h1, h2 {
-                    font-size: 20px;
-                }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+
+            th, td {
+                padding: 10px;
+                text-align: left;
+                border-bottom: 1px solid #ccc;
+            }
+
+            th {
+                background-color: #007bff;
+                color: white;
+            }
+
+            tr:hover {
+                background-color: #f1f1f1;
+            }
+
+            .icon-button {
+                background: none;
+                border: none;
+                cursor: pointer;
+                color: #007bff;
+                font-size: 24px; /* Increased size for visibility */
+                width: 36px; /* Set width */
+                height: 36px; /* Set height */
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .icon-button:hover {
+                color: #0056b3;
             }
         </style>
 
-        <h2>Create Section & Schedule</h2>
-        <form action="/createsection" method="POST">
-        @csrf
-            <label for="grade">Grade:</label>
-            <select class="form-control" id="grade" name="grade" required onchange="updateSections()">
-                <option value="">Select Grade</option>
-                <option value="K">Kindergarten</option>
-                @for ($i = 1; $i <= 10; $i++)
-                    <option value="Grade {{ $i }}">Grade {{ $i }}</option>
-                @endfor
-            </select>
+        @if ($errors->any())
+        <div class="alert" id="error-alert">
+            <span>Error(s) occurred:</span>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        <script>
+            // Set a timeout to hide the error alert after 2 seconds
+            setTimeout(() => {
+                const alert = document.getElementById('error-alert');
+                if (alert) {
+                    alert.style.display = 'none';
+                }
+            }, 2000);
+        </script>
+        @endif
 
-            <div class="col">
-                <label for="section">Section</label>
-                <select class="form-control" id="section" name="section" required onchange="handleSectionChange()">
-                    <option value="">Select Section</option>
+        <div class="form-section">
+            <h2>Create Section & Schedule</h2>
+            <form action="/createsection" method="POST">
+                @csrf
+                <label for="grade">Grade:</label>
+                <select class="form-control" id="grade" name="grade" required onchange="updateSections()">
+                    <option value="">Select Grade</option>
+                    <option value="K">Kindergarten</option>
+                    @for ($i = 1; $i <= 10; $i++)
+                        <option value="Grade {{ $i }}">Grade {{ $i }}</option>
+                    @endfor
                 </select>
-            </div>
 
-            <button type="submit">Proceed to add schedules</button>
-        </form>
+                <div class="col">
+                    <label for="section">Section</label>
+                    <select class="form-control" id="section" name="section" required onchange="handleSectionChange()">
+                        <option value="">Select Section</option>
+                    </select>
+                </div>
+
+                <button type="submit">Proceed to add schedules</button>
+            </form>
+        </div>
+
+        <div class="table-section">
+            <h2>Existing Sections</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Grade</th>
+                        <th>Section</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($sections as $section)
+                        <tr>
+                            <td>{{ $section->grade }}</td>
+                            <td>{{ $section->section }}</td>
+                            <td>
+                                <a href="{{ route('principalclassload', ['grade' => $section->grade, 'section' => $section->section]) }}" class="icon-button" title="Edit Schedule">&#9998;</a>
+                                <form action="{{ route('section.delete', $section->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" onclick="return confirm('Are you sure you want to delete this section?');" class="icon-button" title="Delete Section">&#10060;</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

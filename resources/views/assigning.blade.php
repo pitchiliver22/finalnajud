@@ -4,11 +4,11 @@
     <div class="w3-teal">
         <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
         <div class="w3-container">
-            <h1>Available Section</h1>
+            <h1>Available Sections</h1>
         </div>
     </div>
 
-    <div class="container" style="width: 80%; height: auto; border: 1px solid #ccc; padding: 20px;">
+    <div class="container">
         <style>
             body {
                 font-family: 'Arial', sans-serif;
@@ -30,7 +30,7 @@
                 text-align: center;
                 color: #2c3e50;
                 margin-bottom: 20px;
-                font-size: 24px;
+                font-size: 28px;
                 font-weight: 600;
             }
 
@@ -49,16 +49,23 @@
                 background-color: #dc3545; /* Red */
             }
 
+            input[type="text"] {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 20px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 16px;
+            }
+
             table {
                 width: 100%;
                 border-collapse: collapse;
                 margin-top: 20px;
                 box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                overflow-x: auto;
             }
 
-            th,
-            td {
+            th, td {
                 border: 1px solid #ddd;
                 padding: 12px;
                 text-align: left;
@@ -90,97 +97,95 @@
                     white-space: nowrap;
                 }
 
-                th,
-                td {
+                th, td {
                     min-width: 120px;
                     padding: 10px 5px;
                 }
 
                 h1 {
-                    font-size: 20px;
+                    font-size: 22px;
+                }
+
+                input[type="text"] {
+                    font-size: 14px;
                 }
             }
         </style>
 
-        <div class="container">
-            @if (session('success'))
-                <div class="alert alert-success">   
-                    {{ session('success') }}
-                </div>
-            @elseif (session('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
-                </div>
-            @endif
+        @if (session('success'))
+            <div class="alert alert-success">   
+                {{ session('success') }}
+            </div>
+        @elseif (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
 
-            <h2>Assign Classes</h2>
-            <input type="text" id="searchInput" onkeyup="searchClasses()" placeholder="Search for classes..." aria-label="Search for classes">
+        <h2>Assign Classes</h2>
+        <input type="text" id="searchInput" onkeyup="searchClasses()" placeholder="Search for classes..." aria-label="Search for classes">
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Year Level</th>
-                        <th>Teacher</th>
-                        <th>Section</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="classTableBody">
-                    @php
-                        // Create an array to hold unique sections
-                        $uniqueSections = [];
+        <table>
+            <thead>
+                <tr>
+                    <th>Year Level</th>
+                    <th>Teacher</th>
+                    <th>Section</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="classTableBody">
+                @php
+                    $uniqueSections = [];
 
-                        // Iterate through classes and filter unique sections
-                        foreach ($classes as $class) {
-                            if ($class->grade === $proof->level && !in_array($class->section, $uniqueSections)) {
-                                $uniqueSections[] = $class->section; // Add to unique sections
-                    @endphp
-                                <tr onclick="redirectToSection('{{ $class->id }}', '{{ $class->section }}', '{{ $proof->id }}')">
-                                    <td>{{ $class->grade }}</td>
-                                    <td>{{ $class->adviser }}</td>
-                                    <td>{{ $class->section }}</td>
-                                    <td>Active</td>
-                                </tr>
-                    @php
-                            }
-                        }
-                    @endphp
-                </tbody>
-            </table>
-
-        </div>
-
-        <script>
-            function searchClasses() {
-                const input = document.getElementById('searchInput');
-                const filter = input.value.toLowerCase();
-                const table = document.getElementById('classTableBody');
-                const rows = table.getElementsByTagName('tr');
-
-                for (let i = 0; i < rows.length; i++) {
-                    const cells = rows[i].getElementsByTagName('td');
-                    let rowContainsSearchTerm = false;
-
-                    for (let j = 0; j < cells.length; j++) {
-                        if (cells[j]) {
-                            const cellText = cells[j].textContent || cells[j].innerText;
-                            if (cellText.toLowerCase().includes(filter)) {
-                                rowContainsSearchTerm = true;
-                                break;
-                            }
+                    foreach ($classes as $class) {
+                        if ($class->grade === $proof->level && !in_array($class->section, $uniqueSections)) {
+                            $uniqueSections[] = $class->section; 
+                @endphp
+                            <tr onclick="redirectToSection('{{ $class->id }}', '{{ $class->section }}', '{{ $proof->id }}')">
+                                <td>{{ $class->grade }}</td>
+                                <td>{{ $class->adviser }}</td>
+                                <td>{{ $class->section }}</td>
+                                <td>Active</td>
+                            </tr>
+                @php
                         }
                     }
+                @endphp
+            </tbody>
+        </table>
 
-                    rows[i].style.display = rowContainsSearchTerm ? "" : "none";
-                }
-            }
-
-            function redirectToSection(id, sectionName, paymentId) {
-                // Redirect to the section page, including payment ID
-                window.location.href = `/section/${paymentId}/${sectionName}`;
-            }
-        </script>
     </div>
 </div>
 
 @include('templates.principalfooter')
+
+<script>
+    function searchClasses() {
+        const input = document.getElementById('searchInput');
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById('classTableBody');
+        const rows = table.getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const cells = rows[i].getElementsByTagName('td');
+            let rowContainsSearchTerm = false;
+
+            for (let j = 0; j < cells.length; j++) {
+                if (cells[j]) {
+                    const cellText = cells[j].textContent || cells[j].innerText;
+                    if (cellText.toLowerCase().includes(filter)) {
+                        rowContainsSearchTerm = true;
+                        break;
+                    }
+                }
+            }
+
+            rows[i].style.display = rowContainsSearchTerm ? "" : "none";
+        }
+    }
+
+    function redirectToSection(id, sectionName, paymentId) {
+        window.location.href = `/section/${paymentId}/${sectionName}`;
+    }
+</script>

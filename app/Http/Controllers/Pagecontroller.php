@@ -76,10 +76,31 @@ class Pagecontroller extends Controller
         return view('studentdashboard');
     }
     public function studentclassload()
-    {
+{
+    $userId = Auth::id(); // Get the authenticated user's ID
 
-        return view('studentclassload');
+    // Find the register form associated with the authenticated user
+    $registerForm = \App\Models\register_form::where('user_id', $userId)->first();
+
+    if (!$registerForm) {
+        return redirect()->route('login')->withErrors('No registration form found.');
     }
+
+    // Use the registerForm ID to get assigned classes
+    $assignedClasses = assign::where('class_id', $registerForm->id)->get();
+
+    // The student variable now refers to the register form record
+    $student = $registerForm;
+
+    // Get payment proof associated with the register form
+    $proof = payment_form::where('payment_id', $registerForm->id)->first();
+
+    return view('studentclassload', [
+        'assignedClasses' => $assignedClasses,
+        'student' => $student,
+        'proof' => $proof,
+    ]);
+}
 
     public function studentprofile()
     {
@@ -471,6 +492,9 @@ public function approvedpayment()
 
     public function createsection()
     {
-        return view('createsection');
+      
+        $sections = section::all();
+    
+        return view('createsection', compact('sections'));
     }
 }
