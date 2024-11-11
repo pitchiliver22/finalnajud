@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('primary_school_type');
 
             $table->unsignedBigInteger('school_id');
-            $table->foreign('school_id')->references('id')->on('users');
+            $table->foreign('school_id')->references('id')->on('register_form');
 
             $table->string('status')->default('pending');
 
@@ -35,14 +35,12 @@ return new class extends Migration
         });
     }
 
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('previous_school', function (Blueprint $table) {
-            $table->dropForeign(['school_id']);
-        });
         Schema::dropIfExists('previous_school');
     }
 };

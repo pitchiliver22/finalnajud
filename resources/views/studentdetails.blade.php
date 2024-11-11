@@ -172,7 +172,7 @@
                         maxlength="11" placeholder="e.g. 0995#######" required>
                     <small class="form-text text-muted">Only numbers are allowed.</small>
                 </div>
-                <input type="hidden" id="details_id" name="details_id" value="{{ auth()->user()->id }}">
+                <input type="hidden" id="details_id" name="details_id" value="{{ $registerForm->id }}">
                 <div class="col-12">
                     <button type="submit" class="btn btn-primary">Next</button>
                 </div>

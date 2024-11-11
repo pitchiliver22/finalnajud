@@ -29,14 +29,12 @@ return new class extends Migration
         });
     }
 
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('grade', function (Blueprint $table) {
-            $table->dropForeign(['grade_id']);
-        });
         Schema::dropIfExists('grade');
     }
 };

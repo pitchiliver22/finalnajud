@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pending Account</title>
+    <title>Sectioning Approved</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -25,7 +25,7 @@
         }
 
         h1 {
-            color: #555;
+            color: #e74c3c;
         }
 
         h2 {
@@ -39,31 +39,8 @@
         }
 
         .logo {
-            max-width: 80px;
-            /* Increased logo size */
+            max-width: 120px;
             margin-bottom: 20px;
-        }
-
-        .image-placeholder {
-            width: 100%;
-            background-color: #eaeaea;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 5px;
-        }
-
-        .image-placeholder img {
-            width: 100%;
-            background-color: #eaeaea;
-            margin-bottom: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #999;
-            font-size: 18px;
-            border-radius: 5px;
         }
 
         @media (max-width: 600px) {
@@ -85,13 +62,9 @@
 
 <body>
     <div class="container">
-        <img src="https://static-00.iconduck.com/assets.00/redhat-icon-2048x2048-c81kj8ny.png" alt="Logo"
-            class="logo">
-        <h1>Your account, {{ $user->firstname }} {{ $user->middlename }} {{ $user->lastname }}!</h1>
-        <div class="image-placeholder">
-            <img src="https://cdn.dribbble.com/users/168771/screenshots/6457502/red_hat_4x.png" alt="Red Hat Logo">
-        </div>
-        <h2>Your account is currently pending approval. We appreciate your patience as we work to get you set up!</h2>
+        <img src="https://static-00.iconduck.com/assets.00/redhat-icon-2048x2048-c81kj8ny.png" alt="Logo" class="logo">
+        <h1>Congratulations, {{ $user->firstname }} {{ $user->middlename }} {{ $user->lastname }}!</h1>
+        <h2>Congratulations! You have been successfully assigned to your section. Please refresh the page to see the updates and check your class load. Exciting times ahead!</h2>
         <h3>Best regards,<br>RedHat Team</h3>
     </div>
 </body>

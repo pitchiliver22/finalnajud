@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('assign', function (Blueprint $table) {
+        Schema::create('classes', function (Blueprint $table) {
             $table->id();
             $table->string('grade');
             $table->string('adviser');
@@ -24,22 +24,19 @@ return new class extends Migration
             $table->string('unit');
             $table->string('time');
             $table->string('days');
-            $table->string('status')->nullable();
-            $table->unsignedBigInteger('class_id');
-            $table->foreign('class_id')->references('id')->on('payment_form');
+            $table->string('status');
+            $table->unsignedBigInteger('assign_id')->nullable();
 
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('assign', function (Blueprint $table) {
-            $table->dropForeign(['class_id']);
-        });
-        Schema::dropIfExists('assign');
+        Schema::dropIfExists('classes');
     }
 };

@@ -10,9 +10,11 @@ use App\Models\payment_form;
 use App\Models\previous_school;
 use App\Models\register_form;
 use App\Models\required_docs;
+use App\Models\section;
 use App\Models\studentdetails;
 use App\Models\teacher;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,7 +28,6 @@ class Pagecontroller extends Controller
     }
     public function login()
     {
-        //  sweetalert()->success('Welcome to our system called BESIS: Basic Ed Student Information System!');
         return view('login');
     }
     public function partialaccount()
@@ -49,7 +50,9 @@ class Pagecontroller extends Controller
 
     public function address_contact()
     {
-        return view('address_contact');
+        
+        
+    return view('address_contact'); // Pass it to the view
     }
 
     public function required_documents()
@@ -59,7 +62,8 @@ class Pagecontroller extends Controller
 
     public function previous_school()
     {
-        return view('previous_school');
+        $userId = Auth::user()->id; 
+        return view('previous_school',compact('userId'));
     }
 
     public function payment_process()
@@ -82,13 +86,31 @@ class Pagecontroller extends Controller
         return view('studentprofile');
     }
 
-    public function enrollmentstep()
-    {
-        $details = studentdetails::all();
-
-
-        return view('enrollmentstep', compact('details'));
+    public function enrollmentStep()
+{
+    // Ensure the user is authenticated
+    if (!Auth::check()) {
+        return redirect()->route('login');
     }
+
+    $user = Auth::user();
+    // Fetch the register form associated with the authenticated user
+    $registerForm = register_form::where('user_id', $user->id)->first(); // Assuming user_id links to register_form
+
+    if (!$registerForm) {
+        return redirect()->route('some.route')->with('error', 'No registration form found.');
+    }
+
+    // Use registerForm ID to get related details
+    $details = studentdetails::where('details_id', $registerForm->id)->first();
+    $address = address::where('address_id', $registerForm->id)->first(); // Assuming the relationship is correct
+    $previousSchool = previous_school::where('school_id', $registerForm->id)->first();
+    $requiredDocs = required_docs::where('required_id', $registerForm->id)->first();
+    $payment = payment_form::where('payment_id', $registerForm->id)->first(); // Adjust as needed
+    $assignStatus = assign::where('class_id', $registerForm->id)->first(); // Adjust as needed
+
+    return view('enrollmentstep', compact('details', 'address', 'previousSchool', 'requiredDocs', 'payment', 'assignStatus'));
+}
 
     public function studentgrades()
     {
@@ -172,9 +194,10 @@ class Pagecontroller extends Controller
 
     public function principalclassload()
     {
+        $section = section::all();
         $class = classes::all();
         $teachers = teacher::all();
-        return view('principalclassload', compact('class', 'teachers'));
+        return view('principalclassload', compact('class', 'teachers', 'section'));
     }
 
     public function submittedgrades()
@@ -269,32 +292,40 @@ class Pagecontroller extends Controller
     //cashier 
     public function cashier()
     {
-        return view('cashier');
+        // Count pending and approved accounts
+        $pendingCount = payment_form::where('status', 'pending')->count();
+        $approvedCount = payment_form::where('status', 'approved')->count();
+
+        // Fetch student information
+        $students = studentdetails::all(); // You can adjust this to filter or paginate if needed
+
+        return view('cashier', compact('students', 'pendingCount', 'approvedCount'));
     }
     public function cashieraddfee()
     {
         return view('cashieraddfee');
     }
     public function cashierstudentfee()
-    {
-        $students = register_form::all();
-        $payments = payment_form::all();
+{
+    // Fetch all students
+    $students = register_form::all();
+    
+    // Fetch all payments
+    $payments = payment_form::all();
 
-        return view('cashierstudentfee', [
-            'students' => $students,
-            'payments' => $payments,
-        ]);
-    }
-    public function approvedpayment()
-    {
-        $students = register_form::all();
-        $payments = payment_form::all();
+    // Pass both students and payments to the view
+    return view('cashierstudentfee', [
+        'students' => $students,
+        'payments' => $payments,
+    ]);
+}
+public function approvedpayment()
+{
+    $students = register_form::where('status', 'approved')->get();
+    $payments = payment_form::where('status', 'approved')->get();
 
-        return view('approvedpayment', [
-            'students' => $students,
-            'payments' => $payments,
-        ]);
-    }
+    return view('approvedpayment', compact('students', 'payments'));
+}
 
     public function sectioning()
     {
@@ -314,6 +345,19 @@ class Pagecontroller extends Controller
         $classes = classes::all();
 
         return view('assigning', [
+            'students' => $students,
+            'payments' => $payments,
+            'classes' => $classes
+        ]);
+    }
+
+    public function section()
+    {
+        $students = register_form::all();
+        $payments = payment_form::all();
+        $classes = classes::all();
+
+        return view('section', [
             'students' => $students,
             'payments' => $payments,
             'classes' => $classes
@@ -423,5 +467,10 @@ class Pagecontroller extends Controller
     public function principalteacher()
     {
         return view('principalteacher');
+    }
+
+    public function createsection()
+    {
+        return view('createsection');
     }
 }

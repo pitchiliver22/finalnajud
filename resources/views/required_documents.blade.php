@@ -120,7 +120,7 @@
                 <input type="file" name="documents[]" accept=".pdf,.jpg,.png" required>
                 <div class="error-message" id="file-error"></div>
             </div>
-            <input type="hidden" id="required_id" name="required_id" value="{{ auth()->user()->id }}">
+            <input type="hidden" id="required_id" name="required_id" value="{{ $registerForm->id }}">
             <div id="additional-uploads"></div>
             <button type="button" class="add-upload-button" onclick="addAnotherUpload()">Add Another Upload</button>
             <button type="submit" name="submit" class="btn btn-success" id="submit-button">Upload</button>

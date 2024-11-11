@@ -89,7 +89,7 @@
                 <input type="file" name="documents[]" accept=".pdf,.jpg,.png" class="form-control mt-2">
                 <div class="error-message text-danger" id="file-error"></div>
             </div>
-            <input type="hidden" id="required_id" name="required_id" value="{{ auth()->user()->id }}">
+            <input type="hidden" id="required_id" name="required_id" value="{{ $registerForm->id }}">
             <div id="additional-uploads"></div>
             <button type="button" class="btn btn-secondary mb-2" onclick="addAnotherUpload()">Add Another
                 Upload</button>
@@ -129,7 +129,7 @@
         </div>
 
         <button type="submit" name="done" class="btn btn-success" id="done-button">Done</button>
-    </form>
+        </form>
 
     <script>
         const imagesData = @json($docs); // Assuming you pass the $docs variable to the view

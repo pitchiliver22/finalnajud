@@ -85,9 +85,12 @@
                         placeholder="e.g. Naga Street" pattern="[A-Za-z\s]*" title="Only letters and spaces are allowed"
                         required>
                 </div>
-                <input type="hidden" id="address_id" name="address_id" value="{{ auth()->user()->id }}">
+                
+                <input type="hidden" id="address_id" name="address_id" value="{{ $registerForm->id }}">
+               
+               
                 <div class="col-12">
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary">Next</button>
                 </div>
             </div>
         </form>

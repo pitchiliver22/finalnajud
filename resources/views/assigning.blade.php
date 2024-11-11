@@ -4,7 +4,7 @@
     <div class="w3-teal">
         <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
         <div class="w3-container">
-            <h1>Sectioning</h1>
+            <h1>Available Section</h1>
         </div>
     </div>
 
@@ -42,41 +42,11 @@
             }
 
             .alert-success {
-                background-color: #28a745;
-                /* Green */
+                background-color: #28a745; /* Green */
             }
 
             .alert-danger {
-                background-color: #dc3545;
-                /* Red */
-            }
-
-            .info-row {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 15px;
-                padding: 10px 0;
-                border-bottom: 1px solid #e0e0e0;
-            }
-
-            .label {
-                font-weight: bold;
-                color: #2980b9;
-            }
-
-            input[type="text"] {
-                width: 100%;
-                padding: 10px;
-                margin-top: 10px;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                font-size: 14px;
-            }
-
-            input[type="text"]:focus {
-                border-color: #2980b9;
-                outline: none;
-                box-shadow: 0 0 5px rgba(41, 128, 185, 0.5);
+                background-color: #dc3545; /* Red */
             }
 
             table {
@@ -92,6 +62,7 @@
                 border: 1px solid #ddd;
                 padding: 12px;
                 text-align: left;
+                cursor: pointer; /* Add cursor pointer for rows */
             }
 
             th {
@@ -112,21 +83,7 @@
                 background-color: #ffffff;
             }
 
-            input[type="checkbox"] {
-                margin-right: 10px;
-            }
-
             @media (max-width: 600px) {
-                .info-row {
-                    flex-direction: column;
-                    align-items: flex-start;
-                }
-
-                .info-row div {
-                    margin-bottom: 10px;
-                    width: 100%;
-                }
-
                 table {
                     display: block;
                     overflow-x: auto;
@@ -142,21 +99,12 @@
                 h1 {
                     font-size: 20px;
                 }
-
-                input[type="text"] {
-                    font-size: 16px;
-                }
-
-                button {
-                    width: 100%;
-                    padding: 12px;
-                }
             }
         </style>
 
         <div class="container">
             @if (session('success'))
-                <div class="alert alert-success">
+                <div class="alert alert-success">   
                     {{ session('success') }}
                 </div>
             @elseif (session('error'))
@@ -165,69 +113,41 @@
                 </div>
             @endif
 
-            <form action="/assigning" method="POST">
-                @csrf
-                <input type="hidden" name="grade" value="{{ $proof->level }}">
-                <input type="hidden" name="payment_id" value="{{ $proof->id }}">
-                <div class="info-row">
-                    <div>
-                        <span class="label">Name:</span> {{ $students->firstname }} {{ $students->middlename }}
-                        {{ $students->lastname }} {{ $students->suffix }}
-                    </div>
-                    <div><span class="label">1st Semester S.Y. 2024 - 2025</span></div>
-                </div>
-                <div class="info-row">
-                    <div><span class="label">Year Level:</span> {{ $proof->level }}</div>
-                </div>
+            <h2>Assign Classes</h2>
+            <input type="text" id="searchInput" onkeyup="searchClasses()" placeholder="Search for classes..." aria-label="Search for classes">
 
-                <h2>Assign Classes</h2>
-                <input type="text" id="searchInput" onkeyup="searchClasses()" placeholder="Search for classes..."
-                    aria-label="Search for classes">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Year Level</th>
+                        <th>Teacher</th>
+                        <th>Section</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="classTableBody">
+                    @php
+                        // Create an array to hold unique sections
+                        $uniqueSections = [];
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Select</th>
-                            <th>Year Level</th>
-                            <th>Adviser</th>
-                            <th>Section</th>
-                            <th>EDP Code</th>
-                            <th>Subject</th>
-                            <th>Description</th>
-                            <th>Type</th>
-                            <th>Units</th>
-                            <th>Days</th>
-                            <th>Time</th>
-                            <th>Room</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="classTableBody">
-                        @foreach ($classes as $class)
-                            @if ($class->grade === $proof->level)
-                                <tr>
-                                    <td><input type="checkbox" name="selected_classes[]" value="{{ $class->edpcode }}">
-                                    </td>
+                        // Iterate through classes and filter unique sections
+                        foreach ($classes as $class) {
+                            if ($class->grade === $proof->level && !in_array($class->section, $uniqueSections)) {
+                                $uniqueSections[] = $class->section; // Add to unique sections
+                    @endphp
+                                <tr onclick="redirectToSection('{{ $class->id }}', '{{ $class->section }}', '{{ $proof->id }}')">
                                     <td>{{ $class->grade }}</td>
                                     <td>{{ $class->adviser }}</td>
                                     <td>{{ $class->section }}</td>
-                                    <td>{{ $class->edpcode }}</td>
-                                    <td>{{ $class->subject }}</td>
-                                    <td>{{ $class->description }}</td>
-                                    <td>{{ $class->type }}</td>
-                                    <td>{{ $class->unit }}</td>
-                                    <td>{{ $class->days }}</td>
-                                    <td>{{ $class->time }}</td>
-                                    <td>{{ $class->room }}</td>
                                     <td>Active</td>
                                 </tr>
-                            @endif
-                        @endforeach
-                    </tbody>
-                </table>
+                    @php
+                            }
+                        }
+                    @endphp
+                </tbody>
+            </table>
 
-                <button type="submit" class="button">Assign Selected Classes</button>
-            </form>
         </div>
 
         <script>
@@ -241,7 +161,7 @@
                     const cells = rows[i].getElementsByTagName('td');
                     let rowContainsSearchTerm = false;
 
-                    for (let j = 1; j < cells.length; j++) { // Start from 1 to skip the checkbox column
+                    for (let j = 0; j < cells.length; j++) {
                         if (cells[j]) {
                             const cellText = cells[j].textContent || cells[j].innerText;
                             if (cellText.toLowerCase().includes(filter)) {
@@ -253,6 +173,11 @@
 
                     rows[i].style.display = rowContainsSearchTerm ? "" : "none";
                 }
+            }
+
+            function redirectToSection(id, sectionName, paymentId) {
+                // Redirect to the section page, including payment ID
+                window.location.href = `/section/${paymentId}/${sectionName}`;
             }
         </script>
     </div>

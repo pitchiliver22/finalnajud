@@ -11,26 +11,28 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('required_documents', function (Blueprint $table) {
+        Schema::create('address', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
-            $table->string('documents');
-            $table->unsignedBigInteger('required_id');
+            $table->string('zipcode');
+            $table->string('province');
+            $table->string('city');
+            $table->string('barangay');
+            $table->string('streetaddress');
+            $table->unsignedBigInteger('address_id');
             $table->timestamps();
-            $table->foreign('required_id')->references('id')->on('users');
 
             $table->string('status')->default('pending');
+
+            $table->foreign('address_id')->references('id')->on('register_form');
         });
     }
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('required_documents', function (Blueprint $table) {
-            $table->dropForeign(['required_id']);
-        });
-        Schema::dropIfExists('required_documents');
+        Schema::dropIfExists('address');
     }
 };

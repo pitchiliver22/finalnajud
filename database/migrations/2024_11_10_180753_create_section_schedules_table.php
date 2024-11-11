@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('classes', function (Blueprint $table) {
+        Schema::create('section_schedules', function (Blueprint $table) {
             $table->id();
             $table->string('grade');
             $table->string('adviser');
@@ -24,10 +24,6 @@ return new class extends Migration
             $table->string('unit');
             $table->string('time');
             $table->string('days');
-            $table->string('status');
-            $table->unsignedBigInteger('assign_id')->nullable();
-
-
             $table->timestamps();
         });
     }
@@ -37,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('classes');
+        Schema::dropIfExists('section_schedules');
     }
 };

@@ -52,7 +52,7 @@
                 <textarea class="form-control" id="payment-details" name="payment-details" rows="3"
                     placeholder="Enter payment details" required></textarea>
             </div>
-            <input type="hidden" name="payment_id" value="{{ auth()->user()->id }}">
+            <input type="hidden" name="payment_id" value="{{ $registerForm->id }}">
             <button type="submit" class="btn btn-primary btfn-block">Submit Payment</button>
         </form>
     </div>

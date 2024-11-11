@@ -80,39 +80,36 @@
                         </li>
 
                         @if (auth()->check() && auth()->user()->role == 'Oldstudent')
-                            @php
-                                // Fetch the student details directly
-                                $studentDetail = \App\Models\StudentDetails::where(
-                                    'details_id',
-                                    auth()->user()->id,
-                                )->first();
-                            @endphp
+                        @php
+                            $studentDetail = \App\Models\StudentDetails::where('details_id', $registerForm->id)->first();
+                        @endphp
 
-                            <li class="list-group-item d-flex justify-content-between align-items-start">
-                                <div class="ms-2 me-auto">
-                                    <div class="fw-bold">Student Details</div>
-                                    <p class="mb-0">Provided detailed student information.</p>
-                                </div>
-                                <div>
-                                    @if ($studentDetail && $studentDetail->status === 'approved')
-                                        <span class="badge bg-success rounded-pill"
-                                            aria-label="Status: Completed">Completed</span>
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Student Details</div>
+                                <p class="mb-0">Provided detailed student information.</p>
+                            </div>
+                            <div>
+                                @if ($studentDetail)
+                                    @if ($studentDetail->status === 'approved')
+                                        <span class="badge bg-success rounded-pill" aria-label="Status: Completed">Completed</span>
                                     @else
-                                        <a href="/updatedetails/{{ auth()->user()->id }}"
-                                            class="btn btn-primary mt-3 rounded-pill updateInfoBtn"
-                                            data-url="updatedetails"
-                                            aria-label="Confirm Information for Student ID {{ auth()->user()->id }}">
-                                            Confirm Information
+                                        <a href="{{ route('updatedetails', ['id' => $studentDetail->details_id]) }}" 
+                                        class="btn btn-primary mt-3 rounded-pill updateInfoBtn"
+                                        aria-label="Confirm Information for Student ID {{ $studentDetail->details_id }}">
+                                        Confirm Information
                                         </a>
                                     @endif
-                                </div>
-                            </li>
+                                @else
+                                    <span>No student details found.</span>
+                                @endif
+                            </div>
+                        </li>
 
 
-                            @php
-                                // Fetch the student details directly
-                                $address = \App\Models\address::where('address_id', auth()->user()->id)->first();
-                            @endphp
+                    @php
+                    $address = \App\Models\address::where('address_id', $registerForm->id)->first();
+                @endphp
                             <li class="list-group-item d-flex justify-content-between align-items-start">
                                 <div class="ms-2 me-auto">
                                     <div class="fw-bold">Address and Contact Details</div>
@@ -123,10 +120,10 @@
                                         <span class="badge bg-success rounded-pill"
                                             aria-label="Status: Completed">Completed</span>
                                     @else
-                                        <a href="/updateaddress/{{ auth()->user()->id }}"
+                                        <a href="{{ route('updateaddress', ['id' => $address_id]) }}"
                                             class="btn btn-primary mt-3 rounded-pill updateInfoBtn"
                                             data-url="updateaddress"
-                                            aria-label="Confirm Information for Student ID {{ auth()->user()->id }}">
+                                            aria-label="Confirm Information for Student ID {{ $address_id }}">
                                             Confirm Information
                                         </a>
                                     @endif
@@ -136,10 +133,7 @@
 
                             @php
                                 // Fetch the student details directly
-                                $previousSchool = \App\Models\previous_school::where(
-                                    'school_id',
-                                    auth()->user()->id,
-                                )->first();
+                                $previousSchool = \App\Models\previous_school::where('school_id', $registerForm->id)->first();
                             @endphp
                             <li class="list-group-item d-flex justify-content-between align-items-start">
                                 <div class="ms-2 me-auto">
@@ -148,25 +142,20 @@
                                 </div>
                                 <div>
                                     @if ($previousSchool && $previousSchool->status === 'approved')
-                                        <span class="badge bg-success rounded-pill"
-                                            aria-label="Status: Completed">Completed</span>
+                                        <span class="badge bg-success rounded-pill" aria-label="Status: Completed">Completed</span>
                                     @else
-                                        <a href="/updateschool/{{ auth()->user()->id }}"
-                                            class="btn btn-primary mt-3 rounded-pill updateInfoBtn"
-                                            data-url="updateschool"
-                                            aria-label="Confirm Information for Student ID {{ auth()->user()->id }}">
-                                            Confirm Information
-                                        </a>
+                                        <a href="{{ route('updateschool', ['id' => $school_id]) }}" 
+   class="btn btn-primary mt-3 rounded-pill updateInfoBtn"
+   aria-label="Confirm Information for School ID {{ $school_id }}">
+    Confirm Information
+</a>
                                     @endif
                                 </div>
                             </li>
 
                             @php
                                 // Fetch the required documents for the authenticated user
-                                $existingDocs = \App\Models\required_docs::where(
-                                    'required_id',
-                                    auth()->user()->required_id,
-                                )->first();
+                                $existingDocs = \App\Models\required_docs::where('required_id', $registerForm->id)->first();
                             @endphp
 
                             <li class="list-group-item d-flex justify-content-between align-items-start">
@@ -176,15 +165,16 @@
                                 </div>
                                 <div>
                                     @if ($existingDocs && $existingDocs->status === 'approved')
-                                        <span class="badge bg-success rounded-pill"
-                                            aria-label="Status: Completed">Completed</span>
-                                    @else
-                                        <a href="{{ route('updatedocuments', ['id' => auth()->user()->id]) }}"
-                                            class="btn btn-primary mt-3 rounded-pill updateInfoBtn"
-                                            data-url="updatedocuments"
-                                            aria-label="Confirm Information for Student ID {{ auth()->user()->id }}">
-                                            Confirm Information
-                                        </a>
+                                    <span class="badge bg-success rounded-pill" aria-label="Status: Completed">Completed</span>
+                                @else
+                                
+                                    <a href="{{ route('updatedocuments', ['id' => $required_id]) }}"
+                                        class="btn btn-primary mt-3 rounded-pill updateInfoBtn"
+                                        data-url="updatedocuments"
+                                        aria-label="Confirm Information for Student ID {{ $required_id }}">
+                                        Confirm Information
+                                    </a>
+                             
                                     @endif
                                 </div>
                             </li>
@@ -192,7 +182,7 @@
 
                         @php
                             // Fetch the payment form associated with the user
-                            $paymentForm = App\Models\payment_form::where('payment_id', auth()->user()->id)->first();
+                            $paymentForm = App\Models\payment_form::where('payment_id', $registerForm->id)->first();
                             $paymentStatus = $paymentForm ? $paymentForm->status : null; // Handle case where payment form is not found
                         @endphp
 
@@ -211,18 +201,22 @@
                                     <span class="badge bg-warning rounded-pill">Pending</span>
                                 @else
                                     <span class="badge bg-danger rounded-pill">Not Found</span>
-                                    <!-- Handle unexpected status -->
                                 @endif
                             </div>
                         </li>
 
+                        @php
+                        
+                        $assignStatus = App\Models\assign::where('class_id', $registerForm->id)->first();
+                        $assignStatus = $assignStatus ? $assignStatus->status : null; 
+                    @endphp
                         <li class="list-group-item d-flex justify-content-between align-items-start">
                             <div class="ms-2 me-auto">
                                 <div class="fw-bold">Sectioning</div>
                                 <p class="mb-0">Assign the student to a specific section or class.</p>
                             </div>
                             <div>
-                                @if (session('assigningStatus') === 'assigned')
+                                @if ($assignStatus === 'assigned')
                                     <span class="badge bg-success rounded-pill">Completed</span>
                                 @else
                                     <span class="badge bg-warning rounded-pill">Pending</span>
@@ -236,30 +230,12 @@
                                 <p class="mb-0">Officially enrolled in the school.</p>
                             </div>
                             <div>
-                                @php
-                                    // Check if all required steps are completed
-                                    $allCompleted = true;
-
-                                    // Check each step's status
-if ($paymentStatus !== 'approved') {
-    $allCompleted = false;
-}
-if (session('assigningStatus') !== 'assigned') {
-    $allCompleted = false;
-}
-// Add checks for other sections as needed
-if (
-    session('DetailsUpdateStatus') !== 'student_details' ||
-    session('AddressUpdateStatus') !== 'address' ||
-    session('SchoolUpdateStatus') !== 'school' ||
-    session('docsUpdateStatus') !== 'docs'
-                                    ) {
-                                        $allCompleted = false;
-                                    }
-                                @endphp
-
                                 @if ($allCompleted)
                                     <span class="badge bg-success rounded-pill">Completed</span>
+                                    <script>
+                                        // Launch confetti if all steps are completed
+                                        launchConfetti(); // Ensure this function is defined in your JavaScript
+                                    </script>
                                 @else
                                     <span class="badge bg-warning rounded-pill">Pending</span>
                                 @endif
@@ -278,69 +254,41 @@ if (
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.updateInfoBtn').forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
+    document.querySelectorAll('.updateInfoBtn').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
 
-                const url = this.getAttribute('href');
-                const dataUrl = this.getAttribute('data-url');
+            const url = this.getAttribute('href'); // Get the URL from the href attribute
 
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You will be redirected to update your information. PS: You can't update your information again once submitted.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'OK',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        setTimeout(() => {
-                            window.location.href = '/' + dataUrl + '/' +
-                                {{ auth()->user()->id }};
-                        }, 1000);
-                    }
-                });
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You will be redirected to update your information. PS: You can't update your information again once submitted.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(() => {
+                        window.location.href = url; // Redirect to the correct URL
+                    }, 1000);
+                }
             });
         });
     });
+});
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Check for session variables
-        const paymentStatus = @json(session('paymentStatus')); // Convert PHP variable to JavaScript
-        const assigningStatus = @json(session('assigningStatus')); // Convert PHP variable to JavaScript
-
-        // Show payment approved alert if payment status is approved
-        if (paymentStatus === 'approved') {
-            Swal.fire({
-                title: 'Payment Approved!',
-                text: "The payment has been successfully approved.",
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then(() => {
-                // After the first alert is closed, check for sectioning approval
-                if (assigningStatus === 'assigned') {
-                    Swal.fire({
-                        title: 'Sectioning Approved!',
-                        text: "The sectioning has been successfully approved.",
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            });
-        } else if (assigningStatus === 'assigned') {
-            // If payment is not approved but sectioning is
-            Swal.fire({
-                title: 'Sectioning Approved!',
-                text: "The sectioning has been successfully approved.",
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-        }
-
+     // This will run when the page loads
+     document.addEventListener('DOMContentLoaded', function() {
         // Check if all steps are completed to show confetti
         const allCompleted = @json($allCompleted); // Ensure this variable is set in your blade file
         if (allCompleted) {
             launchConfetti();
+            // Change the button text to "Approved" if all steps are completed
+            const enrollButton = document.getElementById('enrollButton'); // Make sure this exists
+            if (enrollButton) {
+                enrollButton.textContent = 'Approved'; // Adjust the ID as necessary
+            }
         }
     });
 
@@ -352,7 +300,7 @@ if (
         (function frame() {
             // Check if the animation duration has ended
             if (Date.now() > animationEnd) return;
-
+s
             // Launch confetti from random positions
             confetti({
                 particleCount: 40,

@@ -23,18 +23,16 @@ return new class extends Migration
             $table->string('status')->default('pending');
             
             $table->timestamps();
-            $table->foreign('payment_id')->references('id')->on('users');
+            $table->foreign('payment_id')->references('id')->on('register_form');
         });
     }
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('payment_form', function (Blueprint $table) {
-            $table->dropForeign(['payment_id']);
-        });
         Schema::dropIfExists('payment_form');
     }
 };

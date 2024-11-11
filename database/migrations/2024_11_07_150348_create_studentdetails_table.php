@@ -33,7 +33,7 @@ return new class extends Migration
             $table->string('guardian_occupation');
             $table->string('guardian_contact');
             $table->unsignedBigInteger('details_id');
-            $table->foreign('details_id')->references('id')->on('users');
+            $table->foreign('details_id')->references('id')->on('register_form');
 
             $table->string('status')->default('pending');
 
@@ -41,14 +41,12 @@ return new class extends Migration
         });
     }
 
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('studentdetails', function (Blueprint $table) {
-            $table->dropForeign(['details_id']);
-        });
         Schema::dropIfExists('studentdetails');
     }
 };

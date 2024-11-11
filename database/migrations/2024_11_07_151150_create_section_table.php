@@ -11,25 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('code_values', function (Blueprint $table) {
+        Schema::create('section', function (Blueprint $table) {
             $table->id();
-            $table->string('fullname');
+            $table->string('grade');
             $table->string('section');
-            $table->string('student_id');
-            $table->string('respect');
-            $table->string('excellence');
-            $table->string('teamwork');
-            $table->string('innovation');
-            $table->string('sustainability');
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('code_values');
+        Schema::dropIfExists('section');
     }
 };

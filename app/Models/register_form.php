@@ -16,10 +16,19 @@ class register_form extends Model
         'suffix',
         'email',
         'password',
-        'status'
+        'status',
+        'user_id'
 
     ];
 
     const STATUS_PENDING = 'pending';
     const STATUS_APPROVED = 'approved';
+
+    
+    // Define the relationship with the User model
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
+

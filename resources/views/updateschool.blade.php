@@ -194,8 +194,7 @@
             </div>
 
             <!-- Hidden field for school ID -->
-            <input type="hidden" name="school_id" id="school_id" value="{{ auth()->user()->id }}">
-
+            <input type="hidden" name="school_id" id="school_id" value="{{ $school->school_id }}">
             <!-- Form actions -->
             <div class="col-12 text-end">
                 <button type="submit" name="submit" class="btn btn-primary">Done</button>

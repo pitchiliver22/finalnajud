@@ -15,6 +15,7 @@ use App\Models\teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use tidy;
 
 class Usercontroller extends Controller
 {
@@ -46,38 +47,104 @@ class Usercontroller extends Controller
         return view('recordapproval', compact('account'));
     }
 
+    public function studentdetails($registerFormId)
+    {
+        $registerForm = register_form::findOrFail($registerFormId);
+    
+        $details = studentdetails::where('details_id', $registerFormId)->get();
+    
+         return view('studentdetails', compact('registerForm', 'details'));
+    }
+
+    public function address_contact($registerFormId)
+    {
+   
+    $registerForm = register_form::findOrFail($registerFormId);
+    
+    $addresses = address::where('address_id', $registerFormId)->get();
+    
+
+    return view('address_contact', compact('registerForm', 'addresses'));
+    }
+
+    public function previous_school($registerFormId)
+    {
+        $registerForm = register_form::findOrFail($registerFormId);
+    
+        $details = previous_school::where('school_id', $registerFormId)->get();
+
+     return view('previous_school', compact('registerForm', 'details'));
+    }
+
+    public function required_documents($registerFormId)
+    {
+                   // Fetch the corresponding register_form record using the provided ID
+        $registerForm = register_form::findOrFail($registerFormId);
+    
+            // Fetch existing student details linked to this register_form
+        $details = required_docs::where('required_id', $registerFormId)->get();
+    
+        // Pass both the register form and details to the view
+        return view('required_documents', compact('registerForm', 'details'));
+    }
+
+    public function payment_process($registerFormId)
+    {
+                   // Fetch the corresponding register_form record using the provided ID
+        $registerForm = register_form::findOrFail($registerFormId);
+    
+            // Fetch existing student details linked to this register_form
+        $details = payment_form::where('payment_id', $registerFormId)->get();
+    
+        // Pass both the register form and details to the view
+        return view('payment_process', compact('registerForm', 'details'));
+    }
 
 
     public function updatedetails($id)
     {
-
-        $details = studentdetails::findOrFail($id);
-
+        
+        $details = \App\Models\studentdetails::find($id);
+    
+        if (!$details) {
+            return redirect('/enrollmentstep')->with('error', 'Student details not found.');
+        }
+    
         return view('updatedetails', compact('details'));
     }
 
     public function updateaddress($id)
     {
 
-        $address = address::findOrFail($id);
+        $address = \App\Models\address::where('address_id', $id)->first();
 
+        if (!$address) {
+            return redirect('/enrollmentstep')->with('error', 'address not found.');
+        }
         return view('updateaddress', compact('address'));
     }
     public function updatedocuments($id)
     {
-        // Fetch the required document record
-        $docRecord = required_docs::findOrFail($id);
+        $docRecord = \App\Models\required_docs::where('required_id', $id)->first();
 
-        // Fetch all documents associated with the required_id
-        $docs = required_docs::where('required_id', $docRecord->required_id)->get();
+        if (!$docRecord) {
+            return redirect('/enrollmentstep')->with('error', 'Student details not found.');
+        }
+          $docs = required_docs::where('required_id', $docRecord->required_id)->get();
 
-        return view('updatedocuments', compact('docs'));
+          $userId = Auth::user()->id;
+          $registerForm = \App\Models\register_form::where('user_id', $userId)->first();
+      
+          return view('updatedocuments', compact('docs', 'registerForm'));
     }
+
     public function updateschool($id)
     {
-
-        $school = previous_school::findOrFail($id);
-
+        $school = \App\Models\previous_school::where('school_id', $id)->first();
+    
+        if (!$school) {
+            return redirect('/enrollmentstep')->with('error', 'School details not found.');
+        }
         return view('updateschool', compact('school'));
     }
 
@@ -133,6 +200,33 @@ class Usercontroller extends Controller
 
         return view('assigning', $data);
     }
+
+    public function section($id, $sectionName)
+{
+    $students = register_form::findOrFail($id);
+    $proof = payment_form::where('id', $id)->firstOrFail(); // Adjust if necessary
+
+    $classes = classes::where('grade', $proof->level)
+        ->where('section', $sectionName)
+        ->get();
+
+    $data = [
+        'title' => 'Assigning',
+        'students' => $students,
+        'proof' => $proof,
+        'classes' => $classes,
+        'sectionName' => $sectionName // Pass section name for the view
+    ];
+
+    return view('section', $data);
+}
+    public function getSectionDetails($edpcode)
+{
+    // Fetch the class details for the specific edpcode
+    $sectionDetails = classes::where('edpcode', $edpcode)->get(['edpcode', 'room', 'subject', 'description', 'type', 'unit', 'time', 'days']);
+
+    return response()->json($sectionDetails);
+}
     public function proofofpayment($id)
     {
         $proof = payment_form::findOrFail($id);
@@ -311,21 +405,52 @@ class Usercontroller extends Controller
         return view('showdetails', compact('student', 'previous', 'require', 'address'));
     }
 
+  
+
     public function getSubject($teacherId)
-    {
-        // Fetch the teacher by ID
-        $teacher = Teacher::find($teacherId);
+{
+    // Fetch the teacher by ID
+    $teacher = teacher::find($teacherId);
 
-        if ($teacher) {
-            // Split the subjects by comma and trim whitespace
-            $subjects = array_map('trim', explode(',', $teacher->subject));
-            return response()->json([
-                'subjects' => $subjects,
-            ]);
-        }
-
+    if ($teacher) {
+        // Split the subjects by comma and trim whitespace
+        $subjects = array_map('trim', explode(',', $teacher->subject)); // Assuming 'subject' is a comma-separated string
         return response()->json([
-            'subjects' => [],
+            'subjects' => $subjects,
         ]);
     }
+
+    return response()->json([
+        'subjects' => [],
+    ]);
+}
+
+public function getAssignedTeacher($subject)
+{
+    
+    $teachers = teacher::where('subject', 'like', '%' . $subject . '%')->get(); // Adjust this as needed
+
+    if ($teachers->isNotEmpty()) {
+        $teacherList = $teachers->map(function($teacher) {
+            return [
+                'id' => $teacher->id,
+                'name' => $teacher->name,
+            ];
+        });
+
+        return response()->json([
+            'teachers' => $teacherList,
+        ]);
+    }
+
+    return response()->json(['teachers' => null]);
+}
+
+public function getTeachersByGrade($grade) {
+    $teachers = teacher::where('grade', $grade)->get(['id', 'name', 'subject']);
+
+    return response()->json([
+        'teachers' => $teachers
+    ]);
+}
 }

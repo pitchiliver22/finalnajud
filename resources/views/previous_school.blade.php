@@ -163,14 +163,14 @@
             </div>
 
 
-            <input type="hidden" name="school_id" id="school_id" value="{{ auth()->user()->id }}">
+            <input type="hidden" name="school_id" id="school_id" value="{{ $registerForm->id }}">
 
 
             <div class="col-12 text-end">
-                <button type="submit" name="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" name="submit" class="btn btn-primary">Next</button>
             </div>
         </form>
-    </div>
+    </div>  
 
 </body>
 

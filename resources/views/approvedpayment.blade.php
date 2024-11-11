@@ -1,4 +1,4 @@
-@include('templates.cashierheader')
+    @include('templates.cashierheader')
 
 <div id="main">
     <div class="w3-teal">
@@ -37,37 +37,34 @@
                         </thead>
                         <tbody>
                             @foreach ($students as $student)
-                                @php
-                                    $payment = $payments->firstWhere('payment_id', $student->id);
-                                    $status = $payment ? $payment->status : 'No payment';
-                                @endphp
-                                @if ($status === 'approved')
-                                    <tr>
-                                        <td>{{ $status }}</td>
-                                        <td>{{ $student->lastname }}</td>
-                                        <td>{{ $student->firstname }}</td>
-                                        <td>{{ $student->middlename }}</td>
-                                        <td>
-                                            {{ $payments->firstWhere('payment_id', $student->id)->level ?? 'N/A' }}
-                                        </td>
-                                        <td>
-                                            @if ($payment)
-                                                <a href="/proofofpayment/{{ $payment->id }}"
-                                                    class="btn btn-info btn-sm view-studententry" title="View">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                        height="16" fill="currentColor" class="bi bi-eye"
-                                                        viewBox="0 0 16 16">
-                                                        <path
-                                                            d="M7.998 2c-2.757 0-5.287 1.417-6.758 3.75a.748.748 0 0 0 0 .5c1.471 2.333 4.001 3.75 6.758 3.75s5.287-1.417 6.758-3.75a.748.748 0 0 0 0-.5c-1.471-2.333-4.001-3.75-6.758-3.75zm0 1.5a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5zm0 2a1.75 1.75 0 1 0 0 3.5 1.75 1.75 0 0 0 0-3.5z" />
-                                                    </svg>
-                                                </a>
-                                            @else
-                                                <span>No payment found</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endif
-                            @endforeach
+                            @php
+                                // Fetch all payment records for the current student
+                                $payments = App\Models\payment_form::where('payment_id', $student->id)->where('status', 'approved')->get(); // Get only approved payments
+                            @endphp
+                        
+                            @if ($payments->isNotEmpty())
+                                <tr>
+                                    <td>{{ $payments->first()->status }}</td> <!-- Show the status of the first approved payment -->
+                                    <td>{{ $student->lastname }}</td>
+                                    <td>{{ $student->firstname }}</td>
+                                    <td>{{ $student->middlename }}</td>
+                                    <td>
+                                        {{ $payments->first()->level ?? 'N/A' }} <!-- Show level of the first approved payment -->
+                                    </td>
+                                    <td>
+                                        <a href="/proofofpayment/{{ $payments->first()->id }}"
+                                           class="btn btn-info btn-sm view-studententry" title="View">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                 height="16" fill="currentColor" class="bi bi-eye"
+                                                 viewBox="0 0 16 16">
+                                                <path
+                                                    d="M7.998 2c-2.757 0-5.287 1.417-6.758 3.75a.748.748 0 0 0 0 .5c1.471 2.333 4.001 3.75 6.758 3.75s5.287-1.417 6.758-3.75a.748.748 0 0 0 0-.5c-1.471-2.333-4.001-3.75-6.758-3.75zm0 1.5a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5zm0 2a1.75 1.75 0 1 0 0 3.5 1.75 1.75 0 0 0 0-3.5z" />
+                                            </svg>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endif
+                        @endforeach
                         </tbody>
                     </table>
                 </div>

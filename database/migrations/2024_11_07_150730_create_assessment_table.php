@@ -11,24 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('register_form', function (Blueprint $table) {
+        Schema::create('assessment', function (Blueprint $table) {
             $table->id();
-            $table->string('firstname');
-            $table->string('lastname');
-            $table->string('middlename');
-            $table->string('suffix');
-            $table->string('email');
-            $table->string('password');
-            $table->string('status');
+            $table->string('school_year');
+            $table->string('grade_level');
+            $table->string('assessment_name');
+            $table->text('description');
+            $table->string('assessment_date');
+            $table->string('assessmen_time');
+            $table->string('assessment_fee');
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('register_form');
+        Schema::dropIfExists('assessment');
     }
 };
