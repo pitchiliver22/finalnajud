@@ -4,6 +4,7 @@ use App\Http\Controllers\Datacontroller;
 use App\Http\Controllers\Pagecontroller;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\Usercontroller;
+use Dompdf\FrameDecorator\Page;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
@@ -26,7 +27,7 @@ Route::get('register_consent', [Pagecontroller::class, 'register_consent']);
 
 Route::get('/studentdetails', [PageController::class, 'studentdetails'])->name('studentdetails')->middleware('auth');
 Route::post('studentdetails', [Datacontroller::class, 'studentdetailspost'])->middleware('auth');
-Route::get('studentdetails/{registerFormId}', [UserController::class, 'studentdetails'])->name('studentdetails')->middleware('auth');
+Route::get('studentdetails/{registerFormId}', [UserController::class, 'studentdetails'])->middleware('auth');
 
 Route::post('/update-profile', [Datacontroller::class, 'updateProfile'])->name('update.profile');
 
@@ -66,19 +67,19 @@ Route::get('studentassessment', [Pagecontroller::class, 'studentassessment']);
 
 
 //teacher
-Route::get('teacher', [Pagecontroller::class, 'teacher']);
-Route::get('teachernotification', [Pagecontroller::class, 'teachernotification']);
-Route::get('teacherprofile', [Pagecontroller::class, 'teacherprofile']);
-Route::get('teacherclassload', [Pagecontroller::class, 'teacherclassload']);
-Route::get('teacherclassload', [Usercontroller::class, 'teacherclassload']);
+Route::get('teacher', [Pagecontroller::class, 'teacher'])->middleware('auth');
+Route::get('teachernotification', [Pagecontroller::class, 'teachernotification'])->middleware('auth');
+Route::get('teacherprofile', [Pagecontroller::class, 'teacherprofile'])->middleware('auth');
+Route::get('teacherclassload', [Pagecontroller::class, 'teacherclassload'])->middleware('auth');
+Route::get('teacherclassload', [Usercontroller::class, 'teacherclassload'])->middleware('auth');
 
 
-Route::get('gradesubmit', [Pagecontroller::class, 'gradesubmit']);
-Route::post('gradesubmit', [Datacontroller::class, 'gradesubmitpost']);
-Route::get('gradesubmit/{id}', [Usercontroller::class, 'gradesubmit']);
+Route::get('gradesubmit', [Pagecontroller::class, 'gradesubmit'])->middleware('auth');
+Route::post('gradesubmit', [Datacontroller::class, 'gradesubmitpost'])->middleware('auth');
+Route::get('gradesubmit/{id}', [Usercontroller::class, 'gradesubmit'])->middleware('auth');
 
-Route::get('teacherattendance', [Pagecontroller::class, 'teacherattendance']);
-Route::get('teachercorevalue', [Pagecontroller::class, 'teachercorevalue']);
+Route::get('teacherattendance', [Pagecontroller::class, 'teacherattendance'])->middleware('auth');
+Route::get('teachercorevalue', [Pagecontroller::class, 'teachercorevalue'])->middleware('auth');
 
 
 
@@ -92,7 +93,8 @@ Route::get('/principalteacher', [DataController::class, 'showTeachers'])->name('
 Route::post('/principalteacher', [DataController::class, 'teachersubjectpost']);
 
 Route::get('submittedgrades', [Pagecontroller::class, 'submittedgrades']);
-
+Route::post('/update-quarters', [Datacontroller::class, 'updateQuarters'])->name('update.quarters');
+Route::get('/submittedgrades', [Datacontroller::class, 'showEvaluateGrades'])->name('evaluate.grades');
 
 
 Route::get('assigning', [Pagecontroller::class, 'assigning']);
@@ -136,7 +138,9 @@ Route::post('publishgrade/{id}', [Datacontroller::class, 'publish'])->name('grad
 Route::get('accounting', [Pagecontroller::class, 'accounting']);
 Route::get('accountingprofile', [Pagecontroller::class, 'accountingprofile']);
 Route::get('accountingassessment', [Pagecontroller::class, 'accountingassessment']);
-Route::get('createassessmet', [Pagecontroller::class, 'createassessmet']);
+Route::get('createassessment', [Pagecontroller::class, 'createassessment']);
+Route::post('/createassessment', [Datacontroller::class, 'assessmentpost'])->name('assessment.post');
+
 
 
 
@@ -182,18 +186,18 @@ Route::get('adminprofile', [Pagecontroller::class, 'adminprofile']);
 
 Route::get('/enrollmentstep', [DataController::class, 'enrollmentStep'])->name('enrollment.step');
 
-Route::get('updatedetails', [Pagecontroller::class, 'updatedetails'])->middleware('auth');
+Route::get('updatedetails', [Pagecontroller::class, 'updatedetails'])->middleware('auth')->name('updatedetails');
 Route::post('updatedetails', [Datacontroller::class, 'updatedetailspost'])->middleware('auth');
-Route::get('/updatedetails/{id}', [Usercontroller::class, 'updatedetails'])->name('updatedetails');
+Route::get('/updatedetails/{id}', [Usercontroller::class, 'updatedetails'])->name('updatedetails.id');
 
-Route::get('updateaddress', [Pagecontroller::class, 'updateaddress'])->middleware('auth');
+Route::get('updateaddress', [Pagecontroller::class, 'updateaddress'])->middleware('auth')->name('updateaddress');
 Route::post('updateaddress', [Datacontroller::class, 'updateaddresspost'])->middleware('auth');
-Route::get('updateaddress/{id}', [Usercontroller::class, 'updateaddress'])->middleware('auth')->name('updateaddress');
+Route::get('updateaddress/{id}', [Usercontroller::class, 'updateaddress'])->middleware('auth')->name('updateaddress.id');
 
 
-Route::get('updatedocuments', [Pagecontroller::class, 'updatedocuments'])->middleware('auth');
+Route::get('updatedocuments', [Pagecontroller::class, 'updatedocuments'])->middleware('auth')->name('updatedocuments');
 Route::post('updatedocuments', [Datacontroller::class, 'updatedocumentspost'])->middleware('auth');
-Route::get('updatedocuments/{id}', [Usercontroller::class, 'updatedocuments'])->middleware('auth')->name('updatedocuments');
+Route::get('updatedocuments/{id}', [Usercontroller::class, 'updatedocuments'])->middleware('auth')->name('updatedocuments.id');
 Route::post('/updatedocuments', [Datacontroller::class, 'updateDocuments'])->name('updatedocuments');
 
 
@@ -202,6 +206,6 @@ Route::post('/updatedocuments', [Datacontroller::class, 'updateDocuments'])->nam
 Route::delete('/documents/{id}', [Datacontroller::class, 'destroy']);
 
 
-Route::get('updateschool', [Pagecontroller::class, 'updateschool'])->middleware('auth');
+Route::get('updateschool', [Pagecontroller::class, 'updateschool'])->middleware('auth')->name('updateschool');
 Route::post('updateschool', [Datacontroller::class, 'updateschoolpost'])->middleware('auth');
-Route::get('updateschool/{id}', [UserController::class, 'updateschool'])->middleware('auth')->name('updateschool');
+Route::get('updateschool/{id}', [UserController::class, 'updateschool'])->middleware('auth')->name('updateschool.id');

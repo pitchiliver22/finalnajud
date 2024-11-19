@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Constants\QuarterStatus;
 use App\Mail\ApprovePayment;
+use App\Mail\ApproveSectioning;
 use App\Models\address;
 use App\Models\assign;
 use App\Models\classes;
@@ -27,8 +28,10 @@ use PhpParser\Node\NullableType;
 use App\Mail\ApproveStudent;
 use App\Mail\PendingPayment;
 use App\Mail\PendingStudent;
+use App\Models\assessment;
 use App\Models\section;
 use App\Models\subject;
+use App\Models\QuarterSettings;
 use App\Models\teacher;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 
@@ -778,10 +781,6 @@ public function address_contactpost(Request $request)
             'days' => 'required',
         ]);
     
-        // Create a time string from start and end time
-        $time = $validatedData['startTime'] . ' - ' . $validatedData['endTime'];
-    
-        // Retrieve the selected teacher
         $teacher = Teacher::find($validatedData['adviser']);
         if (!$teacher) {
             return redirect('/principalclassload')->withErrors(['error' => 'Selected teacher not found.'])->withInput();
@@ -805,9 +804,8 @@ public function address_contactpost(Request $request)
             ]);
         }
     
-        if ($existingSchedules == 8) {
-            // Set a warning if there are already 8 schedules
-            return redirect('/principalclassload')->with('warning', 'Warning: The section has reached 8 schedules. Maximum is 10.')->withInput()->with([
+        if ($existingSchedules == 10) {
+            return redirect('/principalclassload')->with('warning', 'Warning: The section has reached 10 schedules. Maximum is 10.')->withInput()->with([
                 'sections' => section::all(),
                 'teachers' => teacher::all(),
                 'selectedGrade' => $validatedData['grade'],
@@ -816,8 +814,6 @@ public function address_contactpost(Request $request)
                 'selectedAdviser' => $validatedData['adviser'],
             ]);
         }
-    
-        
     
         // Prepare class entry data
         $classData = [
@@ -830,22 +826,25 @@ public function address_contactpost(Request $request)
             'description' => strtoupper($validatedData['description']),
             'type' => $validatedData['type'],
             'unit' => strtoupper($validatedData['unit']),
-            'time' => $time,
+            'startTime' => $validatedData['startTime'], 
+            'endTime' => $validatedData['endTime'],    
             'days' => strtoupper($validatedData['days']),
             'status' => 'not assigned',
         ];
     
-        // Check for conflicts: same subject and same teacher
-        $subjectTeacherConflict = classes::where('subject', $classData['subject'])
-            ->where('adviser', $classData['adviser']) // Check if the same teacher is assigned to the same subject
-            ->where('days', $classData['days'])
-            ->where('time', $classData['time'])
+        // Check for conflicts: any teacher scheduled at the same time on the same day
+        $timeConflict = classes::where('grade', $classData['grade'])
             ->where('section', $classData['section'])
+            ->where('days', $classData['days'])
+            ->where(function ($query) use ($validatedData) {
+                $query->where('startTime', '<', $validatedData['endTime'])
+                      ->where('endTime', '>', $validatedData['startTime']);
+            })
             ->exists();
     
-        // Handle conflict for same subject and same teacher
-        if ($subjectTeacherConflict) {
-            return redirect('/principalclassload')->withErrors(['error' => 'Conflict detected: This teacher is already scheduled to teach the same subject at this time.'])->withInput()->with([
+        // Handle conflict for any teacher at the same time
+        if ($timeConflict) {
+            return redirect('/principalclassload')->withErrors(['error' => 'Conflict detected: Another class is scheduled at this time on the same day.'])->withInput()->with([
                 'sections' => section::all(),
                 'teachers' => teacher::all(),
                 'selectedGrade' => $validatedData['grade'],
@@ -867,37 +866,125 @@ public function address_contactpost(Request $request)
             'selectedAdviser' => $validatedData['adviser'],
         ])->with('success', 'Classload added successfully.');
     }
+
     public function principalclassload(Request $request)
-    {
-        // Get selected values from the request
-        $selectedGrade = $request->input('grade', session('selectedGrade'));
-        $selectedSection = $request->input('section', session('selectedSection'));
-        $selectedSubject = $request->input('subject', session('selectedSubject'));
+{
+    // Get selected values from the request
+    $selectedGrade = $request->input('grade', session('selectedGrade'));
+    $selectedSection = $request->input('section', session('selectedSection'));
+    $selectedSubject = $request->input('subject', session('selectedSubject'));
     
-        // Get all classes
-        $class = classes::all();
+    // Get all classes
+    $class = classes::all();
     
-        // Get teachers filtered by the selected subject and grade
-        $teachers = teacher::where('grade', $selectedGrade)
-                           ->where('subject', 'LIKE', '%' . $selectedSubject . '%')
-                           ->get();
+    // Fetch all teachers
+    $teachers = teacher::all();
+
+    // Extract unique subjects from teachers
+    $subjects = [];
+    foreach ($teachers as $teacher) {
+        $teacherSubjects = explode(',', $teacher->subject); // Assuming subjects are comma-separated
+        foreach ($teacherSubjects as $subject) {
+            $subjects[trim($subject)] = true; 
+          }
+    }
+    $subjects = array_keys($subjects); 
+    $filteredTeachers = teacher::where('grade', $selectedGrade)
+                               ->where('subject', 'LIKE', '%' . $selectedSubject . '%')
+                               ->get();
     
-        // Initialize schedules variable
-        $schedules = []; // Default to an empty array
+    $schedules = []; 
+
+     if ($selectedGrade && $selectedSection) {
+        $schedules = classes::where('grade', $selectedGrade)
+                             ->where('section', $selectedSection)
+                             ->get();
+    }
     
-        // Retrieve schedules based on the selected grade and section
-        if ($selectedGrade && $selectedSection) {
-            $schedules = classes::where('grade', $selectedGrade)
-                                 ->where('section', $selectedSection)
-                                 ->get();
-        }
-    
-        return view('principalclassload', compact('class', 'teachers', 'schedules', 'selectedGrade', 'selectedSection', 'selectedSubject'));
+    return view('principalclassload', compact('class', 'subjects', 'filteredTeachers', 'schedules', 'selectedGrade', 'selectedSection', 'selectedSubject'));
+}
+
+
+
+public function updateQuarters(Request $request)
+{
+    // Validate request
+    $request->validate([
+        '1st_quarter_enabled' => 'boolean',
+        '2nd_quarter_enabled' => 'boolean',
+        '3rd_quarter_enabled' => 'boolean',
+        '4th_quarter_enabled' => 'boolean',
+        'quarter_status' => 'required|in:active,inactive',
+    ]);
+
+    // Fetch existing settings or create a new one
+    $settings = QuarterSettings::first();
+    if ($settings) {
+        $settings->first_quarter_enabled = $request->has('1st_quarter_enabled'); // true if checked
+        $settings->second_quarter_enabled = $request->has('2nd_quarter_enabled');
+        $settings->third_quarter_enabled = $request->has('3rd_quarter_enabled');
+        $settings->fourth_quarter_enabled = $request->has('4th_quarter_enabled');
+        
+        // Update the overall quarter status
+        $settings->quarter_status = $request->input('quarter_status');
+        
+        $settings->save();
+    } else {
+        QuarterSettings::create([
+            'first_quarter_enabled' => $request->has('1st_quarter_enabled'),
+            'second_quarter_enabled' => $request->has('2nd_quarter_enabled'),
+            'third_quarter_enabled' => $request->has('3rd_quarter_enabled'),
+            'fourth_quarter_enabled' => $request->has('4th_quarter_enabled'),
+            'quarter_status' => $request->input('quarter_status'),
+        ]);
     }
 
+    return redirect()->back()->with('success', 'Quarter settings updated successfully.');
+}
+public function showEvaluateGrades()
+{
+    // Fetch the existing quarter settings
+    $quarterSettings = QuarterSettings::first();
 
+    // Initialize with default values if no settings found
+    if (!$quarterSettings) {
+        $quarterSettings = new QuarterSettings();
+        $quarterSettings->first_quarter_enabled = false;
+        $quarterSettings->second_quarter_enabled = false;
+        $quarterSettings->third_quarter_enabled = false;
+        $quarterSettings->fourth_quarter_enabled = false;
+        $quarterSettings->quarter_status = 'inactive'; // Default status
+    }
 
+    // Prepare the quarters enabled and status arrays
+    $quartersEnabled = [
+        '1st_quarter' => $quarterSettings->first_quarter_enabled,
+        '2nd_quarter' => $quarterSettings->second_quarter_enabled,
+        '3rd_quarter' => $quarterSettings->third_quarter_enabled,
+        '4th_quarter' => $quarterSettings->fourth_quarter_enabled,
+    ];
 
+    // Prepare the quarters status array
+    $quartersStatus = [
+        '1st_quarter' => $quarterSettings->quarter_status,
+        '2nd_quarter' => $quarterSettings->quarter_status,
+        '3rd_quarter' => $quarterSettings->quarter_status,
+        '4th_quarter' => $quarterSettings->quarter_status,
+    ];
+
+    // Fetch other necessary data
+    $assigns = Assign::all();
+    $grades = Grade::all();
+
+    // Return the principal interface view with all necessary variables
+    return view('submittedgrades', [
+        'quartersEnabled' => $quartersEnabled,
+        'quartersStatus' => $quartersStatus,
+        'quarterSettings' => $quarterSettings,
+        'assigns' => $assigns,
+        'grades' => $grades,
+    ]);
+}
     public function update_class(Request $request, $id)
     {
 
@@ -932,118 +1019,123 @@ public function address_contactpost(Request $request)
     }
 
     public function assigning(Request $request)
-{
-    $request->validate([
-        'selected_classes' => 'required|array',
-        'selected_classes.*' => 'string',
-        'grade' => 'required|string',
-        'payment_id' => 'required|integer'
-    ]);
-
-    $anyAssigned = false;
-
-    foreach ($request->selected_classes as $classEdpCode) {
-        $class = classes::where('edpcode', $classEdpCode)->first();
-
-        if ($class) {
-            $existingAssignment = assign::where('edpcode', $class->edpcode)
-                ->where('class_id', $request->input('payment_id'))
-                ->first();
-
-            if (!$existingAssignment) {
-                $assignment = assign::create([
-                    'grade' => $request->input('grade'),
-                    'adviser' => $class->adviser,
-                    'section' => $class->section,
-                    'edpcode' => $class->edpcode,
-                    'room' => $class->room,
-                    'subject' => $class->subject,
-                    'description' => $class->description,
-                    'type' => $class->type ?? null,
-                    'unit' => $class->unit,
-                    'time' => $class->time,
-                    'days' => $class->days,
-                    'class_id' => $request->input('payment_id'),
-                    'status' => 'assigned',
-                ]);
-
-                // Log the created assignment
-                Log::info('Assignment Created:', $assignment->toArray());
-
-                $class->assign_id = $request->input('payment_id');
-                $class->status = 'assigned';
-                $class->save();
-
-                $anyAssigned = true;
+    {
+        $request->validate([
+            'selected_classes' => 'required|array',
+            'selected_classes.*' => 'string',
+            'grade' => 'required|string',
+            'payment_id' => 'required|integer'
+        ]);
+    
+        $anyAssigned = false;
+    
+        foreach ($request->selected_classes as $classEdpCode) {
+            $class = Classes::where('edpcode', $classEdpCode)->first();
+    
+            if ($class) {
+                $existingAssignment = Assign::where('edpcode', $class->edpcode)
+                    ->where('class_id', $request->input('payment_id'))
+                    ->first();
+    
+                if (!$existingAssignment) {
+                    $assignment = Assign::create([
+                        'grade' => $request->input('grade'),
+                        'adviser' => $class->adviser,
+                        'section' => $class->section,
+                        'edpcode' => $class->edpcode,
+                        'room' => $class->room,
+                        'subject' => $class->subject,
+                        'description' => $class->description,
+                        'type' => $class->type ?? null,
+                        'unit' => $class->unit,
+                        'startTime' => $class->startTime,
+                        'endTime' => $class->endTime,
+                        'days' => $class->days,
+                        'class_id' => $request->input('payment_id'),
+                        'status' => 'assigned',
+                    ]);
+    
+                    // Log the created assignment
+                    Log::info('Assignment Created:', $assignment->toArray());
+    
+                    $class->assign_id = $request->input('payment_id');
+                    $class->status = 'assigned';
+                    $class->save();
+    
+                    $anyAssigned = true;
+    
+                    // Fetch the user (student) associated with the class
+                    $user = User::find($class->assign_id); // Ensure you have user_id in your class model
+    
+                    if ($user) {
+                        FacadesMail::to($user->email)->send(new ApproveSectioning($user));
+                    }
+                }
             }
+        }
+    
+        if ($anyAssigned) {
+            return redirect('/sectioning')->with('success', 'Classload assigned successfully.');
+        } else {
+            return redirect('/sectioning')->with('error', 'No classes were assigned or duplicate entries were avoided.');
         }
     }
 
-    if ($anyAssigned) {
-        return redirect('/sectioning')->with('success', 'Classload assigned successfully.');
-    } else {
-        return redirect('/sectioning')->with('error', 'No classes were assigned or duplicate entries were avoided.');
-    }
-}
-
-
-public function section(Request $request)
-{
-    $request->validate([
-        'selected_classes' => 'required|array',
-        'selected_classes.*' => 'string',
-        'grade' => 'required|string',
-        'payment_id' => 'required|integer'
-    ]);
-
-    $anyAssigned = false;
-
-    foreach ($request->selected_classes as $classEdpCode) {
-        $class = classes::where('edpcode', $classEdpCode)->first();
-
-        if ($class) {
-            $existingAssignment = assign::where('edpcode', $class->edpcode)
-                ->where('class_id', $request->input('payment_id'))
-                ->first();
-
-            if (!$existingAssignment) {
-                $assignment = assign::create([
-                    'grade' => $request->input('grade'),
-                    'adviser' => $class->adviser,
-                    'section' => $class->section,
-                    'edpcode' => $class->edpcode,
-                    'room' => $class->room,
-                    'subject' => $class->subject,
-                    'description' => $class->description,
-                    'type' => $class->type ?? null,
-                    'unit' => $class->unit,
-                    'time' => $class->time,
-                    'days' => $class->days,
-                    'class_id' => $request->input('payment_id'),
-                    'status' => 'assigned',
-                ]);
-
-                // Log the created assignment
-                Log::info('Assignment Created:', $assignment->toArray());
-
-                $class->assign_id = $request->input('payment_id');
-                $class->status = 'assigned';
-                $class->save();
-
-                $anyAssigned = true;
-
-                //FacadesMail::to($user->email)->send(new PendingPayment($user->toArray(), $amount, $feeType));
-
+    public function section(Request $request)
+    {
+        $request->validate([
+            'selected_classes' => 'required|array',
+            'selected_classes.*' => 'string',
+            'grade' => 'required|string',
+            'payment_id' => 'required|integer'
+        ]);
+    
+        $anyAssigned = false;
+    
+        foreach ($request->selected_classes as $classEdpCode) {
+            $class = classes::where('edpcode', $classEdpCode)->first();
+    
+            if ($class) {
+                $existingAssignment = assign::where('edpcode', $class->edpcode)
+                    ->where('class_id', $request->input('payment_id'))
+                    ->first();
+    
+                if (!$existingAssignment) {
+                    $assignment = assign::create([
+                        'grade' => $request->input('grade'),
+                        'adviser' => $class->adviser,
+                        'section' => $class->section,
+                        'edpcode' => $class->edpcode,
+                        'room' => $class->room,
+                        'subject' => $class->subject,
+                        'description' => $class->description,
+                        'type' => $class->type ?? null,
+                        'unit' => $class->unit,
+                        'startTime' => $class->startTime, // Insert startTime
+                        'endTime' => $class->endTime,     // Insert endTime
+                        'days' => $class->days,
+                        'class_id' => $request->input('payment_id'),
+                        'status' => 'assigned',
+                    ]);
+    
+                    // Log the created assignment
+                    Log::info('Assignment Created:', $assignment->toArray());
+    
+                    $class->assign_id = $request->input('payment_id');
+                    $class->status = 'assigned';
+                    $class->save();
+    
+                    $anyAssigned = true;
+                }
             }
         }
+    
+        if ($anyAssigned) {
+            return redirect('/sectioning')->with('success', 'Classload assigned successfully.');
+        } else {
+            return redirect('/sectioning')->with('error', 'No classes were assigned or duplicate entries were avoided.');
+        }
     }
-
-    if ($anyAssigned) {
-        return redirect('/sectioning')->with('success', 'Classload assigned successfully.');
-    } else {
-        return redirect('/sectioning')->with('error', 'No classes were assigned or duplicate entries were avoided.');
-    }
-}
 
     public function updateProfile(Request $request)
     {
@@ -1308,5 +1400,68 @@ public function section(Request $request)
             'grade' => $section->grade,
             'section' => $section->section
         ])->with('success', 'Section created successfully.');
+    }
+
+
+    public function assessmentpost(Request $request)
+    {
+        // Validate incoming request data
+        $validatedData = $request->validate([
+            'school_year' => 'required|string',
+            'grade_level' => 'required|string',
+            'assessment_name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'assessment_date' => 'required|date',
+            'assessment_time' => 'required|date_format:H:i',
+            'assessment_fee' => 'required|numeric|min:0',
+        ]);
+    
+        // Create a new assessment record in the database
+        $assessment = new assessment(); // Ensure to use your Assessment model
+        $assessment->school_year = $validatedData['school_year'];
+        $assessment->grade_level = $validatedData['grade_level'];
+        $assessment->assessment_name = $validatedData['assessment_name'];
+        $assessment->description = $validatedData['description'];
+        $assessment->assessment_date = $validatedData['assessment_date'];
+        $assessment->assessment_time = $validatedData['assessment_time'];
+        $assessment->assessment_fee = $validatedData['assessment_fee'];
+    
+        // Save the assessment to the database
+        $assessment->save();
+    
+        // Set a success message in the session
+        return redirect()->back()->with('success', 'Assessment created successfully!');
+    }
+
+
+    public function updateQuarter(Request $request, $assignId, $quarter, $status)
+    {
+        // Find the grade entry
+        $grade = grade::where('id', $assignId)->first();
+
+        if ($grade) {
+            // Update the corresponding quarter status
+            switch ($quarter) {
+                case '1st':
+                    $grade->first_quarter_enabled = (bool)$status;
+                    break;
+                case '2nd':
+                    $grade->second_quarter_enabled = (bool)$status;
+                    break;
+                case '3rd':
+                    $grade->third_quarter_enabled = (bool)$status;
+                    break;
+                case '4th':
+                    $grade->fourth_quarter_enabled = (bool)$status;
+                    break;
+            }
+
+            // Save the changes
+            $grade->save();
+
+            return response()->json(['message' => 'Quarter status updated successfully.']);
+        }
+
+        return response()->json(['message' => 'Grade not found.'], 404);
     }
 }

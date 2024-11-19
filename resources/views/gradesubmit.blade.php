@@ -16,34 +16,9 @@
             <input type="hidden" name="fullname" value="{{ $fullName }}">
             <input type="hidden" name="section" value="{{ $section }}">
             <input type="hidden" name="payment_id" value="{{ $paymentForm->payment_id ?? '' }}">
-            <!-- New hidden input -->
-
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
 
             <div class="fee-list">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4>STUDENT GRADES</h4>
-                    <div class="d-flex">
-                        <div class="input-group mr-3">
-                            <input type="text" class="form-control" placeholder="Search by EDP Code..."
-                                aria-label="Search" name="search" id="search-input">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="button"
-                                    onclick="searchByEdpCode()">Search</button>
-                            </div>
-                            <button type="button" class="btn btn-outline-secondary"
-                                onclick="refreshPage()">Refresh</button>
-                        </div>
-                    </div>
-                </div>
+                <h4>STUDENT GRADES</h4>
                 <div class="table-responsive">
                     <table class="table table-striped" id="student-table">
                         <thead>
@@ -53,10 +28,18 @@
                                 <th>Edpcode</th>
                                 <th>Subject</th>
                                 <th>Grade Level</th>
-                                <th>1st Quarter</th>
-                                <th>2nd Quarter</th>
-                                <th>3rd Quarter</th>
-                                <th>4th Quarter</th>
+                                @if ($quartersEnabled['1st_quarter'])
+                                    <th>1st Quarter</th>
+                                @endif
+                                @if ($quartersEnabled['2nd_quarter'])
+                                    <th>2nd Quarter</th>
+                                @endif
+                                @if ($quartersEnabled['3rd_quarter'])
+                                    <th>3rd Quarter</th>
+                                @endif
+                                @if ($quartersEnabled['4th_quarter'])
+                                    <th>4th Quarter</th>
+                                @endif
                                 <th>Overall Grade</th>
                             </tr>
                         </thead>
@@ -67,25 +50,19 @@
                                 <td>{{ $edpcode }}</td>
                                 <td>{{ $subject }}</td>
                                 <td>{{ $paymentForm->level ?? 'N/A' }}</td>
+
+                                @foreach (['1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter'] as $quarter)
+                                    @if ($quartersEnabled[$quarter])
+                                        <td>
+                                            <input type="number" class="form-control" name="{{ $quarter }}" min="0" max="100" step="0.01" 
+                                                required oninput="calculateOverall()"
+                                                {{ $quartersStatus[$quarter] === 'inactive' }}>
+                                        </td>
+                                    @endif
+                                @endforeach
+
                                 <td>
-                                    <input type="number" class="form-control" name="1st_quarter" min="0"
-                                        max="100" step="0.01" required oninput="calculateOverall()">
-                                </td>
-                                <td>
-                                    <input type="number" class="form-control" name="2nd_quarter" min="0"
-                                        max="100" step="0.01" required oninput="calculateOverall()">
-                                </td>
-                                <td>
-                                    <input type="number" class="form-control" name="3rd_quarter" min="0"
-                                        max="100" step="0.01" required oninput="calculateOverall()">
-                                </td>
-                                <td>
-                                    <input type="number" class="form-control" name="4th_quarter" min="0"
-                                        max="100" step="0.01" required oninput="calculateOverall()">
-                                </td>
-                                <td>
-                                    <input type="number" class="form-control" name="overall_grade" min="0"
-                                        max="100" step="0.01" required readonly>
+                                    <input type="number" class="form-control" name="overall_grade" min="0" max="100" step="0.01" required readonly>
                                 </td>
                             </tr>
                         </tbody>
@@ -101,37 +78,16 @@
 </div>
 
 <script>
-    function searchByEdpCode() {
-        var searchInput = document.getElementById("search-input").value.toLowerCase();
-        var studentTable = document.getElementById("student-table");
-        var rows = studentTable.getElementsByTagName("tr");
-
-        for (var i = 1; i < rows.length; i++) {
-            var edpCodeCell = rows[i].getElementsByTagName("td")[2]; // EDP Code is in the third column
-            if (edpCodeCell) {
-                var edpCode = edpCodeCell.textContent.toLowerCase();
-                rows[i].style.display = edpCode.includes(searchInput) ? "" : "none";
-            }
-        }
-    }
-
-    function refreshPage() {
-        location.reload();
-    }
-
     function calculateOverall() {
-        // Get values from the quarter inputs
         const firstQuarter = parseFloat(document.querySelector('input[name="1st_quarter"]').value) || 0;
         const secondQuarter = parseFloat(document.querySelector('input[name="2nd_quarter"]').value) || 0;
         const thirdQuarter = parseFloat(document.querySelector('input[name="3rd_quarter"]').value) || 0;
         const fourthQuarter = parseFloat(document.querySelector('input[name="4th_quarter"]').value) || 0;
 
-        // Calculate the overall grade (here we use average)
-        const overallGrade = (firstQuarter + secondQuarter + thirdQuarter + fourthQuarter) / 4;
+        const overallGrade = (firstQuarter + secondQuarter + thirdQuarter + fourthQuarter) / 
+            ([firstQuarter, secondQuarter, thirdQuarter, fourthQuarter].filter(x => x > 0).length || 1);
 
-        // Set the overall grade input value
-        document.querySelector('input[name="overall_grade"]').value = overallGrade.toFixed(
-            2); // Limit to 2 decimal places
+        document.querySelector('input[name="overall_grade"]').value = overallGrade.toFixed(2);
     }
 </script>
 

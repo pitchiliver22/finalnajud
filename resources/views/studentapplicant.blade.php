@@ -28,7 +28,10 @@
                 <table class="table table-striped table-hover" id="accountTable">
                     <thead class="thead-light">
                         <tr>
-                            <th>Select</th>
+                            <th>
+                                <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)">
+                                <label for="selectAll" style="display: inline;"> Select All</label>
+                            </th>
                             <th>Status</th>
                             <th>Users ID</th>
                             <th>First Name</th>
@@ -44,7 +47,7 @@
                         @foreach ($account as $acc)
                             <tr>
                                 <td>
-                                    <input type="checkbox" name="students[]" value="{{ $acc->id }}">
+                                    <input type="checkbox" name="students[]" value="{{ $acc->id }}" class="studentCheckbox">
                                 </td>
                                 <td>{{ $acc->status }}</td>
                                 <td>{{ $acc->id }}</td>
@@ -55,8 +58,7 @@
                                 <td>{{ $acc->email }}</td>
                                 <td>{{ $acc->password }}</td>
                                 <td>
-                                    <a href="/recordapproval/{{ $acc->id }}" class="btn btn-info btn-sm"
-                                        title="View">
+                                    <a href="/recordapproval/{{ $acc->id }}" class="btn btn-info btn-sm" title="View">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
                                             <path
@@ -95,6 +97,13 @@
 
             // Show or hide row based on match
             row.style.display = match ? '' : 'none';
+        });
+    }
+
+    function toggleSelectAll(selectAllCheckbox) {
+        const checkboxes = document.querySelectorAll('.studentCheckbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
         });
     }
 </script>

@@ -19,21 +19,47 @@
     </div>
 
     <style>
-        .uppercase {
-            text-transform: uppercase;
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
         }
 
-        .card {
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 15px;
+        .card:hover {
+            transform: translateY(-5px);
         }
 
         .modal-header {
             border-bottom: none;
         }
+
+        .profile-image {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #007bff;
+        }
+
+        .bg-custom {
+            background-color: #e3f2fd;
+        }
+
+        .uppercase {
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
     </style>
 
-    <section class="container-fluid py-5" style="background-color: #9de2ff;">
+    <section class="container-fluid py-5 bg-custom">
         <div class="row justify-content-center">
             <div class="col-md-9 col-lg-7 col-xl-6">
                 <div class="card">
@@ -41,13 +67,12 @@
                         <div class="d-flex align-items-center">
                             <div class="flex-shrink-0">
                                 <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                                    alt="Profile Image" class="img-fluid rounded-circle" style="width: 180px;">
+                                     alt="Profile Image" class="profile-image">
                             </div>
                             <div class="flex-grow-1 ms-3">
-                                <h5 class="mb-1 uppercase" id="firstnameDisplay">{{ $profile->firstname }}
-                                    {{ $profile->middlename }} {{ $profile->lastname }} {{ $profile->suffix }}</h5>
+                                <h5 class="mb-1 uppercase" id="firstnameDisplay">{{ $profile->firstname }} {{ $profile->middlename }} {{ $profile->lastname }} {{ $profile->suffix }}</h5>
                                 <p class="mb-2 pb-1">Student ID: 232023</p>
-                                <div class="d-flex justify-content-between rounded-3 p-2 mb-2 bg-body-tertiary">
+                                <div class="d-flex justify-content-between bg-light rounded-3 p-2 mb-2">
                                     <div>
                                         <p class="small text-muted mb-1">Grade Level</p>
                                         <p class="mb-0">{{ $level->level }}</p>
@@ -57,8 +82,7 @@
                                         <p class="mb-0">{{ $profile->email }}</p>
                                     </div>
                                     <div class="d-flex justify-content-end pt-1">
-                                        <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#editProfileModal">Edit Profile</button>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">Edit Profile</button>
                                     </div>
                                 </div>
                             </div>
@@ -70,8 +94,7 @@
     </section>
 
     <!-- Edit Profile Modal -->
-    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -84,28 +107,23 @@
                     <form id="editProfileForm">
                         <div class="form-group">
                             <label for="firstname">First Name</label>
-                            <input type="text" class="form-control" id="firstname" name="firstname"
-                                value="{{ $profile->firstname }}">
+                            <input type="text" class="form-control" id="firstname" name="firstname" value="{{ $profile->firstname }}">
                         </div>
                         <div class="form-group">
                             <label for="middlename">Middle Name</label>
-                            <input type="text" class="form-control" id="middlename" name="middlename"
-                                value="{{ $profile->middlename }}">
+                            <input type="text" class="form-control" id="middlename" name="middlename" value="{{ $profile->middlename }}">
                         </div>
                         <div class="form-group">
                             <label for="lastname">Last Name</label>
-                            <input type="text" class="form-control" id="lastname" name="lastname"
-                                value="{{ $profile->lastname }}">
+                            <input type="text" class="form-control" id="lastname" name="lastname" value="{{ $profile->lastname }}">
                         </div>
                         <div class="form-group">
                             <label for="suffix">Suffix</label>
-                            <input type="text" class="form-control" id="suffix" name="suffix"
-                                value="{{ $profile->suffix }}">
+                            <input type="text" class="form-control" id="suffix" name="suffix" value="{{ $profile->suffix }}">
                         </div>
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email"
-                                value="{{ $profile->email }}" readonly>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ $profile->email }}" readonly>
                         </div>
                     </form>
                 </div>
@@ -160,5 +178,4 @@
         });
     });
 </script>
-
 @include('templates.studentfooter')

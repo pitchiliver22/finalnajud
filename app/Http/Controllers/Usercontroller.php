@@ -8,6 +8,7 @@ use App\Models\classes;
 use App\Models\grade;
 use App\Models\payment_form;
 use App\Models\previous_school;
+use App\Models\QuarterSettings;
 use App\Models\register_form;
 use App\Models\required_docs;
 use App\Models\section;
@@ -268,18 +269,22 @@ class Usercontroller extends Controller
         return view('update_class', compact('classes'));
     }
     public function teacherclassload()
-    {
-        $userId = Auth::id();
+{
+    $user = Auth::user(); // Get the authenticated user
+    $fullName = trim("{$user->firstname} {$user->middlename} {$user->lastname}"); // Create the full name
 
-        $classes = assign::all();
-        $proof = payment_form::where('payment_id', $userId)->firstOrFail();
+    // Get all classes from the 'assign' table
+    $classes = assign::where('adviser', $fullName)->get(); // Fetch classes where adviser matches full name
 
-        return view('teacherclassload', [
-            'title' => 'Teacher Class Load',
-            'classes' => $classes,
-            'proof' => $proof
-        ]);
-    }
+    // Get all payment records from the 'payment_form' table
+    $proofs = payment_form::whereNotNull('level')->get(); // Fetch all records with a level
+
+    return view('teacherclassload', [
+        'title' => 'Teacher Class Load',
+        'classes' => $classes,
+        'proofs' => $proofs // Pass all proofs to the view
+    ]);
+}
 
     public function publishgrade($id)
     {
@@ -340,30 +345,53 @@ class Usercontroller extends Controller
 
     public function gradesubmit($id)
     {
-
-        $assign = assign::findOrFail($id);
-
-
-        $paymentForm = Payment_form::where('payment_id', $assign->class_id)->first();
-
-        $student = Register_form::findOrFail($assign->class_id); // Assuming student_id is a foreign key in assign table
-
-
+        $assign = Assign::findOrFail($id);
+        $paymentForm = payment_form::where('payment_id', $assign->class_id)->first();
+        $student = register_form::findOrFail($assign->class_id);
+        
+        // Fetch the full name of the student
         $fullName = "{$student->firstname} {$student->middlename} {$student->lastname}";
-
+        
+        // Fetch the grade if it exists
+        $grade = grade::where('grade_id', $assign->id)->first();
+        
+        // Fetch the latest quarter settings
+        $quartersEnabled = QuarterSettings::first();
+        
+        // Prepare the quarters enabled array
+        $quartersEnabledArray = [
+            '1st_quarter' => $quartersEnabled->first_quarter_enabled ?? false,
+            '2nd_quarter' => $quartersEnabled->second_quarter_enabled ?? false,
+            '3rd_quarter' => $quartersEnabled->third_quarter_enabled ?? false,
+            '4th_quarter' => $quartersEnabled->fourth_quarter_enabled ?? false,
+        ];
+    
+        // Prepare the quarters status array
+        $quartersStatusArray = [
+            '1st_quarter' => $quartersEnabled->first_quarter_status ?? 'inactive',
+            '2nd_quarter' => $quartersEnabled->second_quarter_status ?? 'inactive',
+            '3rd_quarter' => $quartersEnabled->third_quarter_status ?? 'inactive',
+            '4th_quarter' => $quartersEnabled->fourth_quarter_status ?? 'inactive',
+        ];
+        
         return view('gradesubmit', [
             'assign' => $assign,
             'paymentForm' => $paymentForm,
             'fullName' => $fullName,
-            'edpcode' => $assign->edpcode, // Assuming this is how you access the EDP code
-            'subject' => $assign->subject, // Assuming this is how you access the subject
-            'section' => $assign->section
+            'edpcode' => $assign->edpcode,
+            'subject' => $assign->subject,
+            'section' => $assign->section,
+            'grade' => $grade,
+            'quartersEnabled' => $quartersEnabledArray,
+            'quartersStatus' => $quartersStatusArray, // Pass the status array to the view
         ]);
-}
+    }
     public function submittedgrades()
     {
         return view('submittedgrades');
     }
+
+   
 
     public function teachercorevalue() {}
 

@@ -91,7 +91,7 @@
         <div class="image-placeholder">
             <img src="https://cdn.dribbble.com/users/168771/screenshots/6457502/red_hat_4x.png" alt="Red Hat Logo">
         </div>
-        <h2>Your account is currently pending approval. We appreciate your patience as we work to get you set up!</h2>
+        <h2>Your account is currently on pending approval. We appreciate your patience as we work to get you set up!</h2>
         <h3>Best regards,<br>RedHat Team</h3>
     </div>
 </body>

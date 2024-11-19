@@ -22,7 +22,8 @@ return new class extends Migration
             $table->text('description');
             $table->string('type')->nullable();
             $table->string('unit');
-            $table->string('time');
+            $table->string('startTime');
+            $table->string('endTime');
             $table->string('days');
             $table->string('status')->nullable();
             $table->unsignedBigInteger('class_id');

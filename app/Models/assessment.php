@@ -15,7 +15,7 @@ class assessment extends Model
         'assessment_name',
         'description',
         'assessment_date',
-        'assessmen_time',
+        'assessment_time',
         'assessment_fee',
     ];
 }

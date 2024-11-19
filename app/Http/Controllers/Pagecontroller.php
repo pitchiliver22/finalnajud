@@ -171,7 +171,20 @@ class Pagecontroller extends Controller
     }
     public function teacherclassload()
     {
-        return view('teacherclassload');
+        $user = Auth::user(); // Get the authenticated user
+        $fullName = trim("{$user->firstname} {$user->middlename} {$user->lastname}"); // Create the full name
+    
+        // Get all classes from the 'assign' table
+        $classes = assign::where('adviser', $fullName)->get(); // Fetch classes where adviser matches full name
+    
+        // Get all payment records from the 'payment_form' table
+        $proofs = payment_form::whereNotNull('level')->get(); // Fetch all records with a level
+    
+        return view('teacherclassload', [
+            'title' => 'Teacher Class Load',
+            'classes' => $classes,
+            'proofs' => $proofs // Pass all proofs to the view
+        ]);
     }
     public function gradesubmit()
     {
@@ -221,19 +234,36 @@ class Pagecontroller extends Controller
         return view('principalclassload', compact('class', 'teachers', 'section'));
     }
 
-    public function submittedgrades()
-    {
-        $assigns = assign::all();
-        $grades = grade::all();
+    public function submittedgrades(Request $request)
+{
+    // Fetch all assignments
+    $assigns = assign::all();
 
-        $data = [
-            'title' => 'Submitted Grades',
-            'assigns' => $assigns,
-            'grades' => $grades
-        ];
+    // Fetch all grades related to assignments
+    $grades = grade::all();
 
-        return view('submittedgrades', $data);
+    // Optional: Handle search functionality
+    if ($request->has('search') && $request->search != '') {
+        $searchTerm = $request->search;
+
+        // Filter assignments based on search criteria
+        $assigns = $assigns->filter(function ($assign) use ($searchTerm) {
+            return stripos($assign->subject, $searchTerm) !== false ||
+                   stripos($assign->adviser, $searchTerm) !== false ||
+                   stripos($assign->section, $searchTerm) !== false;
+        });
     }
+
+    $data = [
+        'title' => 'Submitted Grades',
+        'assigns' => $assigns,
+        'grades' => $grades
+    ];
+
+    return view('submittedgrades', $data);
+}
+    
+    
 
     public function publishgrade()
     {
@@ -250,9 +280,9 @@ class Pagecontroller extends Controller
     {
         return view('accountingassessment');
     }
-    public function createassessmet()
+    public function createassessment()
     {
-        return view('createassessmet');
+        return view('createassessment');
     }
     public function accountingprofile()
     {

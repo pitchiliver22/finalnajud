@@ -54,7 +54,7 @@
                             <td class="text-center">{{ $class->description }}</td>
                             <td class="text-center">{{ $class->type }}</td>
                             <td class="text-center">{{ $class->unit }}</td>
-                            <td class="text-center">{{ $class->time }}</td>
+                            <td class="text-center">{{ date('h:i A', strtotime($class->startTime)) }} - {{ date('h:i A', strtotime($class->endTime)) }}</td>
                             <td class="text-center">{{ $class->days }}</td>
                         </tr>
                     @endforeach

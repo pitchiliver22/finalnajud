@@ -13,7 +13,6 @@
             @csrf
             <div class="fee-list">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4>Approved Students</h4>
                     <div class="d-flex">
                         <div class="input-group mr-3">
                             <input type="text" class="form-control" placeholder="Search..." aria-label="Search"

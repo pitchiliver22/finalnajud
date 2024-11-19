@@ -129,7 +129,7 @@
             <thead>
                 <tr>
                     <th>Year Level</th>
-                    <th>Teacher</th>
+                  
                     <th>Section</th>
                     <th>Status</th>
                 </tr>
@@ -144,7 +144,7 @@
                 @endphp
                             <tr onclick="redirectToSection('{{ $class->id }}', '{{ $class->section }}', '{{ $proof->id }}')">
                                 <td>{{ $class->grade }}</td>
-                                <td>{{ $class->adviser }}</td>
+                               
                                 <td>{{ $class->section }}</td>
                                 <td>Active</td>
                             </tr>

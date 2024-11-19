@@ -192,7 +192,7 @@
                     <tr>
                         <th style="display: none;">Select</th>
                         <th style="display: none;">Year Level</th>
-                        <th style="display: none;">Teacher</th>
+                        <th>Teacher</th>
                         <th style="display: none;">Section</th>
                         <th>EDP Code</th>
                         <th>Subject</th>
@@ -213,7 +213,7 @@
                                     <input type="checkbox" name="selected_classes[]" value="{{ $class->edpcode }}" checked style="display: none;">
                                 </td>
                                 <td style="display: none;">{{ $class->grade }}</td>
-                                <td style="display: none;">{{ $class->adviser }}</td>
+                                <td >{{ $class->adviser }}</td>
                                 <td style="display: none;">{{ $class->section }}</td>
                                 <td>{{ $class->edpcode }}</td>
                                 <td>{{ $class->subject }}</td>
@@ -221,7 +221,7 @@
                                 <td>{{ $class->type }}</td>
                                 <td>{{ $class->unit }}</td>
                                 <td>{{ $class->days }}</td>
-                                <td>{{ $class->time }}</td>
+                                <td>{{ date('h:i A', strtotime($class->startTime)) }} - {{ date('h:i A', strtotime($class->endTime)) }}</td>
                                 <td>{{ $class->room }}</td>
                                 <td>Active</td>
                             </tr>

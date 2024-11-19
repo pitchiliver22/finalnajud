@@ -28,7 +28,10 @@
                     <table class="table table-striped" id="studentTable">
                         <thead>
                             <tr>
-                                <th>Select</th>
+                                <th>
+                                    <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)">
+                                    <label for="selectAll" style="margin-left: 5px;">Select All</label>
+                                </th>
                                 <th>Status</th>
                                 <th>Last Name</th>
                                 <th>First Name</th>
@@ -49,7 +52,7 @@
                                 @if ($payment && $status === 'pending') <!-- Only show pending payments -->
                                     <tr>
                                         <td>
-                                            <input type="checkbox" name="payments[]" value="{{ $payment->id }}">
+                                            <input type="checkbox" name="payments[]" value="{{ $payment->id }}" class="paymentCheckbox">
                                         </td>
                                         <td>{{ $status }}</td>
                                         <td>{{ $student->lastname }}</td>
@@ -109,6 +112,13 @@
             // Show or hide the row based on whether it matches the search
             tr[i].style.display = rowVisible ? '' : 'none';
         }
+    }
+
+    function toggleSelectAll(selectAllCheckbox) {
+        const checkboxes = document.querySelectorAll('.paymentCheckbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
     }
 </script>
 

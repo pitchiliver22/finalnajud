@@ -94,7 +94,7 @@
                                     @if ($studentDetail->status === 'approved')
                                         <span class="badge bg-success rounded-pill" aria-label="Status: Completed">Completed</span>
                                     @else
-                                        <a href="{{ route('updatedetails', ['id' => $studentDetail->details_id]) }}" 
+                                        <a href="{{ route('updatedetails.id', ['id' => $studentDetail->details_id]) }}" 
                                         class="btn btn-primary mt-3 rounded-pill updateInfoBtn"
                                         aria-label="Confirm Information for Student ID {{ $studentDetail->details_id }}">
                                         Confirm Information
@@ -120,7 +120,7 @@
                                         <span class="badge bg-success rounded-pill"
                                             aria-label="Status: Completed">Completed</span>
                                     @else
-                                        <a href="{{ route('updateaddress', ['id' => $address_id]) }}"
+                                        <a href="{{ route('updateaddress.id', ['id' => $address_id]) }}"
                                             class="btn btn-primary mt-3 rounded-pill updateInfoBtn"
                                             data-url="updateaddress"
                                             aria-label="Confirm Information for Student ID {{ $address_id }}">
@@ -144,7 +144,7 @@
                                     @if ($previousSchool && $previousSchool->status === 'approved')
                                         <span class="badge bg-success rounded-pill" aria-label="Status: Completed">Completed</span>
                                     @else
-                                        <a href="{{ route('updateschool', ['id' => $school_id]) }}" 
+                                        <a href="{{ route('updateschool.id', ['id' => $school_id]) }}" 
    class="btn btn-primary mt-3 rounded-pill updateInfoBtn"
    aria-label="Confirm Information for School ID {{ $school_id }}">
     Confirm Information
@@ -168,7 +168,7 @@
                                     <span class="badge bg-success rounded-pill" aria-label="Status: Completed">Completed</span>
                                 @else
                                 
-                                    <a href="{{ route('updatedocuments', ['id' => $required_id]) }}"
+                                    <a href="{{ route('updatedocuments.id', ['id' => $required_id]) }}"
                                         class="btn btn-primary mt-3 rounded-pill updateInfoBtn"
                                         data-url="updatedocuments"
                                         aria-label="Confirm Information for Student ID {{ $required_id }}">
@@ -242,7 +242,6 @@
                             </div>
                         </li>
                     </ol>
-                    <a href="#" class="btn btn-primary mt-3">Review Submitted Details</a>
                 </form>
             </div>
         </div>

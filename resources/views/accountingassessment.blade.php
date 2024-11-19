@@ -12,7 +12,7 @@
     <form action="/accountingassessment" method="GET">
         <div class="row">
             <div class="col">
-                <a href="/createassessmet"><button class="btn btn-primary" type="button">Create Assessment</button></a>
+                <a href="/createassessment"><button class="btn btn-primary" type="button">Create Assessment</button></a>
                 <button class="btn btn-secondary">Edit Assessment</button>
                 <button class="btn btn-danger">Delete Assessment</button>
             </div>
