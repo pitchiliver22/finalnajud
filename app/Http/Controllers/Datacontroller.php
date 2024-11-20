@@ -1166,34 +1166,46 @@ public function showEvaluateGrades()
     }
 
     public function gradesubmitpost(Request $request)
-    {
-        try {
-            // Validate the incoming request data
-            $validateData = $request->validate([
-                'fullname' => 'required',
-                'section' => 'required',
-                'edp_code' => 'required',
-                'subject' => 'required',
-                '1st_quarter' => 'required',
-                '2nd_quarter' => 'required',
-                '3rd_quarter' => 'required',
-                '4th_quarter' => 'required',
-                'overall_grade' => 'required',
-                'payment_id' => 'required|integer' // Validate payment_id
-            ]);
+{
+    try {
+        // Validate the incoming request data
+        $validateData = $request->validate([
+            'edp_code' => 'required',
+            'subject' => 'required',
+            'grade_id' => 'required|integer',
+            'fullname' => 'required',
+            'section' => 'required',
+            '1st_quarter' => 'nullable|numeric|min:0|max:100',
+            '2nd_quarter' => 'nullable|numeric|min:0|max:100',
+            '3rd_quarter' => 'nullable|numeric|min:0|max:100',
+            '4th_quarter' => 'nullable|numeric|min:0|max:100',
+            'overall_grade' => 'required|numeric|min:0|max:100'
+        ]);
 
-            $validateData['status'] = 'pending'; // Set status here
-            $validateData['grade_id'] = $request->input('payment_id'); // Set grade_id from payment_id
+        // Prepare the data for insertion
+        $gradesData = [
+            'edp_code' => $validateData['edp_code'],
+            'subject' => $validateData['subject'],
+            'fullname' => $validateData['fullname'],
+            'section' => $validateData['section'],
+            '1st_quarter' => $validateData['1st_quarter'] ?? null,
+            '2nd_quarter' => $validateData['2nd_quarter'] ?? null,
+            '3rd_quarter' => $validateData['3rd_quarter'] ?? null,
+            '4th_quarter' => $validateData['4th_quarter'] ?? null,
+            'overall_grade' => $validateData['overall_grade'],
+            'status' => 'pending'
+        ];
 
-            // Create the grade entry
-            grade::create($validateData);
+        // Create the grade entry
+        grade::create($gradesData);
 
-            return redirect('/gradesubmit')->with('success', 'Student Grade submitted successfully.');
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return redirect('/gradesubmit')->with('error', 'Failed to submit grade.');
-        }
+        return redirect('/gradesubmit')->with('success', 'Student Grade submitted successfully.');
+    } catch (\Exception $e) {
+        Log::error($e->getMessage());
+
+        return redirect()->back()->withInput()->withErrors(['Failed to submit grade: ' . $e->getMessage()]);
     }
+}
     public function publish($id)
     {
         $grades = grade::findOrFail($id);

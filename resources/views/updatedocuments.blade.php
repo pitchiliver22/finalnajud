@@ -26,20 +26,8 @@
             cursor: pointer;
         }
 
-        .delete-button {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: red;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
         #image-modal {
             display: none;
-            /* Hidden by default */
             position: fixed;
             top: 0;
             left: 0;
@@ -58,14 +46,8 @@
             height: auto;
         }
 
-        #selected-image img {
-            margin: 5px;
+        .document-card {
             cursor: pointer;
-        }
-
-        #image-modal.open {
-            display: flex;
-            /* Show modal when open */
         }
     </style>
 </head>
@@ -91,26 +73,29 @@
             </div>
             <input type="hidden" id="required_id" name="required_id" value="{{ $registerForm->id }}">
             <div id="additional-uploads"></div>
-            <button type="button" class="btn btn-secondary mb-2" onclick="addAnotherUpload()">Add Another
-                Upload</button>
+            <button type="button" class="btn btn-secondary mb-2" onclick="addAnotherUpload()">Add Another Upload</button>
             <button type="submit" name="submit" class="btn btn-success" id="submit-button">Upload</button>
         </div>
 
         <div class="upload-container mb-4 p-4 border rounded bg-light shadow-sm">
             <h2 class="mb-3">Uploaded Documents</h2>
-            <label for="document-type" class="form-label">Select Document Type</label>
-            <select id="document-type" class="form-select" onchange="showImageByType()">
-                <option value="" disabled selected>Select document type</option>
-                <option value="2x2 ID Picture">2x2 ID Picture</option>
-                <option value="Birth Certificate">Birth Certificate</option>
-                <option value="LCR">Local Civil Registrar (LCR)</option>
-                <option value="ESC Grantee Certificate">ESC Grantee Certificate</option>
-                <option value="Other">Other</option>
-            </select>
-            <div id="selected-image-container" class="text-center my-4">
-                <p>Selected Document:</p>
-                <div id="selected-image" class="d-flex justify-content-center flex-wrap"></div>
-            </div>
+            @if ($docs && count($docs) > 0)
+                <div class="row">
+                    @foreach ($docs as $doc)
+                        <div class="col-md-4 mb-3">
+                            <div class="card text-center document-card" onclick="openModal('{{ asset('storage/' . $doc->documents) }}')">
+                                <div class="card-body">
+                                    <p><strong>Type:</strong> {{ $doc->type }}</p>
+                                    <img src="{{ asset('storage/' . $doc->documents) }}"
+                                        alt="{{ $doc->documents }}" class="img-fluid document-img">
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <p>No required documents available.</p>
+            @endif
         </div>
 
         <!-- Modal for enlarged image -->
@@ -129,47 +114,19 @@
         </div>
 
         <button type="submit" name="done" class="btn btn-success" id="done-button">Done</button>
-        </form>
+    </form>
 
     <script>
-        const imagesData = @json($docs); // Assuming you pass the $docs variable to the view
-
         function openModal(imageSrc) {
             const modal = document.getElementById('image-modal');
             const modalImage = document.getElementById('modal-image');
             modalImage.src = imageSrc;
-            modal.classList.add('open'); // Add class to open modal
+            modal.style.display = 'flex'; // Use flex to open modal
         }
 
         function closeModal() {
             const modal = document.getElementById('image-modal');
-            modal.classList.remove('open'); // Remove class to close modal
-        }
-
-        function showImageByType() {
-            const selectedType = document.getElementById('document-type').value;
-            const selectedImageContainer = document.getElementById('selected-image');
-            selectedImageContainer.innerHTML = '';
-
-            const filteredImages = imagesData.filter(doc => doc.type === selectedType && doc.documents.match(
-                /\.(jpg|jpeg|png)$/));
-
-            if (filteredImages.length > 0) {
-                filteredImages.forEach(doc => {
-                    const img = document.createElement('img');
-                    img.src = `/storage/${doc.documents}`;
-                    img.style.width = '300px';
-                    img.style.height = '300px';
-                    img.classList.add('img-thumbnail', 'm-2');
-                    img.onclick = function() {
-                        openModal(img.src);
-                    };
-
-                    selectedImageContainer.appendChild(img);
-                });
-            } else {
-                selectedImageContainer.innerHTML = '<p class="text-muted">No image available for this type.</p>';
-            }
+            modal.style.display = 'none'; // Hide modal
         }
 
         function addAnotherUpload() {

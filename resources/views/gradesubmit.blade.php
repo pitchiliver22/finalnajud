@@ -11,14 +11,14 @@
     <div class="container" style="width: 80%; height: auto; border: 1px solid #ccc; padding: 20px;">
         <form action="/gradesubmit" method="POST">
             @csrf
-            <input type="hidden" name="edp_code" value="{{ $edpcode }}">
-            <input type="hidden" name="subject" value="{{ $subject }}">
-            <input type="hidden" name="fullname" value="{{ $fullName }}">
-            <input type="hidden" name="section" value="{{ $section }}">
-            <input type="hidden" name="payment_id" value="{{ $paymentForm->payment_id ?? '' }}">
+            <input type="hidden" name="edp_code" value="{{ old('edp_code', $edpcode) }}">
+            <input type="hidden" name="subject" value="{{ old('subject', $subject) }}">
+            <input type="hidden" name="grade_id" value="{{ old('payment_id', $paymentForm->payment_id ?? '') }}">
+            <input type="hidden" name="fullname" value="{{ old('fullname', $fullName) }}">
+            <input type="hidden" name="section" value="{{ old('section', $assign->section) }}">
 
             <div class="fee-list">
-                <h4>STUDENT GRADES</h4>
+                <h4>STUDENT GRADES</h4>     
                 <div class="table-responsive">
                     <table class="table table-striped" id="student-table">
                         <thead>
@@ -28,22 +28,14 @@
                                 <th>Edpcode</th>
                                 <th>Subject</th>
                                 <th>Grade Level</th>
-                                @if ($quartersEnabled['1st_quarter'])
-                                    <th>1st Quarter</th>
-                                @endif
-                                @if ($quartersEnabled['2nd_quarter'])
-                                    <th>2nd Quarter</th>
-                                @endif
-                                @if ($quartersEnabled['3rd_quarter'])
-                                    <th>3rd Quarter</th>
-                                @endif
-                                @if ($quartersEnabled['4th_quarter'])
-                                    <th>4th Quarter</th>
-                                @endif
+                                @if ($quartersEnabled['1st_quarter']) <th>1st Quarter</th> @endif
+                                @if ($quartersEnabled['2nd_quarter']) <th>2nd Quarter</th> @endif
+                                @if ($quartersEnabled['3rd_quarter']) <th>3rd Quarter</th> @endif
+                                @if ($quartersEnabled['4th_quarter']) <th>4th Quarter</th> @endif
                                 <th>Overall Grade</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="student-rows">
                             <tr>
                                 <td>{{ $fullName }}</td>
                                 <td>{{ $assign->section }}</td>
@@ -54,15 +46,13 @@
                                 @foreach (['1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter'] as $quarter)
                                     @if ($quartersEnabled[$quarter])
                                         <td>
-                                            <input type="number" class="form-control" name="{{ $quarter }}" min="0" max="100" step="0.01" 
-                                                required oninput="calculateOverall()"
-                                                {{ $quartersStatus[$quarter] === 'inactive' }}>
+                                            <input type="number" class="form-control" name="{{ $quarter }}" value="{{ old($quarter) }}" min="0" max="100" step="0.01" oninput="calculateOverall(this)" required>
                                         </td>
                                     @endif
                                 @endforeach
 
                                 <td>
-                                    <input type="number" class="form-control" name="overall_grade" min="0" max="100" step="0.01" required readonly>
+                                    <input type="number" class="form-control" name="overall_grade" value="{{ old('overall_grade') }}" min="0" max="100" step="0.01" readonly>
                                 </td>
                             </tr>
                         </tbody>
@@ -78,16 +68,20 @@
 </div>
 
 <script>
-    function calculateOverall() {
-        const firstQuarter = parseFloat(document.querySelector('input[name="1st_quarter"]').value) || 0;
-        const secondQuarter = parseFloat(document.querySelector('input[name="2nd_quarter"]').value) || 0;
-        const thirdQuarter = parseFloat(document.querySelector('input[name="3rd_quarter"]').value) || 0;
-        const fourthQuarter = parseFloat(document.querySelector('input[name="4th_quarter"]').value) || 0;
+    function calculateOverall(row) {
+        const quarterInputs = row.closest('tr').querySelectorAll('input[type="number"]');
+        let total = 0;
+        let count = 0;
 
-        const overallGrade = (firstQuarter + secondQuarter + thirdQuarter + fourthQuarter) / 
-            ([firstQuarter, secondQuarter, thirdQuarter, fourthQuarter].filter(x => x > 0).length || 1);
+        quarterInputs.forEach(input => {
+            if (input.value) {
+                total += parseFloat(input.value);
+                count++;
+            }
+        });
 
-        document.querySelector('input[name="overall_grade"]').value = overallGrade.toFixed(2);
+        const overallGrade = count ? (total / count) : 0;
+        row.closest('tr').querySelector('input[name="overall_grade"]').value = overallGrade.toFixed(2);
     }
 </script>
 
