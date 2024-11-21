@@ -90,10 +90,16 @@
             display: inline-block;
             margin-left: 10px;
         }
+
+        .requirements {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            background-color: #e9f7ff;
+        }
     </style>
 </head>
-
-
 
 <body>
     <div class="upload-container">
@@ -108,109 +114,131 @@
         <form action="/required_documents" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="file-input">
+                <label for="student-type">Select Student Type</label>
+                <select id="student-type" name="student_type" onchange="showRequirements()" required>
+                    <option value="" disabled selected>Select student type</option>
+                    <option value="New Students">New Students</option>
+                    <option value="Nursery">Nursery</option>
+                    <option value="Old & Returnee Students">Old & Returnee Students</option>
+                    <option value="Transferee Students">Transferee Students</option>
+                </select>
+            </div>
+
+            <div class="requirements" id="requirements" style="display: none;"></div>
+
+            <div class="file-input">
                 <label for="document-upload">Select Document</label>
                 <select name="type[]" required>
                     <option value="" disabled selected>Select document type</option>
-                    <option value="2x2 ID Picture">2x2 ID Picture</option>
-                    <option value="Birth Certificate">Birth Certificate</option>
-                    <option value="LCR">Local Civil Registrar (LCR)</option>
-                    <option value="ESC Grantee Certificate">ESC Grantee Certificate</option>
+                    <option value="F-138A or Report Card">F-138A or Report Card</option>
+                    <option value="Certificate of Good Moral Character">Certificate of Good Moral Character</option>
+                    <option value="Birth Certificate in Security Paper(NSO)">Birth Certificate in Security Paper(NSO)</option>
+                    <option value="Medical Certificate">Medical Certificate</option>
+                    <option value="2 pcs of latest and 2x2 colored picture">2 pcs of latest and 2x2 colored picture</option>
                     <option value="Other">Other</option>
                 </select>
                 <input type="file" name="documents[]" accept=".pdf,.jpg,.png" required>
                 <div class="error-message" id="file-error"></div>
             </div>
+
+
             <input type="hidden" id="required_id" name="required_id" value="{{ $registerForm->id }}">
             <div id="additional-uploads"></div>
             <button type="button" class="add-upload-button" onclick="addAnotherUpload()">Add Another Upload</button>
             <button type="submit" name="submit" class="btn btn-success" id="submit-button">Upload</button>
-
         </form>
     </div>
 
     <script>
-        function validateAndSubmit() {
-            const form = document.querySelector('form');
-            const formData = new FormData(form);
-            const fileError = document.getElementById('file-error');
-            fileError.textContent = '';
+        function showRequirements() {
+            const studentType = document.getElementById('student-type').value;
+            const requirementsDiv = document.getElementById('requirements');
+            let requirementsText = '';
 
-            // Check if at least one file is selected
-            if (formData.getAll('documents[]').length === 0) {
-                fileError.textContent = 'Please select at least one file to upload.';
-                return false; // Prevent form submission
+            switch (studentType) {
+                case 'New Students':
+                    requirementsText = `
+                        <strong>Requirements:</strong>
+                        <ul>
+                            <li>F-138A or Report Card</li>
+                            <li>Certificate of Good Moral Character</li>
+                            <li>Birth Certificate in Security Paper (NSO)</li>
+                            <li>Medical Certificate</li>
+                            <li>2 pcs of latest and colored picture</li>
+                        </ul>`;
+                    break;
+                case 'Nursery':
+                    requirementsText = `
+                        <strong>Requirements:</strong>
+                        <ul>
+                            <li>Birth Certificate in Security Paper (NSO)</li>
+                            <li>Medical Certificate</li>
+                            <li>2 pcs of latest and colored picture</li>
+                        </ul>`;
+                    break;
+                case 'Old & Returnee Students':
+                    requirementsText = `
+                        <strong>Requirements:</strong>
+                        <ul>
+                            <li>F-138A or Report Card</li>
+                            <li>Clearance</li>
+                        </ul>`;
+                    break;
+                case 'Transferee Students':
+                    requirementsText = `
+                        <strong>Requirements:</strong>
+                        <ul>
+                            <li>F-138A or Report Card</li>
+                            <li>Certificate of Good Moral Character</li>
+                            <li>Birth Certificate in Security Paper (NSO)</li>
+                            <li>Medical Certificate</li>
+                            <li>2 pcs of latest and colored picture</li>
+                        </ul>`;
+                    break;
+                default:
+                    requirementsText = '';
             }
 
-            // Disable the submit button to prevent multiple submissions
-            document.getElementById('submit-button').disabled = true;
-
-            // Submit the form using AJAX
-            fetch('/required_documents', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-                    },
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => {
-                            throw err.errors;
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    alert(data.message);
-                    // Redirect to payment process after successful upload
-                    window.location.href = '/payment_process';
-                })
-                .catch(errors => {
-                    fileError.textContent = ''; // Clear previous errors
-                    for (let key in errors) {
-                        fileError.textContent += errors[key].join(', ') + ' ';
-                    }
-                    document.getElementById('submit-button').disabled = false; // Re-enable the button
-                });
-
-            return false; // Prevent default form submission
+            requirementsDiv.innerHTML = requirementsText;
+            requirementsDiv.style.display = requirementsText ? 'block' : 'none';
         }
 
         function addAnotherUpload() {
-            const additionalUploads = document.getElementById('additional-uploads');
-            const newUpload = document.createElement('div');
-            newUpload.className = 'file-input';
+    const additionalUploads = document.getElementById('additional-uploads');
+    const newUpload = document.createElement('div');
+    newUpload.className = 'file-input';
 
-            const label = document.createElement('label');
-            label.textContent = 'Select Document';
-            newUpload.appendChild(label);
+    const label = document.createElement('label');
+    label.textContent = 'Select Document';
+    newUpload.appendChild(label);
 
-            const select = document.createElement('select');
-            select.name = 'type[]';
-            select.required = true; // Ensure each new upload has a type
-            select.innerHTML = `
-                <option value="" disabled selected>Select document type</option>
-                <option value="2x2 ID Picture">2x2 ID Picture</option>
-                <option value="Birth Certificate">Birth Certificate</option>
-                <option value="LCR">Local Civil Registrar (LCR)</option>
-                <option value="ESC Grantee Certificate">ESC Grantee Certificate</option>
-                <option value="Other">Other</option>
-            `;
-            newUpload.appendChild(select);
+    const select = document.createElement('select');
+    select.name = 'type[]';
+    select.required = true; // Ensure each new upload has a type
+    select.innerHTML = `
+        <option value="" disabled selected>Select document type</option>
+        <option value="F-138A or Report Card">F-138A or Report Card</option>
+        <option value="Certificate of Good Moral Character">Certificate of Good Moral Character</option>
+        <option value="Birth Certificate in Security Paper(NSO)">Birth Certificate in Security Paper(NSO)</option>
+        <option value="Medical Certificate">Medical Certificate</option>
+        <option value="2 pcs of latest and 2x2 colored picture">2 pcs of latest and 2x2 colored picture</option>
+        <option value="Other">Other</option>
+    `;
+    newUpload.appendChild(select);
 
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.name = 'documents[]';
-            fileInput.accept = '.pdf,.jpg,.png';
-            fileInput.required = true; // Ensure each file input is required
-            newUpload.appendChild(fileInput);
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.name = 'documents[]'; // This allows multiple files to be uploaded
+    fileInput.accept = '.pdf,.jpg,.png';
+    fileInput.required = true; // Ensure each file input is required
+    newUpload.appendChild(fileInput);
 
-            const errorMessage = document.createElement('div');
-            errorMessage.className = 'error-message';
-            newUpload.appendChild(errorMessage);
+    const errorMessage = document.createElement('div');
+    errorMessage.className = 'error-message';
+    newUpload.appendChild(errorMessage);
 
-            additionalUploads.appendChild(newUpload);
-        }
+    additionalUploads.appendChild(newUpload);
+}
     </script>
 </body>
 

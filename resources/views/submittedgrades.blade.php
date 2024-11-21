@@ -1,18 +1,159 @@
 @include('templates.principalheader')
 
+<style>
+    body {
+        background-color: #f7f9fc; /* Light background for better contrast */
+        font-family: Arial, sans-serif;
+    }
+
+    #main {
+        padding: 20px;
+    }
+
+    .w3-teal {
+        background-color: #007bff; /* Teal background */
+        padding: 10px;
+        border-radius: 0.5rem;
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        color: white;
+        margin: 0;
+        font-size: 2.5rem;
+    }
+
+    .container {
+        width: 80%;
+        margin: auto; /* Centering the container */
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 0.5rem;
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px; /* Spacing between sections */
+    }
+
+    h4 {
+        margin-top: 20px;
+        color: #343a40;
+        font-size: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .alert {
+        padding: 15px;
+        background-color: #f9edbe;
+        color: #856404;
+        border: 1px solid #ffeeba;
+        border-radius: 5px;
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-info {
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+    }
+
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked + .slider {
+        background-color: #007bff;
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+
+    .table {
+        margin-top: 20px;
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table th, .table td {
+        padding: 12px;
+        text-align: left;
+    }
+
+    .table th {
+        background-color: #4CAF50;
+        color: white;
+        text-transform: uppercase;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f2f2f2; /* Stripe effect */
+    }
+
+    .table-responsive {
+        overflow-x: auto; /* Allow horizontal scroll */
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+        .container {
+            width: 100%; /* Full width on small screens */
+        }
+    }
+</style>
+
 <div id="main">
     <div class="w3-teal">
         <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <div class="w3-container">
-            <h1>Evaluate Grades</h1>
-        </div>
+        <h1 style="text-align: center;">Evaluate Grades</h1>
     </div>
 
-    <div class="container" style="width: 80%; height: auto; border: 1px solid #ccc; padding: 20px;">
-        <!-- Form to Enable/Disable Quarters -->
+    <!-- Container for Managing Quarters -->
+    <div class="container">
         <form action="{{ route('update.quarters') }}" method="POST">
             @csrf
-            <h4>Enable/Disable Quarters</h4>
+            <h4>Manage Quarter Settings</h4>
         
             @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
@@ -27,33 +168,37 @@
                     </ul>
                 </div>
             @endif
-        
+
             <div class="form-group">
-                <label>
+                <label class="toggle-switch">
                     <input type="checkbox" name="1st_quarter_enabled" value="1" {{ $quartersEnabled['1st_quarter'] ? 'checked' : '' }}>
-                    1st Quarter Enabled
+                    <span class="slider"></span>
                 </label>
+                1st Quarter Enabled
             </div>
         
             <div class="form-group">
-                <label>
+                <label class="toggle-switch">
                     <input type="checkbox" name="2nd_quarter_enabled" value="1" {{ $quartersEnabled['2nd_quarter'] ? 'checked' : '' }}>
-                    2nd Quarter Enabled
+                    <span class="slider"></span>
                 </label>
+                2nd Quarter Enabled
             </div>
         
             <div class="form-group">
-                <label>
+                <label class="toggle-switch">
                     <input type="checkbox" name="3rd_quarter_enabled" value="1" {{ $quartersEnabled['3rd_quarter'] ? 'checked' : '' }}>
-                    3rd Quarter Enabled
+                    <span class="slider"></span>
                 </label>
+                3rd Quarter Enabled
             </div>
         
             <div class="form-group">
-                <label>
+                <label class="toggle-switch">
                     <input type="checkbox" name="4th_quarter_enabled" value="1" {{ $quartersEnabled['4th_quarter'] ? 'checked' : '' }}>
-                    4th Quarter Enabled
+                    <span class="slider"></span>
                 </label>
+                4th Quarter Enabled
             </div>
         
             <div class="form-group">
@@ -67,9 +212,11 @@
         
             <button type="submit" class="btn btn-primary">Update Quarters</button>
         </form>
+    </div>
 
-        <!-- Form for Evaluating Grade Submission -->
-        <h4 class="mt-5">Evaluate Grade Submission</h4>
+    <!-- Container for Evaluating Grade Submission -->
+    <div class="container">
+        <h4>Evaluate Grade Submissions</h4>
         <form action="#" method="GET">
             @csrf
             <div class="d-flex justify-content-between align-items-center mb-3">

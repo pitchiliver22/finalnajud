@@ -90,10 +90,13 @@
                         <option value="married">Married</option>
                     </select>
                 </div>
+
                 <div class="col-md-6">
                     <label for="birthdate" class="form-label">Birth Date *</label>
                     <input type="date" class="form-control" id="birthdate" name="birthdate" required>
+                    <div class="error" id="error" style="color: red; display: none;"></div>
                 </div>
+
                 <div class="col-md-6">
                     <label for="birthplace" class="form-label">Birth Place *</label>
                     <input type="text" class="form-control" id="birthplace" name="birthplace"
@@ -179,6 +182,23 @@
             </div>
         </form>
     </div>
+
+
+
+    <script>
+        document.getElementById('birthdate').addEventListener('change', function() {
+            const birthdateInput = this.value;
+            const birthdateYear = new Date(birthdateInput).getFullYear();
+            const errorDiv = document.getElementById('error');
+    
+            if (birthdateYear >= 2020 && birthdateYear <= 2030) {
+                errorDiv.textContent = 'Error: Birthdate cannot be between 2020 and 2024.';
+                errorDiv.style.display = 'block';
+            } else {
+                errorDiv.style.display = 'none';
+            }
+        });
+    </script>
 
 
 </body>

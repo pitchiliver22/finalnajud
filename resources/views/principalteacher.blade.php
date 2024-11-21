@@ -68,7 +68,7 @@
                     <select class="form-control" id="teacher" name="name" required>
                         <option value="">Select a Teacher</option>
                         @foreach ($teachers as $teacher)
-                            <option value="{{ $teacher['id'] }}" {{ $teacher['assigned'] && old('name') != $teacher['id'] ?  : '' }}>
+                            <option value="{{ $teacher['id'] }}" {{ $teacher['assigned'] && old('name') != $teacher['id'] ? 'disabled' : '' }}>
                                 {{ $teacher['name'] }}
                             </option>
                         @endforeach
@@ -119,8 +119,8 @@
             </form>
             
             <script>
-                    document.getElementById('myForm').onsubmit = function() {
-                    const checkboxes = document.querySelectorAll('input[name="subjects[]"]:checked');
+                document.getElementById('myForm').onsubmit = function() {
+                    const checkboxes = document.querySelectorAll('input[name="subject[]"]:checked');
                     const selectedSubjects = Array.from(checkboxes).map(cb => cb.value);
                     const concatenatedSubjects = selectedSubjects.join(', ');
                     document.getElementById('concatenated_subjects').value = concatenatedSubjects;
@@ -145,3 +145,4 @@
             </script>
 
 @include('templates.principalfooter')
+```

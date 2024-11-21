@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\address;
+use App\Models\assessment;
 use App\Models\assign;
 use App\Models\classes;
 use App\Models\grade;
 use App\Models\payment_form;
 use App\Models\previous_school;
+use App\Models\QuarterSettings;
 use App\Models\register_form;
 use App\Models\required_docs;
 use App\Models\section;
@@ -133,23 +135,26 @@ class Pagecontroller extends Controller
     return view('enrollmentstep', compact('details', 'address', 'previousSchool', 'requiredDocs', 'payment', 'assignStatus'));
 }
 
-    public function studentgrades()
-    {
-        $userId = Auth::id();
+public function studentgrades()
+{
+    // Fetch the authenticated user's ID
+    $userId = Auth::id();
 
-        // Fetch all approved grades for the authenticated user based on the grade_id
-        $grades = Grade::where('grade_id', $userId) // Check if the authenticated user's ID matches the grade_id
-            ->where('status', 'approved') // Only fetch approved grades
-            ->get(['subject', 'edp_code', 'section', '1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter', 'overall_grade']); // Specify the fields you need
+    // Fetch grades for the authenticated user based on grade_id
+    $grades = grade::where('grade_id', $userId) // Match the user's ID with grade_id
+        ->get(['subject', 'edp_code', 'section', '1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter', 'overall_grade']); // Specify the fields you need
 
-        // Check if there are any approved grades
-        $gradesApproved = $grades->isNotEmpty();
+    // Check for approved grades
+    $gradesApproved = $grades->where('status', 'approved')->isNotEmpty();
 
-        return view('studentgrades', [
-            'grades' => $grades, // Pass the collection of approved grades
-            'gradesApproved' => $gradesApproved,
-        ]);
-    }
+    // Filter out only approved grades
+    $approvedGrades = $grades->where('status', 'approved');
+
+    return view('studentgrades', [
+        'grades' => $approvedGrades, // Pass the collection of approved grades
+        'gradesApproved' => $gradesApproved,
+    ]);
+}
 
     public function studentassessment()
     {
@@ -189,21 +194,49 @@ class Pagecontroller extends Controller
     public function gradesubmit()
     {
         $userId = Auth::id();
-        $assign = assign::findOrFail($userId);
-
+        $assign = Assign::findOrFail($userId);
+        $paymentForm = payment_form::where('payment_id', $assign->class_id)->first();
         $student = register_form::findOrFail($assign->class_id);
-
-
+        
+        // Fetch the full name of the student
         $fullName = "{$student->firstname} {$student->middlename} {$student->lastname}";
-
+        
+        // Fetch the grade if it exists
+        $grade = grade::where('grade_id', $assign->id)->first();
+        
+        // Fetch the latest quarter settings
+        $quartersEnabled = QuarterSettings::first();
+        
+        // Prepare the quarters enabled array
+        $quartersEnabledArray = [
+            '1st_quarter' => $quartersEnabled->first_quarter_enabled ?? false,
+            '2nd_quarter' => $quartersEnabled->second_quarter_enabled ?? false,
+            '3rd_quarter' => $quartersEnabled->third_quarter_enabled ?? false,
+            '4th_quarter' => $quartersEnabled->fourth_quarter_enabled ?? false,
+        ];
+    
+        // Prepare the quarters status array
+        $quartersStatusArray = [
+            '1st_quarter' => $quartersEnabled->first_quarter_status ?? 'inactive',
+            '2nd_quarter' => $quartersEnabled->second_quarter_status ?? 'inactive',
+            '3rd_quarter' => $quartersEnabled->third_quarter_status ?? 'inactive',
+            '4th_quarter' => $quartersEnabled->fourth_quarter_status ?? 'inactive',
+        ];
+        
         return view('gradesubmit', [
             'assign' => $assign,
+            'paymentForm' => $paymentForm,
+            'fullName' => $fullName,
             'edpcode' => $assign->edpcode,
             'subject' => $assign->subject,
             'section' => $assign->section,
-            'fullName' => $fullName,
+            'grade' => $grade,
+            'quartersEnabled' => $quartersEnabledArray,
+            'quartersStatus' => $quartersStatusArray, // Pass the status array to the view
         ]);
     }
+
+    
     public function teacherattendance()
     {
         return view('teacherattendance');
@@ -278,8 +311,10 @@ class Pagecontroller extends Controller
 
     public function accountingassessment()
     {
-        return view('accountingassessment');
+        $assessments = assessment::all(); 
+        return view('accountingassessment', compact('assessments'));
     }
+
     public function createassessment()
     {
         return view('createassessment');
@@ -288,7 +323,6 @@ class Pagecontroller extends Controller
     {
         return view('accountingprofile');
     }
-
 
     //record
     public function record()
@@ -302,6 +336,7 @@ class Pagecontroller extends Controller
 
         return view('record', compact('students', 'pendingCount', 'approvedCount'));
     }
+
     public function studententries()
     {
 
@@ -313,43 +348,35 @@ class Pagecontroller extends Controller
         // Pass all datasets to the view
         return view('studententries', compact('studentDetails', 'previousSchools', 'addresses', 'requiredDocs'));
     }
+
     public function showdetails()
     {
         return view('showdetails');
     }
+
     public function studentapplicant()
     {
-
         $account = register_form::where('status', register_form::STATUS_PENDING)->get();
-
         return view('studentapplicant', compact('account'));
     }
 
     public function approvedaccount()
     {
-        // Fetch only approved accounts
         $account = register_form::where('status', 'approved')->get();
-
         return view('approvedaccount', compact('account'));
     }
     public function  recordapproval()
     {
         $account = register_form::all();
-
         return view(' recordapproval', compact('account'));
     }
-
 
     //cashier 
     public function cashier()
     {
-        // Count pending and approved accounts
         $pendingCount = payment_form::where('status', 'pending')->count();
         $approvedCount = payment_form::where('status', 'approved')->count();
-
-        // Fetch student information
-        $students = studentdetails::all(); // You can adjust this to filter or paginate if needed
-
+        $students = studentdetails::all();
         return view('cashier', compact('students', 'pendingCount', 'approvedCount'));
     }
     public function cashieraddfee()
@@ -370,6 +397,16 @@ class Pagecontroller extends Controller
         'payments' => $payments,
     ]);
 }
+
+public function principalassessment()
+{
+    // Fetch the assessments from the database
+    $assessments = Assessment::all(); // You can add any necessary filters or conditions here
+
+    // Pass the assessments to the view
+    return view('principalassessment', compact('assessments'));
+}
+
 public function approvedpayment()
 {
     $students = register_form::where('status', 'approved')->get();

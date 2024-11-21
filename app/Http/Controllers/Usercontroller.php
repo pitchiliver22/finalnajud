@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\address;
+use App\Models\assessment;
 use App\Models\assign;
 use App\Models\classes;
 use App\Models\grade;
@@ -480,5 +481,31 @@ public function deleteSection($id)
     $section->delete();
 
     return redirect()->back()->with('success', 'Section deleted successfully.');
+}
+
+public function publishAssessment($id)
+{
+    // Logic to publish the assessment
+    $assessment = assessment::findOrFail($id);
+    $assessment->status = 'Published'; // Example status change
+    $assessment->save();
+
+    return redirect()->back()->with('success', 'Assessment published successfully.');
+}
+
+public function editAssessment($id)
+{
+    // Logic to show the edit form for the assessment
+    $assessment = assessment::findOrFail($id);
+    return view('editassessment', compact('assessment')); // Adjust view name accordingly
+}
+
+public function deleteAssessment($id)
+{
+    // Logic to delete the assessment
+    $assessment = assessment::findOrFail($id);
+    $assessment->delete();
+
+    return redirect()->back()->with('success', 'Assessment deleted successfully.');
 }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Constants\QuarterStatus;
 use App\Mail\ApprovePayment;
 use App\Mail\ApproveSectioning;
+use App\Mail\AssessmentCreated;
 use App\Models\address;
 use App\Models\assign;
 use App\Models\classes;
@@ -329,49 +330,49 @@ public function address_contactpost(Request $request)
     }
 
     public function required_documents_post(Request $request)
-    {
-        $validateData = $request->validate([
-            'type' => 'required|array',
-            'type.*' => 'string|distinct', // Ensure that each type is unique
-            'documents' => 'required|array',
-            'documents.*' => 'file|max:10240|mimes:jpg,png,pdf',
-            'required_id' => 'required|exists:register_form,id',
-        ]);
+{
+    $validateData = $request->validate([
+        'type' => 'required|array',
+        'type.*' => 'string|distinct', // Ensure that each type is unique
+        'documents' => 'required|array',
+        'documents.*' => 'file|max:10240|mimes:jpg,png,pdf',
+        'required_id' => 'required|exists:register_form,id',
+    ]);
 
-        $validatedData['status'] = 'pending';
+    // Prepare for document upload
+    $uploadedTypes = []; // Track uploaded types
+    $filesUploaded = []; // To track successfully uploaded files
 
-        $uploadedTypes = []; // Track uploaded types
+    foreach ($request->file('documents') as $index => $file) {
+        $docType = $validateData['type'][$index];
 
-        foreach ($request->file('documents') as $index => $file) {
-            $docType = $validateData['type'][$index];
-
-            // Check if this type has already been uploaded
-            if (in_array($docType, $uploadedTypes)) {
-                continue; // Skip if already uploaded
-            }
-
-            $filePath = $file->store('documents', 'public');
-
-            required_docs::create([
-                'type' => $docType,
-                'documents' => $filePath,
-                'required_id' => $validateData['required_id'],
-            ]);
-
-            $uploadedTypes[] = $docType;
+        // Check if this type has already been uploaded
+        if (in_array($docType, $uploadedTypes)) {
+            continue; // Skip if already uploaded
         }
 
-        $user = Auth::user();
-        $registerForm = register_form::where('user_id', $user->id)->first();
-            if ($registerForm->status === register_form::STATUS_APPROVED) {
-                return redirect('/payment_process/' . $registerForm->id)->with('success', 'Required Documents submitted successfully.');
-            } else {
-                // Handle case where status is not approved
-               
-                return redirect('/previous_school')->with('error', 'Your registration is still pending approval.');
-            }
+        $filePath = $file->store('documents', 'public');
 
-           }
+        required_docs::create([
+            'type' => $docType,
+            'documents' => $filePath,
+            'required_id' => $validateData['required_id'],
+        ]);
+
+        $uploadedTypes[] = $docType;
+        $filesUploaded[] = $filePath; // Track uploaded files
+    }
+
+    // Redirect based on registration status
+    $user = Auth::user();
+    $registerForm = register_form::where('user_id', $user->id)->first();
+
+    if ($registerForm->status === register_form::STATUS_APPROVED) {
+        return redirect('/payment_process/' . $registerForm->id)->with('success', 'Required Documents submitted successfully.');
+    } else {
+        return redirect('/previous_school')->with('error', 'Your registration is still pending approval.');
+    }
+}
 
     public function payment_processpost(Request $request)
     {
@@ -941,6 +942,7 @@ public function updateQuarters(Request $request)
 
     return redirect()->back()->with('success', 'Quarter settings updated successfully.');
 }
+
 public function showEvaluateGrades()
 {
     // Fetch the existing quarter settings
@@ -1064,12 +1066,6 @@ public function showEvaluateGrades()
     
                     $anyAssigned = true;
     
-                    // Fetch the user (student) associated with the class
-                    $user = User::find($class->assign_id); // Ensure you have user_id in your class model
-    
-                    if ($user) {
-                        FacadesMail::to($user->email)->send(new ApproveSectioning($user));
-                    }
                 }
             }
         }
@@ -1087,10 +1083,11 @@ public function showEvaluateGrades()
             'selected_classes' => 'required|array',
             'selected_classes.*' => 'string',
             'grade' => 'required|string',
-            'payment_id' => 'required|integer'
+            'payment_id' => 'required|integer',
         ]);
     
         $anyAssigned = false;
+        $user = register_form::find($request->input('payment_id'));
     
         foreach ($request->selected_classes as $classEdpCode) {
             $class = classes::where('edpcode', $classEdpCode)->first();
@@ -1111,8 +1108,8 @@ public function showEvaluateGrades()
                         'description' => $class->description,
                         'type' => $class->type ?? null,
                         'unit' => $class->unit,
-                        'startTime' => $class->startTime, // Insert startTime
-                        'endTime' => $class->endTime,     // Insert endTime
+                        'startTime' => $class->startTime,
+                        'endTime' => $class->endTime,
                         'days' => $class->days,
                         'class_id' => $request->input('payment_id'),
                         'status' => 'assigned',
@@ -1126,12 +1123,14 @@ public function showEvaluateGrades()
                     $class->save();
     
                     $anyAssigned = true;
+    
                 }
             }
         }
     
         if ($anyAssigned) {
-            return redirect('/sectioning')->with('success', 'Classload assigned successfully.');
+            FacadesMail::to($user->email)->send(new ApproveSectioning($user));
+            return redirect('/sectioning')->with('success', 'Classload assigned successfully and email sent.');
         } else {
             return redirect('/sectioning')->with('error', 'No classes were assigned or duplicate entries were avoided.');
         }
@@ -1182,12 +1181,13 @@ public function showEvaluateGrades()
             'overall_grade' => 'required|numeric|min:0|max:100'
         ]);
 
-        // Prepare the data for insertion
+        // Prepare the data for insertion/updating
         $gradesData = [
-            'edp_code' => $validateData['edp_code'],
-            'subject' => $validateData['subject'],
             'fullname' => $validateData['fullname'],
             'section' => $validateData['section'],
+            'edp_code' => $validateData['edp_code'],
+            'subject' => $validateData['subject'],
+            'grade_id' => $validateData['grade_id'],
             '1st_quarter' => $validateData['1st_quarter'] ?? null,
             '2nd_quarter' => $validateData['2nd_quarter'] ?? null,
             '3rd_quarter' => $validateData['3rd_quarter'] ?? null,
@@ -1196,13 +1196,19 @@ public function showEvaluateGrades()
             'status' => 'pending'
         ];
 
-        // Create the grade entry
-        grade::create($gradesData);
+        // Use updateOrCreate
+        Grade::updateOrCreate(
+            [
+                'edp_code' => $validateData['edp_code'], // Unique identifier
+                'subject' => $validateData['subject'],
+                'grade_id' => $validateData['grade_id'],
+            ],
+            $gradesData
+        );
 
-        return redirect('/gradesubmit')->with('success', 'Student Grade submitted successfully.');
+        return redirect()->back()->with('success', 'Student Grade submitted successfully.');
     } catch (\Exception $e) {
         Log::error($e->getMessage());
-
         return redirect()->back()->withInput()->withErrors(['Failed to submit grade: ' . $e->getMessage()]);
     }
 }
@@ -1417,32 +1423,39 @@ public function showEvaluateGrades()
 
     public function assessmentpost(Request $request)
     {
-        // Validate incoming request data
         $validatedData = $request->validate([
             'school_year' => 'required|string',
             'grade_level' => 'required|string',
             'assessment_name' => 'required|string|max:255',
             'description' => 'required|string',
             'assessment_date' => 'required|date',
-            'assessment_time' => 'required|date_format:H:i',
+            'assessment_time' => 'required|date_format:H:i', // Validate as 24-hour format
             'assessment_fee' => 'required|numeric|min:0',
         ]);
     
-        // Create a new assessment record in the database
-        $assessment = new assessment(); // Ensure to use your Assessment model
+        $assessment = new assessment(); 
         $assessment->school_year = $validatedData['school_year'];
         $assessment->grade_level = $validatedData['grade_level'];
         $assessment->assessment_name = $validatedData['assessment_name'];
         $assessment->description = $validatedData['description'];
         $assessment->assessment_date = $validatedData['assessment_date'];
-        $assessment->assessment_time = $validatedData['assessment_time'];
+    
+        $assessment->assessment_time = \Carbon\Carbon::createFromFormat('H:i', $validatedData['assessment_time'])->format('h:i A');
+    
         $assessment->assessment_fee = $validatedData['assessment_fee'];
     
-        // Save the assessment to the database
         $assessment->save();
     
-        // Set a success message in the session
         return redirect()->back()->with('success', 'Assessment created successfully!');
+    }
+
+    public function submitAssessment(Request $request, $assessmentId)
+    {
+        $assessment = Assessment::findOrFail($assessmentId);
+
+        FacadesMail::to('principal@example.com')->send(new AssessmentCreated($assessment));
+
+        return redirect()->back()->with('success', 'Assessment submitted successfully and principal notified!');
     }
 
 

@@ -75,8 +75,9 @@ Route::get('teacherclassload', [Usercontroller::class, 'teacherclassload'])->mid
 
 
 Route::get('gradesubmit', [Pagecontroller::class, 'gradesubmit'])->middleware('auth');
-Route::post('gradesubmit', [Datacontroller::class, 'gradesubmitpost'])->middleware('auth');
+Route::post('/gradesubmit', [Datacontroller::class, 'gradesubmitpost'])->name('gradesubmit');
 Route::get('gradesubmit/{id}', [Usercontroller::class, 'gradesubmit'])->middleware('auth');
+
 
 Route::get('teacherattendance', [Pagecontroller::class, 'teacherattendance'])->middleware('auth');
 Route::get('teachercorevalue', [Pagecontroller::class, 'teachercorevalue'])->middleware('auth');
@@ -92,7 +93,7 @@ Route::get('principalteacher', [Pagecontroller::class, 'principalteacher']);
 Route::get('/principalteacher', [DataController::class, 'showTeachers'])->name('principalteacher');
 Route::post('/principalteacher', [DataController::class, 'teachersubjectpost']);
 
-Route::get('submittedgrades', [Pagecontroller::class, 'submittedgrades']);
+Route::get('/submittedgrades', [Pagecontroller::class, 'submittedgrades'])->name('submittedgrades');
 Route::post('/update-quarters', [Datacontroller::class, 'updateQuarters'])->name('update.quarters');
 Route::get('/submittedgrades', [Datacontroller::class, 'showEvaluateGrades'])->name('evaluate.grades');
 
@@ -127,12 +128,20 @@ Route::get('/update_class/{id}', [UserController::class, 'update_class']);
 Route::put('/update_class/{id}', [Datacontroller::class, 'updateClass'])->name('update_class');
 Route::get('/delete_class/{id}', [UserController::class, 'delete_class']);
 
-
-
-
 Route::get('publishgrade', [Pagecontroller::class, 'publishgrade']);
 Route::get('publishgrade/{id}', [Usercontroller::class, 'publishgrade']);
 Route::post('publishgrade/{id}', [Datacontroller::class, 'publish'])->name('grades.publish');
+
+
+Route::get('principalassessment', [Pagecontroller::class, 'principalassessment']);
+Route::post('/assessment/publish/{id}', [Usercontroller::class, 'publishAssessment'])->name('assessment.publish');
+
+// Route for editing an assessment
+Route::get('/assessment/edit/{id}', [Usercontroller::class, 'editAssessment'])->name('assessment.edit');
+
+// Route for deleting an assessment
+Route::post('/assessment/delete/{id}', [Usercontroller::class, 'deleteAssessment'])->name('assessment.delete');
+
 
 //accounting 
 Route::get('accounting', [Pagecontroller::class, 'accounting']);
@@ -140,9 +149,7 @@ Route::get('accountingprofile', [Pagecontroller::class, 'accountingprofile']);
 Route::get('accountingassessment', [Pagecontroller::class, 'accountingassessment']);
 Route::get('createassessment', [Pagecontroller::class, 'createassessment']);
 Route::post('/createassessment', [Datacontroller::class, 'assessmentpost'])->name('assessment.post');
-
-
-
+Route::post('/assessment/submit/{id}', [DataController::class, 'submitAssessment'])->name('assessment.submit');
 
 //record
 Route::get('record', [Pagecontroller::class, 'record']);

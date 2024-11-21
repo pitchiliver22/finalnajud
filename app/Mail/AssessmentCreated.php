@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\assessment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -9,17 +10,17 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ApproveSectioning extends Mailable
+class AssessmentCreated extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $user;
+    public Assessment $assessment;
     /**
      * Create a new message instance.
      */
-    public function __construct($user)
+    public function __construct(assessment $assessment)
     {
-        $this->user = $user;
+        $this->assessment = $assessment;
     }
 
     /**
@@ -28,18 +29,21 @@ class ApproveSectioning extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Approve Sectioning',
+            subject: 'Assessment Created',
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
+
     public function build()
     {
-        return $this->view('emails.approvesectioning') // Ensure this view exists
-            ->with(['user' => $this->user]);
+        return $this->subject('New Assessment Created')
+                    ->view('emails.assessment_created') // Specify the view
+                    ->with([
+                        'assessment' => $this->assessment,
+                    ]);
     }
+
+
     /**
      * Get the attachments for the message.
      *

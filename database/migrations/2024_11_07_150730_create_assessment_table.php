@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('assessment_name');
             $table->text('description');
             $table->string('assessment_date');
-            $table->string('assessmen_time');
+            $table->string('assessment_time');
             $table->string('assessment_fee');
             $table->timestamps();
         });

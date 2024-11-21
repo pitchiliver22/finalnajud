@@ -1,18 +1,16 @@
-@include('templates.accountingheader')
+@include('templates.principalheader')
 
 <div id="main">
     <div class="w3-teal">
         <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
         <div class="w3-container">
-            <h1>ASSESSMENT</h1>
+            <h1>Assessments Overview</h1>
         </div>
     </div>
 
     <div class="row mb-3">
         <div class="col">
-            <a href="/createassessment" class="btn btn-primary">Create Assessment</a>
-            <button class="btn btn-secondary">Edit Assessment</button>
-            <button class="btn btn-danger">Delete Assessment</button>
+            <h2>List of Created Assessments</h2>
         </div>
     </div>
 
@@ -26,6 +24,7 @@
                 <th>Assessment Date</th>
                 <th>Assessment Time</th>
                 <th>Assessment Fee</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -39,20 +38,29 @@
                     <td>{{ $assessment->assessment_date }}</td>
                     <td>{{ $assessment->assessment_time }}</td>
                     <td>{{ $assessment->assessment_fee }}</td>
+                    <td>{{ $assessment->status }}</td> <!-- Add status column if applicable -->
                     <td>
-                        <form action="{{ route('assessment.submit', $assessment->id) }}" method="POST" class="d-inline">
+                        <form action="{{ route('assessment.publish', $assessment->id) }}" method="POST" class="d-inline">
                             @csrf
-                            <button type="submit" class="btn btn-success">Submit Assessment</button>
+                            <button type="submit" class="btn btn-primary">Publish</button>
+                        </form>
+                        <form action="{{ route('assessment.edit', $assessment->id) }}" method="GET" class="d-inline">
+                            <button type="submit" class="btn btn-secondary">Edit</button>
+                        </form>
+                        <form action="{{ route('assessment.delete', $assessment->id) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Delete</button>
                         </form>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="text-center">No assessments found.</td>
+                    <td colspan="9" class="text-center">No assessments found.</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
 </div>
 
-@include('templates.accountingfooter')
+@include('templates.principalfooter')

@@ -7,16 +7,25 @@
             <h1>TEACHER GRADE SUBMISSION</h1>
         </div>
     </div>
-
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
     <div class="container" style="width: 80%; height: auto; border: 1px solid #ccc; padding: 20px;">
-        <form action="/gradesubmit" method="POST">
+        <form action="{{ route('gradesubmit') }}" method="POST">
             @csrf
             <input type="hidden" name="edp_code" value="{{ old('edp_code', $edpcode) }}">
             <input type="hidden" name="subject" value="{{ old('subject', $subject) }}">
             <input type="hidden" name="grade_id" value="{{ old('payment_id', $paymentForm->payment_id ?? '') }}">
             <input type="hidden" name="fullname" value="{{ old('fullname', $fullName) }}">
             <input type="hidden" name="section" value="{{ old('section', $assign->section) }}">
-
+        
+            <!-- Student Grades Table -->
             <div class="fee-list">
                 <h4>STUDENT GRADES</h4>     
                 <div class="table-responsive">
@@ -28,10 +37,9 @@
                                 <th>Edpcode</th>
                                 <th>Subject</th>
                                 <th>Grade Level</th>
-                                @if ($quartersEnabled['1st_quarter']) <th>1st Quarter</th> @endif
-                                @if ($quartersEnabled['2nd_quarter']) <th>2nd Quarter</th> @endif
-                                @if ($quartersEnabled['3rd_quarter']) <th>3rd Quarter</th> @endif
-                                @if ($quartersEnabled['4th_quarter']) <th>4th Quarter</th> @endif
+                                @foreach (['1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter'] as $quarter)
+                                    @if ($quartersEnabled[$quarter]) <th>{{ ucfirst(str_replace('_', ' ', $quarter)) }}</th> @endif
+                                @endforeach
                                 <th>Overall Grade</th>
                             </tr>
                         </thead>
@@ -42,7 +50,6 @@
                                 <td>{{ $edpcode }}</td>
                                 <td>{{ $subject }}</td>
                                 <td>{{ $paymentForm->level ?? 'N/A' }}</td>
-
                                 @foreach (['1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter'] as $quarter)
                                     @if ($quartersEnabled[$quarter])
                                         <td>
@@ -50,7 +57,6 @@
                                         </td>
                                     @endif
                                 @endforeach
-
                                 <td>
                                     <input type="number" class="form-control" name="overall_grade" value="{{ old('overall_grade') }}" min="0" max="100" step="0.01" readonly>
                                 </td>
@@ -59,7 +65,7 @@
                     </table>
                 </div>
             </div>
-
+        
             <div class="text-center">
                 <button type="submit" name="submit" class="btn btn-danger btn-lg">Submit Grades</button>
             </div>
@@ -83,6 +89,7 @@
         const overallGrade = count ? (total / count) : 0;
         row.closest('tr').querySelector('input[name="overall_grade"]').value = overallGrade.toFixed(2);
     }
+ 
 </script>
 
 @include('templates.teacherfooter')
