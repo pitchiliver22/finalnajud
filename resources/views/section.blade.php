@@ -175,12 +175,14 @@
             @csrf
             <input type="hidden" name="grade" value="{{ $proof->level }}">
             <input type="hidden" name="payment_id" value="{{ $proof->id }}">
+            
             <div class="info-row">
                 <div>
                     <span class="label">Name:</span> {{ $students->firstname }} {{ $students->middlename }} {{ $students->lastname }} {{ $students->suffix }}
                 </div>
                 <div><span class="label">1st Semester S.Y. 2024 - 2025</span></div>
             </div>
+
             <div class="info-row">
                 <div><span class="label">Year Level:</span> {{ $proof->level }}</div>
             </div>
@@ -191,9 +193,7 @@
                 <thead>
                     <tr>
                         <th style="display: none;">Select</th>
-                        <th style="display: none;">Year Level</th>
                         <th>Teacher</th>
-                        <th style="display: none;">Section</th>
                         <th>EDP Code</th>
                         <th>Subject</th>
                         <th>Description</th>
@@ -210,11 +210,9 @@
                         @if ($class->grade === $proof->level)
                             <tr>
                                 <td style="display: none;">
-                                    <input type="checkbox" name="selected_classes[]" value="{{ $class->edpcode }}" checked style="display: none;">
+                                    <input type="checkbox" name="selected_classes[]" value="{{ $class->edpcode }}" checked>
                                 </td>
-                                <td style="display: none;">{{ $class->grade }}</td>
-                                <td >{{ $class->adviser }}</td>
-                                <td style="display: none;">{{ $class->section }}</td>
+                                <td>{{ $class->adviser }}</td>
                                 <td>{{ $class->edpcode }}</td>
                                 <td>{{ $class->subject }}</td>
                                 <td>{{ $class->description }}</td>

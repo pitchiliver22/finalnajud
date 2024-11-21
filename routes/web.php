@@ -57,12 +57,12 @@ Route::get('studentprofile', [Pagecontroller::class, 'studentprofile']);
 Route::get('studentprofile', [Usercontroller::class, 'studentprofile'])->middleware('auth');
 
 Route::get('studentclassload', [Pagecontroller::class, 'studentclassload'])->middleware('auth');
-Route::get('/student-class-load/pdf', [PDFController::class, 'generatePDF'])->name('student.classload.pdf');
-
+Route::get('/student/classload/pdf/{student_id}', [PDFController::class, 'generatePDF'])->name('student.classload.pdf');
 Route::get('enrollmentstep', [Pagecontroller::class, 'enrollmentstep']);
 
 
 Route::get('studentgrades', [PageController::class, 'studentgrades'])->middleware('auth');
+
 Route::get('studentassessment', [Pagecontroller::class, 'studentassessment']);
 
 
@@ -133,15 +133,12 @@ Route::get('publishgrade/{id}', [Usercontroller::class, 'publishgrade']);
 Route::post('publishgrade/{id}', [Datacontroller::class, 'publish'])->name('grades.publish');
 
 
-Route::get('principalassessment', [Pagecontroller::class, 'principalassessment']);
+Route::get('principalassessment', [Pagecontroller::class, 'principalassessment'])->name('/principalassessment');;
 Route::post('/assessment/publish/{id}', [Usercontroller::class, 'publishAssessment'])->name('assessment.publish');
 
-// Route for editing an assessment
-Route::get('/assessment/edit/{id}', [Usercontroller::class, 'editAssessment'])->name('assessment.edit');
-
-// Route for deleting an assessment
-Route::post('/assessment/delete/{id}', [Usercontroller::class, 'deleteAssessment'])->name('assessment.delete');
-
+Route::get('principaleditassessment', [Pagecontroller::class, 'principaleditassessment']);
+Route::get('principaleditassessment/{id}', [UserController::class, 'principaleditassessment'])->name('assessment.edit');
+Route::put('principaleditassessment/{id}', [DataController::class, 'principaleditassessmentpost'])->name('assessment.edit');
 
 //accounting 
 Route::get('accounting', [Pagecontroller::class, 'accounting']);

@@ -156,10 +156,23 @@ public function studentgrades()
     ]);
 }
 
-    public function studentassessment()
-    {
-        return view('studentassessment');
+public function studentassessment(Request $request)
+{
+    // Fetch unique school years for the dropdown
+    $schoolYears = assessment::select('school_year')->distinct()->pluck('school_year');
+
+    // Fetch assessments where status is 'Published'
+    // Filter by school year if a specific year is selected
+    $assessments = assessment::where('status', 'Published');
+
+    if ($request->has('school_year') && $request->school_year !== '') {
+        $assessments = $assessments->where('school_year', $request->school_year);
     }
+
+    $assessments = $assessments->get();
+
+    return view('studentassessment', compact('assessments', 'schoolYears'));
+}
 
     //teacher 
     public function teacher()
@@ -400,12 +413,15 @@ public function studentgrades()
 
 public function principalassessment()
 {
-    // Fetch the assessments from the database
-    $assessments = Assessment::all(); // You can add any necessary filters or conditions here
-
-    // Pass the assessments to the view
+    $assessments = Assessment::all(); 
     return view('principalassessment', compact('assessments'));
 }
+
+public function principaleditassessment()
+{
+    return view('principaleditassessment');
+}
+
 
 public function approvedpayment()
 {

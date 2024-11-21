@@ -5,6 +5,7 @@ use App\Constants\QuarterStatus;
 use App\Mail\ApprovePayment;
 use App\Mail\ApproveSectioning;
 use App\Mail\AssessmentCreated;
+use App\Mail\EditAssessment;
 use App\Models\address;
 use App\Models\assign;
 use App\Models\classes;
@@ -35,6 +36,7 @@ use App\Models\subject;
 use App\Models\QuarterSettings;
 use App\Models\teacher;
 use Illuminate\Support\Facades\Mail as FacadesMail;
+
 
 class Datacontroller extends Controller
 {
@@ -905,6 +907,36 @@ public function address_contactpost(Request $request)
     return view('principalclassload', compact('class', 'subjects', 'filteredTeachers', 'schedules', 'selectedGrade', 'selectedSection', 'selectedSubject'));
 }
 
+public function principaleditassessmentpost(Request $request)
+{
+    $request->validate([
+        'school_year' => 'required|string|max:255',
+        'grade_level' => 'required|string|max:255',
+        'assessment_name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'assessment_date' => 'required|date',
+        'assessment_time' => 'required|date_format:H:i',
+        'assessment_fee' => 'required|numeric|min:0',
+    ]);
+
+    $assessment = Assessment::findOrFail($request->id);
+
+    $assessment->update([
+        'school_year' => $request->school_year,
+        'grade_level' => $request->grade_level,
+        'assessment_name' => $request->assessment_name,
+        'description' => $request->description,
+        'assessment_date' => $request->assessment_date,
+        'assessment_time' => $request->assessment_time,
+        'assessment_fee' => $request->assessment_fee,
+        'status' => 'published', 
+    ]);
+
+    FacadesMail::to('accounting@example.com')->send(new EditAssessment($assessment));
+
+    return redirect()->route('/principalassessment', $assessment->id) 
+                     ->with('success', 'Assessment updated and email sent successfully!');
+}
 
 
 public function updateQuarters(Request $request)
@@ -1079,6 +1111,7 @@ public function showEvaluateGrades()
 
     public function section(Request $request)
     {
+        // Validate the incoming request
         $request->validate([
             'selected_classes' => 'required|array',
             'selected_classes.*' => 'string',
@@ -1086,6 +1119,7 @@ public function showEvaluateGrades()
             'payment_id' => 'required|integer',
         ]);
     
+        // Initialize a flag to check if any classes were assigned
         $anyAssigned = false;
         $user = register_form::find($request->input('payment_id'));
     
@@ -1093,11 +1127,13 @@ public function showEvaluateGrades()
             $class = classes::where('edpcode', $classEdpCode)->first();
     
             if ($class) {
+                // Check for existing assignments to avoid duplicates
                 $existingAssignment = assign::where('edpcode', $class->edpcode)
                     ->where('class_id', $request->input('payment_id'))
                     ->first();
     
                 if (!$existingAssignment) {
+                    // Create a new assignment
                     $assignment = assign::create([
                         'grade' => $request->input('grade'),
                         'adviser' => $class->adviser,
@@ -1118,16 +1154,17 @@ public function showEvaluateGrades()
                     // Log the created assignment
                     Log::info('Assignment Created:', $assignment->toArray());
     
+                    // Update the class status
                     $class->assign_id = $request->input('payment_id');
                     $class->status = 'assigned';
                     $class->save();
     
                     $anyAssigned = true;
-    
                 }
             }
         }
     
+        // Send email notification if any classes were assigned
         if ($anyAssigned) {
             FacadesMail::to($user->email)->send(new ApproveSectioning($user));
             return redirect('/sectioning')->with('success', 'Classload assigned successfully and email sent.');
@@ -1433,7 +1470,7 @@ public function showEvaluateGrades()
             'assessment_fee' => 'required|numeric|min:0',
         ]);
     
-        $assessment = new assessment(); 
+        $assessment = new Assessment(); 
         $assessment->school_year = $validatedData['school_year'];
         $assessment->grade_level = $validatedData['grade_level'];
         $assessment->assessment_name = $validatedData['assessment_name'];
@@ -1443,21 +1480,15 @@ public function showEvaluateGrades()
         $assessment->assessment_time = \Carbon\Carbon::createFromFormat('H:i', $validatedData['assessment_time'])->format('h:i A');
     
         $assessment->assessment_fee = $validatedData['assessment_fee'];
+        
+        $assessment->status = 'pending';
     
         $assessment->save();
     
-        return redirect()->back()->with('success', 'Assessment created successfully!');
-    }
-
-    public function submitAssessment(Request $request, $assessmentId)
-    {
-        $assessment = Assessment::findOrFail($assessmentId);
-
         FacadesMail::to('principal@example.com')->send(new AssessmentCreated($assessment));
 
-        return redirect()->back()->with('success', 'Assessment submitted successfully and principal notified!');
+        return redirect()->back()->with('success', 'Assessment created successfully!');
     }
-
 
     public function updateQuarter(Request $request, $assignId, $quarter, $status)
     {

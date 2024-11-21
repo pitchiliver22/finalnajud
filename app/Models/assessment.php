@@ -17,5 +17,8 @@ class assessment extends Model
         'assessment_date',
         'assessment_time',
         'assessment_fee',
+        'status'
     ];
+    const STATUS_PENDING = 'pending';
+    const STATUS_APPROVED = 'published';
 }

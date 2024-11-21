@@ -77,10 +77,11 @@
                         <input type="hidden" id="role" name="role" value="Newstudent">
                     </div>
                     <br>
-                    <button type="submit" name="submit" class="btn btn-primary">Approved</button>
+                    <button type="submit" name="submit" class="btn btn-primary">Approve</button>
                 </div>
 
             </form>
         </div>
     </div>
+
     @include('templates.recordfooter')

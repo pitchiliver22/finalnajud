@@ -5,29 +5,24 @@
         <h2 class="mb-4 text-center">User Management</h2>
         <form action="/adminusers" method="POST" class="shadow p-4 rounded bg-light">
             @csrf
-
             <div class="row g-3">
                 <div class="col">
                     <label for="firstname" class="form-label">First Name<span class="required">*</span></label>
                     <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First Name" required>
                 </div>
-
                 <div class="col">
                     <label for="middlename" class="form-label">Middle Name<span class="required">*</span></label>
                     <input type="text" class="form-control" id="middlename" name="middlename" placeholder="Middle Name" required>
                 </div>
-
                 <div class="col">
                     <label for="lastname" class="form-label">Last Name<span class="required">*</span></label>
                     <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last Name" required>
                 </div>
-
                 <div class="col">
                     <label for="suffix" class="form-label">Suffix<span class="required">*</span></label>
                     <input type="text" class="form-control" id="suffix" name="suffix" placeholder="Suffix" required>
                 </div>
             </div>
-
             <div class="row g-3 mt-3">
                 <div class="col">
                     <label for="password" class="form-label">Password<span class="required">*</span></label>
@@ -51,7 +46,6 @@
                     </select>
                 </div>
             </div>
-
             <div class="row g-4 mt-4">
                 <div class="col text-center">
                     <button type="submit" name="submit" class="btn btn-primary">Create Account</button>
@@ -61,17 +55,7 @@
 
         <div class="users-list mt-5">
             <h4 class="mb-3">Search Users</h4>
-            <form action="/adminusers" method="GET" class="mb-4">
-                <div class="input-group">
-                    <input type="text" class="form-control" name="query" placeholder="Search student entries..." aria-label="Search student entries">
-                    <button class="btn btn-outline-secondary" type="submit">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                        </svg>
-                        Search
-                    </button>
-                </div>
-            </form>
+            <input type="text" id="search" class="form-control mb-4" placeholder="Search student entries..." aria-label="Search student entries">
             <div class="mb-3">
                 <a href="/users" class="btn btn-outline-secondary">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
@@ -96,7 +80,7 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="userTable">
                     @foreach ($account as $user)
                         <tr>
                             <td>{{ $user->id }}</td>
@@ -160,3 +144,18 @@
         }
     }
 </style>
+
+<script>
+    document.getElementById('search').addEventListener('keyup', function() {
+        const query = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#userTable tr');
+        
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            const match = Array.from(cells).some(cell => {
+                return cell.textContent.toLowerCase().includes(query);
+            });
+            row.style.display = match ? '' : 'none';
+        });
+    });
+</script>

@@ -26,7 +26,6 @@
                 <th>Assessment Date</th>
                 <th>Assessment Time</th>
                 <th>Assessment Fee</th>
-                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -40,10 +39,6 @@
                     <td>{{ $assessment->assessment_time }}</td>
                     <td>{{ $assessment->assessment_fee }}</td>
                     <td>
-                        <form action="{{ route('assessment.submit', $assessment->id) }}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-success">Submit Assessment</button>
-                        </form>
                     </td>
                 </tr>
             @empty

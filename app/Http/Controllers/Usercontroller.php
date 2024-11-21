@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use tidy;
+use App\Http\Controllers\showAssessment;
 
 class Usercontroller extends Controller
 {
@@ -107,7 +108,7 @@ class Usercontroller extends Controller
     public function updatedetails($id)
     {
         
-        $details = \App\Models\studentdetails::find($id);
+        $details = \App\Models\studentdetails::where('details_id', $id)->first();
     
         if (!$details) {
             return redirect('/enrollmentstep')->with('error', 'Student details not found.');
@@ -333,13 +334,9 @@ class Usercontroller extends Controller
 
     public function publish($id)
     {
-
         $grades = grade::findOrFail($id);
-
-
         $grades->status = 'approved';
         $grades->save();
-
 
         return redirect()->route('grades.publish', $id)->with('success', 'Grade status updated to approved.');
     }
@@ -350,16 +347,12 @@ class Usercontroller extends Controller
         $paymentForm = payment_form::where('payment_id', $assign->class_id)->first();
         $student = register_form::findOrFail($assign->class_id);
         
-        // Fetch the full name of the student
         $fullName = "{$student->firstname} {$student->middlename} {$student->lastname}";
         
-        // Fetch the grade if it exists
         $grade = grade::where('grade_id', $assign->id)->first();
         
-        // Fetch the latest quarter settings
         $quartersEnabled = QuarterSettings::first();
-        
-        // Prepare the quarters enabled array
+
         $quartersEnabledArray = [
             '1st_quarter' => $quartersEnabled->first_quarter_enabled ?? false,
             '2nd_quarter' => $quartersEnabled->second_quarter_enabled ?? false,
@@ -367,7 +360,6 @@ class Usercontroller extends Controller
             '4th_quarter' => $quartersEnabled->fourth_quarter_enabled ?? false,
         ];
     
-        // Prepare the quarters status array
         $quartersStatusArray = [
             '1st_quarter' => $quartersEnabled->first_quarter_status ?? 'inactive',
             '2nd_quarter' => $quartersEnabled->second_quarter_status ?? 'inactive',
@@ -392,7 +384,16 @@ class Usercontroller extends Controller
         return view('submittedgrades');
     }
 
-   
+
+    public function principaleditassessment($id)
+    {
+        $assessment = assessment::findOrFail($id);
+
+        $assessment->assessment_time = date('H:i', strtotime($assessment->assessment_time));
+
+        return view('principaleditassessment', compact('assessment'));  
+    }
+
 
     public function teachercorevalue() {}
 

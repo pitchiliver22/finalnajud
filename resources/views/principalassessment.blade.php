@@ -47,11 +47,6 @@
                         <form action="{{ route('assessment.edit', $assessment->id) }}" method="GET" class="d-inline">
                             <button type="submit" class="btn btn-secondary">Edit</button>
                         </form>
-                        <form action="{{ route('assessment.delete', $assessment->id) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
                     </td>
                 </tr>
             @empty

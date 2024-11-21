@@ -10,14 +10,12 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class AssessmentCreated extends Mailable
+class EditAssessment extends Mailable
 {
     use Queueable, SerializesModels;
 
     public Assessment $assessment;
-    /**
-     * Create a new message instance.
-     */
+
     public function __construct(assessment $assessment)
     {
         $this->assessment = $assessment;
@@ -29,20 +27,18 @@ class AssessmentCreated extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Assessment Created',
+            subject: 'Edit Assessment',
         );
     }
 
-
-        public function build()
+    public function build()
     {
-        return $this->subject('New Assessment Created')
-                    ->view('emails.assessment_created') // Specify the view
+        return $this->subject('Assessment Updated and Published')
+                    ->view('emails.edit_assessment') // Specify the view
                     ->with([
                         'assessment' => $this->assessment,
                     ]);
     }
-
 
     /**
      * Get the attachments for the message.

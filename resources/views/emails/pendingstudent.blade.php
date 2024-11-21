@@ -39,7 +39,7 @@
         }
 
         .logo {
-            max-width: 80px;
+            max-width: 100px;
             /* Increased logo size */
             margin-bottom: 20px;
         }
@@ -85,7 +85,7 @@
 
 <body>
     <div class="container">
-        <img src="https://static-00.iconduck.com/assets.00/redhat-icon-2048x2048-c81kj8ny.png" alt="Logo"
+        <img src="https://eu-images.contentstack.com/v3/assets/blt8eb3cdfc1fce5194/bltc656fdad185f44a5/6621164bf6abec06d3c22c92/redhat-logo-470.png?width=1280&auto=webp&quality=95&format=jpg&disable=upscale" alt="Logo"
             class="logo">
         <h1>Your account, {{ $user->firstname }} {{ $user->middlename }} {{ $user->lastname }}!</h1>
         <div class="image-placeholder">

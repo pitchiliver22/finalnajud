@@ -122,7 +122,7 @@
 
                         @if (auth()->check() && auth()->user()->role == 'Oldstudent')
                         @php
-                            $studentDetail = \App\Models\StudentDetails::where('details_id', $registerForm->id)->first();
+                            $studentDetail = \App\Models\studentdetails::where('details_id', $registerForm->id)->first();
                         @endphp
 
                         <li class="list-group-item d-flex justify-content-between align-items-start">

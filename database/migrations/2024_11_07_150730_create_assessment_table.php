@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('assessment_date');
             $table->string('assessment_time');
             $table->string('assessment_fee');
+            $table->string('status');
             $table->timestamps();
         });
     }

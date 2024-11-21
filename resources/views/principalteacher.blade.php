@@ -68,7 +68,7 @@
                     <select class="form-control" id="teacher" name="name" required>
                         <option value="">Select a Teacher</option>
                         @foreach ($teachers as $teacher)
-                            <option value="{{ $teacher['id'] }}" {{ $teacher['assigned'] && old('name') != $teacher['id'] ? 'disabled' : '' }}>
+                            <option value="{{ $teacher['id'] }}">
                                 {{ $teacher['name'] }}
                             </option>
                         @endforeach
@@ -145,4 +145,3 @@
             </script>
 
 @include('templates.principalfooter')
-```
