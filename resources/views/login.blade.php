@@ -186,8 +186,8 @@
                             <input type="password" id="password" name="password" class="form-control" placeholder="Password">
                         </div>
                         <div class="form-check mb-3">
-                            <input type="checkbox" class="form-check-input" id="remember">
-                            <label class="form-check-label" for="remember">Remember Me</label>
+                            <input type="checkbox" class="form-check-input" id="showPassword">
+                            <label class="form-check-label" for="showPassword">Show Password</label>
                         </div>
                         <button class="btn btn-primary btn-block w-100 mb-3">Login</button>
                         <a href="#" class="text-muted">Forgot Password?</a>
@@ -218,10 +218,21 @@
 
             setTimeout(() => {
                 snowflake.remove();
-            }, 500000);
+            }, 10000);
         }
 
         setInterval(createSnowflake, 200);
+        // Show/hide password functionality
+        const passwordInput = document.getElementById('password');
+        const showPasswordCheckbox = document.getElementById('showPassword');
+
+        showPasswordCheckbox.addEventListener('change', () => {
+            if (showPasswordCheckbox.checked) {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        });
     </script>
 </body>
 
