@@ -21,7 +21,7 @@
             top: -10px;
             font-size: 1rem;
             color: white;
-            opacity: 0.8;
+            opacity: 0.10;
             animation: fall linear infinite;
         }
 
@@ -37,12 +37,12 @@
         }
 
         .snowflake:nth-child(odd) {
-            animation-duration: 12s;
+            animation-duration: 20s;
             font-size: 1.2rem;
         }
 
         .snowflake:nth-child(even) {
-            animation-duration: 14s;
+            animation-duration: 15s;
             font-size: 0.8rem;
         }
 
@@ -52,7 +52,6 @@
             padding: 2rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             text-align: center;
-            z-index: 20; /* Highest z-index for the login card */
             position: relative;
         }
 
@@ -102,17 +101,16 @@
             right: -21%;
             width: 300px;
             transform: rotate(12deg);
-            z-index: 15; /* Lower z-index for the hat */
+           
         }
 
         .santa-gif {
             position: absolute;
-            bottom: -10%;
-            left: -660px; /* Start off-screen to the left */
-            width: 300px; /* Adjust width as needed */
-            z-index: 10; /* Lower z-index for the Santa Claus GIF */
+            bottom: -40%;
+            left: -660px; 
+            width: 400px; 
             overflow: hidden;
-            animation: santa-ride 10s linear infinite;
+            animation: santa-ride 20s linear infinite;
         }
 
         .santa-gif img {
@@ -122,16 +120,16 @@
 
         @keyframes santa-ride {
             0% {
-                transform: translateX(0) scaleX(1); /* Start from left */
+                transform: translateX(0) scaleX(1); 
             }
             50% {
-                transform: translateX(100vw) scaleX(1); /* Move to right */
+                transform: translateX(100vw) scaleX(1); 
             }
             75% {
-                transform: translateX(100vw) scaleX(-1); /* Flip at the right */
+                transform: translateX(100vw) scaleX(-1); 
             }
             100% {
-                transform: translateX(0) scaleX(-1); /* Move back to left */
+                transform: translateX(5vw) scaleX(-1); 
             }
         }
     </style>
@@ -144,12 +142,12 @@
                 <div class="card">
                     <img src="image/christmashat.png" alt="Santa Hat" class="hat">
                     <div class="santa-gif">
-                        <img src="image/santa.gif" alt="Santa Claus with Reindeer">
+                        <img src="image/santaclaire.gif" alt="Santa Claus with Reindeer">
                     </div>
                     <div class="logo">
                         <img src="image/UCLOGO.png" alt="Logo">
                     </div>
-                    <p>WEB PORTAL</p>
+                
                     <form>
                         <div class="form-group">
                             <input type="text" class="form-control" id="id-or-email" placeholder="ID Number or Email">
