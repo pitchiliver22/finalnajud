@@ -137,24 +137,23 @@
             <tbody id="classTableBody">
                 @php
                     $uniqueSections = [];
-
+            
                     foreach ($classes as $class) {
                         if ($class->grade === $proof->level && !in_array($class->section, $uniqueSections)) {
                             $uniqueSections[] = $class->section; 
                 @endphp
-                            <tr onclick="redirectToSection('{{ $class->id }}', '{{ $class->section }}', '{{ $proof->id }}')">
-                                <td>{{ $class->grade }}</td>
-                               
-                                <td>{{ $class->section }}</td>
-                                <td>Active</td>
-                            </tr>
+                    <tr onclick="redirectToSection('{{ $proof->payment_id }}', '{{ $class->section }}')">
+                        <td>{{ $class->grade }}</td>
+                        <td>{{ $class->section }}</td>
+                        <td>Active</td>
+                    </tr>
                 @php
                         }
                     }
                 @endphp
             </tbody>
-        </table>
 
+        </table>
     </div>
 </div>
 
@@ -185,7 +184,10 @@
         }
     }
 
-    function redirectToSection(id, sectionName, paymentId) {
-        window.location.href = `/section/${paymentId}/${sectionName}`;
-    }
+    function redirectToSection(paymentId, sectionName) {
+    console.log("Redirecting to:", `/section/${paymentId}/${sectionName}`);
+    window.location.href = `/section/${paymentId}/${sectionName}`; 
+}
+
+
 </script>

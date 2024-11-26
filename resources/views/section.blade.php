@@ -173,8 +173,8 @@
 
         <form action="/section" method="POST">
             @csrf
-            <input type="hidden" name="grade" value="{{ $proof->level }}">
-            <input type="hidden" name="payment_id" value="{{ $proof->id }}">
+            <input type="text" name="grade" value="{{ $proof->level }}">
+            <input type="text" name="payment_id" value="{{ $proof->payment_id }}">
             
             <div class="info-row">
                 <div>
@@ -182,7 +182,7 @@
                 </div>
                 <div><span class="label">1st Semester S.Y. 2024 - 2025</span></div>
             </div>
-
+            
             <div class="info-row">
                 <div><span class="label">Year Level:</span> {{ $proof->level }}</div>
             </div>

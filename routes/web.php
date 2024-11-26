@@ -104,11 +104,17 @@ Route::post('assigning', [Datacontroller::class, 'assigning']);
 
 Route::post('/assigning/{id}', [Datacontroller::class, 'approveAssigning']);
 
-Route::get('section', [Pagecontroller::class, 'section']);
-Route::get('section/{id}/{sectionName}', [UserController::class, 'section']);
+// GET route to show the section page
+Route::get('section', [PageController::class, 'section'])->name('section.index');
 
-Route::post('section', [Datacontroller::class, 'section']);
+// GET route to show section details with parameters
+Route::get('section/{id}/{sectionName}', [UserController::class, 'section'])->name('section.show');
+
+// POST route for assigning classes
+Route::post('section', [DataController::class, 'sectionpost']);
 Route::get('section/{section}', [Usercontroller::class, 'getSectionDetails']);
+
+
 
 Route::get('principalclassload', [Pagecontroller::class, 'principalclassload']);
 Route::post('principalclassload', [Datacontroller::class, 'classloadpost']);
@@ -129,8 +135,8 @@ Route::put('/update_class/{id}', [Datacontroller::class, 'updateClass'])->name('
 Route::get('/delete_class/{id}', [UserController::class, 'delete_class']);
 
 Route::get('publishgrade', [Pagecontroller::class, 'publishgrade']);
-Route::get('publishgrade/{id}', [Usercontroller::class, 'publishgrade']);
-Route::post('publishgrade/{id}', [Datacontroller::class, 'publish'])->name('grades.publish');
+Route::get('/publishgrade/grade_id/{gradeId}', [Usercontroller::class, 'publishgrade'])->name('publishgrade');
+Route::post('/publishgrades', [Usercontroller::class, 'publishGrades']);
 
 
 Route::get('principalassessment', [Pagecontroller::class, 'principalassessment'])->name('/principalassessment');;
@@ -172,9 +178,9 @@ Route::post('cashierstudentfee', [Datacontroller::class, 'cashierstudentfeepost'
 Route::get('approvedpayment', [Pagecontroller::class, 'approvedpayment']);
 Route::get('cashierstudentfee/{id}', [Usercontroller::class, 'cashierstudentfee']);
 Route::get('proofofpayment', [Pagecontroller::class, 'proofofpayment']);
-Route::get('/proofofpayment/{id}', [Usercontroller::class, 'proofofpayment']);
 
-Route::post('/proofofpayment/{id}', [DataController::class, 'approvePayment']);
+Route::get('/proofofpayment/{id}', [Usercontroller::class, 'proofofpayment']);
+Route::post('/proofofpayment/{id}', [Datacontroller::class, 'approvePayment']);
 
 //admin
 Route::get('admin', [Pagecontroller::class, 'admin']);
@@ -187,6 +193,58 @@ Route::get('adminnotification', [Pagecontroller::class, 'adminnotification']);
 Route::get('adminstudent', [Pagecontroller::class, 'adminstudent']);
 Route::get('adminreport', [Pagecontroller::class, 'adminreport']);
 Route::get('adminprofile', [Pagecontroller::class, 'adminprofile']);
+
+Route::get('newstudent', [Pagecontroller::class, 'newstudent']);
+Route::post('newstudent', [Datacontroller::class, 'newstudentpost']);
+
+
+Route::get('oldstudent', [Pagecontroller::class, 'oldstudent']);
+Route::post('oldstudent', [Datacontroller::class, 'oldstudentpost']);
+
+Route::get('oldstudentdashboard', [Pagecontroller::class, 'oldstudentdashboard'])->middleware('auth');
+
+Route::get('oldstudentaddress', [Pagecontroller::class, 'oldstudentaddress']);
+Route::post('oldstudentaddress', [Datacontroller::class, 'oldstudentaddresspost']);
+Route::get('oldstudentaddress/{registerFormId}', [Usercontroller::class, 'oldstudentaddress']);
+
+Route::get('oldstudentprevious', [Pagecontroller::class, 'oldstudentprevious']);
+Route::post('oldstudentprevious', [Datacontroller::class, 'oldstudentpreviouspost']);
+Route::get('oldstudentupdateprevious/{id}', [Usercontroller::class, 'oldstudentupdateprevious'])->name('oldstudentupdateprevious.id');
+
+Route::get('oldstudentdocuments', [Pagecontroller::class, 'oldstudentdocuments']);
+Route::post('oldstudentdocuments', [Datacontroller::class, 'oldstudentdocumentspost']);
+
+Route::get('oldstudentpayment', [Pagecontroller::class, 'oldstudentpayment']);
+Route::post('oldstudentpayment', [Datacontroller::class, 'oldstudentpaymentpost']);
+
+Route::get('oldstudentupdatedetails', [Pagecontroller::class, 'oldstudentupdatedetails']);
+Route::get('oldstudentupdatedetails/{id}', [Usercontroller::class, 'oldstudentupdatedetails'])->name('oldstudentupdatedetails.id');
+Route::post('oldstudentupdatedetails', [Datacontroller::class, 'oldstudentupdatedetailspost'])->middleware('auth');
+
+Route::get('oldstudentupdateaddress', [Pagecontroller::class, 'oldstudentupdateaddress'])->middleware('auth')->name('updatedetails');
+Route::post('oldstudentupdateaddress', [Datacontroller::class, 'oldstudentupdateaddresspost'])->middleware('auth');
+Route::get('/oldstudentupdateaddress/{id}', [Usercontroller::class, 'oldstudentupdateaddress'])->name('oldstudentupdateaddress.id');
+
+
+Route::get('oldstudentupdateprevious', [Pagecontroller::class, 'oldstudentupdateprevious']);
+Route::post('oldstudentupdateprevious', [Datacontroller::class, 'oldstudentupdatepreviouspost']);
+Route::get('oldstudentupdateprevious/{id}', [Usercontroller::class, 'oldstudentupdateprevious'])->name('oldstudentupdateprevious.id');
+
+Route::get('oldstudentupdatedocuments', [Pagecontroller::class, 'oldstudentupdatedocuments'])->middleware('auth');
+Route::post('oldstudentupdatedocuments', [Datacontroller::class, 'oldstudentupdatedocumentspost'])->name('oldstudentupdatedocumentspost')->middleware('auth');
+
+
+
+Route::get('oldstudentclassload', [Pagecontroller::class, 'oldstudentclassload'])->middleware('auth');
+
+Route::get('oldstudentgrades', [PageController::class, 'oldstudentgrades'])->middleware('auth');
+
+
+
+
+
+
+Route::get('oldstudentenrollment', [Pagecontroller::class, 'oldstudentenrollment'])->name('oldstudentenrollment');
 
 Route::get('/enrollmentstep', [DataController::class, 'enrollmentStep'])->name('enrollment.step');
 

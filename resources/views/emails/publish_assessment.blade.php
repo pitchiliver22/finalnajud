@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Principal Edited an Assessment</title>
+    <title>Principal Published Assessment</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -62,8 +62,8 @@
 
 <body>
     <div class="container">
-        <h1>Assessment Edited</h1>
-        <h2>Your assessment submitted has been edited by the Principal:</h2>
+        <h1>Assessment Published</h1>
+        <h2>Your assessment submitted has been published by the Principal:</h2>
         <ul>
             <li>School Year: {{ $assessment->school_year }}</li>
             <li>Grade Level: {{ $assessment->grade_level }}</li>
@@ -73,7 +73,7 @@
             <li>Assessment Time: {{ $assessment->assessment_time }}</li>
             <li>Assessment Fee: {{ $assessment->assessment_fee }}</li>
         </ul>
-        <h3>We are pleased to inform you that the assessment has been successfully edited and published. We kindly ask for your review and approval of this updated assessment. Your support in finalizing this process will greatly benefit our students and staff.</h3>
+        <h3>We are pleased to inform you that the assessment has been successfully published. </h3>
     </div>
 </body>
 

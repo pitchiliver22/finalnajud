@@ -131,8 +131,6 @@
 
         });
 
-
-
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.addEventListener('click', () => {
             const parentName = document.getElementById('parentName').value;

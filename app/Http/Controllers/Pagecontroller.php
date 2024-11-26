@@ -52,9 +52,7 @@ class Pagecontroller extends Controller
 
     public function address_contact()
     {
-        
-        
-    return view('address_contact'); // Pass it to the view
+        return view('address_contact'); 
     }
 
     public function required_documents()
@@ -104,6 +102,40 @@ class Pagecontroller extends Controller
     ]);
 }
 
+
+public function oldstudentclassload()
+{
+    $userId = Auth::id(); // Get the authenticated user's ID
+
+    // Find the register form associated with the authenticated user
+    $registerForm = \App\Models\register_form::where('user_id', $userId)->first();
+
+    if (!$registerForm) {
+        return redirect()->route('login')->withErrors('No registration form found.');
+    }
+
+    // Use the registerForm ID to get assigned classes
+    $assignedClasses = assign::where('class_id', $registerForm->id)->get();
+
+    // The student variable now refers to the register form record
+    $student = $registerForm;
+
+    // Get payment proof associated with the register form
+    $proof = payment_form::where('payment_id', $registerForm->id)->first();
+
+    return view('oldstudentclassload', [
+        'assignedClasses' => $assignedClasses,
+        'student' => $student,
+        'proof' => $proof,
+    ]);
+}
+
+
+
+
+
+
+
     public function studentprofile()
     {
         return view('studentprofile');
@@ -111,67 +143,76 @@ class Pagecontroller extends Controller
 
     public function enrollmentStep()
 {
-    // Ensure the user is authenticated
     if (!Auth::check()) {
         return redirect()->route('login');
     }
 
     $user = Auth::user();
-    // Fetch the register form associated with the authenticated user
-    $registerForm = register_form::where('user_id', $user->id)->first(); // Assuming user_id links to register_form
+    $registerForm = register_form::where('user_id', $user->id)->first(); 
 
     if (!$registerForm) {
         return redirect()->route('some.route')->with('error', 'No registration form found.');
     }
 
-    // Use registerForm ID to get related details
     $details = studentdetails::where('details_id', $registerForm->id)->first();
-    $address = address::where('address_id', $registerForm->id)->first(); // Assuming the relationship is correct
+    $address = address::where('address_id', $registerForm->id)->first(); 
     $previousSchool = previous_school::where('school_id', $registerForm->id)->first();
     $requiredDocs = required_docs::where('required_id', $registerForm->id)->first();
-    $payment = payment_form::where('payment_id', $registerForm->id)->first(); // Adjust as needed
-    $assignStatus = assign::where('class_id', $registerForm->id)->first(); // Adjust as needed
+    $payment = payment_form::where('payment_id', $registerForm->id)->first(); 
+    $assignStatus = assign::where('class_id', $registerForm->id)->first(); 
 
     return view('enrollmentstep', compact('details', 'address', 'previousSchool', 'requiredDocs', 'payment', 'assignStatus'));
 }
 
 public function studentgrades()
 {
-    // Fetch the authenticated user's ID
+    
     $userId = Auth::id();
 
-    // Fetch grades for the authenticated user based on grade_id
-    $grades = grade::where('grade_id', $userId) // Match the user's ID with grade_id
-        ->get(['subject', 'edp_code', 'section', '1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter', 'overall_grade']); // Specify the fields you need
 
-    // Check for approved grades
+    $grades = grade::where('grade_id', $userId) 
+        ->get(['subject', 'edp_code', 'section', '1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter', 'overall_grade']); 
+
+    
     $gradesApproved = $grades->where('status', 'approved')->isNotEmpty();
 
-    // Filter out only approved grades
+    
     $approvedGrades = $grades->where('status', 'approved');
 
     return view('studentgrades', [
-        'grades' => $approvedGrades, // Pass the collection of approved grades
+        'grades' => $approvedGrades, 
         'gradesApproved' => $gradesApproved,
     ]);
 }
 
 public function studentassessment(Request $request)
 {
-    // Fetch unique school years for the dropdown
     $schoolYears = assessment::select('school_year')->distinct()->pluck('school_year');
 
-    // Fetch assessments where status is 'Published'
-    // Filter by school year if a specific year is selected
+    $user = Auth::user();
+    $paymentId = $user ? $user->payment_id : null; // Safely get payment_id
+
+    $userPayment = payment_form::where('payment_id', $paymentId)->first();
+    $authGradeLevel = $userPayment ? strtolower(str_replace(' ', '', trim($userPayment->level))) : null;
+
+    // Start with published assessments
     $assessments = assessment::where('status', 'Published');
 
+    // Filter assessments by school year if selected
     if ($request->has('school_year') && $request->school_year !== '') {
         $assessments = $assessments->where('school_year', $request->school_year);
     }
 
+    // Filter by the authenticated user's grade level (exact match)
+    if ($authGradeLevel) {
+        $assessments = $assessments->where('grade_level', '=', $authGradeLevel); // Exact match
+    }
+
+    // Get all assessments
     $assessments = $assessments->get();
 
-    return view('studentassessment', compact('assessments', 'schoolYears'));
+    // Return the view with assessments, school years, and the user's grade level
+    return view('studentassessment', compact('assessments', 'schoolYears', 'authGradeLevel'));
 }
 
     //teacher 
@@ -511,11 +552,238 @@ public function approvedpayment()
     {
         return view('adminprofile');
     }
-    public function updatedetails()
-    {
 
+
+    public function newstudent()
+    {
+        return view('newstudent');
+    }
+
+    public function oldstudent()
+    {
+        return view('oldstudent');
+    }
+
+    public function oldstudentdashboard()
+    {
+        return view('oldstudentdashboard');
+    }
+
+    public function oldstudentaddress()
+    {
+    $registerFormId = session('register_form_id');
+    $registerForm = \App\Models\register_form::find($registerFormId);
+
+    if (!$registerForm) {
+        return redirect()->route('oldstudentaddress')->withErrors(['error' => 'Register form not found.']);
+    }
+
+    return view('oldstudentaddress', compact('registerForm'));
+    }
+
+    public function oldstudentprevious()
+    {
+        $registerFormId = session('register_form_id');
+        $registerForm = \App\Models\register_form::find($registerFormId);
+
+        if (!$registerForm) {
+            return redirect()->route('oldstudentprevious')->withErrors(['error' => 'Register form not found.']);
+    }
+
+    return view('oldstudentprevious', compact('registerForm'));
+    }
+
+    public function oldstudentdocuments()
+    {
+        return view('oldstudentdocuments');
+    }
+
+    public function oldstudentpayment()
+    {
+        $user = Auth::user();
+    
+        if (!$user) {
+            return redirect('/oldstudentenrollment')->with('error', 'User not authenticated.');
+        }
+    
+        $registerForm = \App\Models\register_form::where('user_id', $user->id)->first();
+    
+        if (!$registerForm) {
+            return redirect('/oldstudentenrollment')->with('error', 'Register form not found.');
+        }
+
+        session(['register_form_id' => $registerForm->id]);
+    
+        $payment = \App\Models\payment_form::where('payment_id', $registerForm->id)->get();
+    
+        return view('oldstudentpayment', compact('payment', 'registerForm'));
+    }
+
+        public function oldstudentenrollment()
+        {
+            if (!Auth::check()) {
+                return redirect()->route('login');
+            }
+        
+            $user = Auth::user();
+        
+            $registerForm = register_form::where('user_id', $user->id)->first();
+        
+            if (!$registerForm) {
+                return redirect()->route('/oldstudentenrollment')->with('error', 'No registration form found.');
+            }
+        
+            $registerFormId = $registerForm->id;
+        
+            $studentDetail = studentdetails::where('details_id', $registerFormId)->first();
+            $address = address::where('address_id', $registerFormId)->first();
+            $payment = payment_form::where('payment_id', $registerFormId)->first();
+            $previousSchool = previous_school::where('school_id', $registerFormId)->first();
+            $requiredDocs = required_docs::where('required_id', $registerFormId)->first();
+            $assign = assign::where('class_id', $registerFormId)->first();
+        
+            $allCompleted = true;
+        
+            $paymentStatus = $payment && is_object($payment) ? $payment->status : null;
+            if ($paymentStatus !== 'approved') {
+                $allCompleted = false;
+            }
+
+            $detailsStatus = $studentDetail && is_object($studentDetail) ? $studentDetail->status : null;
+            if ($detailsStatus !== 'approved') {
+                $allCompleted = false;
+            }
+
+            $addressStatus = $address && is_object($address) ? $address->status : null;
+            if ($addressStatus !== 'approved') {
+                $allCompleted = false;
+            }
+
+            $previousStatus = $previousSchool && is_object($previousSchool) ? $previousSchool->status : null;
+            if ($previousStatus !== 'approved') {
+                $allCompleted = false;
+            }
+
+            $requiredStatus = $requiredDocs && is_object($requiredDocs) ? $requiredDocs->status : null;
+            if ($requiredStatus !== 'approved') {
+                $allCompleted = false;
+            }
+
+            $assignStatus = $assign && is_object($assign) ? $assign->status : null;
+            if ($assignStatus !== 'assigned') {
+                $allCompleted = false;
+            }
+        
+            $address_id = $address ? $address->address_id : null;
+            $details_id = $studentDetail ? $studentDetail->details_id : null;
+            $school_id  = $previousSchool ? $previousSchool->school_id : null;
+            $required_id = $requiredDocs ? $requiredDocs->required_id : null;
+            $payment_id = $payment ? $payment->payment_id : null;
+            $class_id = $assign ? $assign->class_id : null;
+        
+            return view('oldstudentenrollment', compact(
+                'allCompleted', 
+                'detailsStatus', 
+                'addressStatus', 
+                'previousStatus', 
+                'paymentStatus', 
+                'requiredStatus', 
+                'assignStatus', 
+                'registerFormId', 
+                'registerForm',  
+                'address_id',
+                'details_id',
+                'school_id',
+                'required_id',
+                'payment_id',
+                'class_id'
+            ));
+        }
+
+    public function oldstudentupdatedetails()
+    {
         $user = Auth::user();
 
+        if (!$user || !$user->details_id) {
+            return redirect('/oldstudentenrollment')->with('error', 'Details not found.');
+        }
+
+        $details = studentdetails::findOrFail($user->details_id);
+
+        return view('oldstudentupdatedetails', compact('details'));
+    }
+    public function oldstudentupdateaddress()
+    {
+        $user = Auth::user();
+        if (!$user || !$user->address_id) {
+            return redirect('/oldstudentenrollment')->with('error', 'Details not found.');
+        }
+        $address = address::findOrFail($user->address_id);
+
+        return view('oldstudentupdateaddress', compact('address'));
+    }
+
+    public function oldstudentupdateprevious()
+    {
+        $user = Auth::user();
+
+        if (!$user || !$user->address_id) {
+            return redirect('/oldstudentenrollment')->with('error', 'Details not found.');
+        }
+
+        $previous = previous_school::findOrFail($user->address_id);
+
+        return view('oldstudentupdateprevious', compact('previous'));
+    }
+
+    public function oldstudentupdatedocuments()
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect('/oldstudentenrollment')->with('error', 'User not authenticated.');
+        }
+
+        $registerForm = \App\Models\register_form::where('user_id', $user->id)->first();
+
+        if (!$registerForm) {
+            return redirect('/oldstudentenrollment')->with('error', 'Register form not found.');
+        }
+
+        $docs = \App\Models\required_docs::where('required_id', $registerForm->id)->get();
+
+        return view('oldstudentupdatedocuments', compact('docs', 'registerForm'));
+    }
+
+
+
+
+    public function oldstudentgrades()
+{
+    $userId = Auth::id();
+    
+    // Get the authenticated user
+    $user = Auth::user();
+    
+    // Construct the full name
+    $userName = trim("{$user->firstname} {$user->middlename} {$user->lastname}");
+
+    // Retrieve grades for the authenticated student based on their fullname and status
+    $grades = Grade::where('fullname', $userName)
+                   ->where('status', 'approved')
+                   ->get(['subject', 'edp_code', 'section', '1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter', 'overall_grade']);
+
+    // Check if there are any approved grades
+    $gradesApproved = $grades->isNotEmpty();
+
+    return view('oldstudentgrades', [
+        'grades' => $grades,
+        'gradesApproved' => $gradesApproved,
+    ]);
+}
+    public function updatedetails()
+    {
+        $user = Auth::user();
 
         if (!$user || !$user->details_id) {
             return redirect('/enrollmentstep')->with('error', 'Details not found.');
@@ -544,11 +812,9 @@ public function approvedpayment()
     {
         $user = Auth::user();
 
-
         if (!$user || !$user->required_id) {
             return redirect('/enrollmentstep')->with('error', 'Details not found.');
         }
-
 
         $docs = required_docs::findOrFail($user->required_id);
 

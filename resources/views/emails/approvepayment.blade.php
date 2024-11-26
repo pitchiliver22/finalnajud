@@ -62,7 +62,7 @@
 
 <body>
     <div class="container">
-        <img src="https://static-00.iconduck.com/assets.00/redhat-icon-2048x2048-c81kj8ny.png" alt="Logo" class="logo">
+        <img src="https://eu-images.contentstack.com/v3/assets/blt8eb3cdfc1fce5194/bltc656fdad185f44a5/6621164bf6abec06d3c22c92/redhat-logo-470.png?width=1280&auto=webp&quality=95&format=jpg&disable=upscale" alt="Logo" class="logo">
         <h1>Congratulations, {{ $user->firstname }} {{ $user->middlename }} {{ $user->lastname }}!</h1>
         <h2>Great news! Your payment has been approved. Please refresh the page to see the updates, and thank you for your patience as we prepare for your sectioning.</h2>
         <h3>Best regards,<br>RedHat Team</h3>

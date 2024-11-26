@@ -180,7 +180,7 @@
                     <form action="/login" method="POST">
                         @csrf
                         <div class="form-outline mb-3">
-                            <input type="email" id="email" name="email" class="form-control" placeholder="ID Number or Email">
+                            <input type="email" id="email" name="email" class="form-control" placeholder="Email">
                         </div>
                         <div class="form-outline mb-3">
                             <input type="password" id="password" name="password" class="form-control" placeholder="Password">

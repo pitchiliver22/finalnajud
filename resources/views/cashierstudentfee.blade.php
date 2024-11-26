@@ -43,39 +43,34 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($students as $student)
-                                @php
-                                    // Find the payment associated with the student by matching id
-                                    $payment = $payments->firstWhere('id', $student->id); // Match payment id with student id
-                                    $status = $payment ? $payment->status : 'No payment';
-                                @endphp
-                                @if ($payment && $status === 'pending') <!-- Only show pending payments -->
-                                    <tr>
-                                        <td>
-                                            <input type="checkbox" name="payments[]" value="{{ $payment->id }}" class="paymentCheckbox">
-                                        </td>
-                                        <td>{{ $status }}</td>
-                                        <td>{{ $student->lastname }}</td>
-                                        <td>{{ $student->firstname }}</td>
-                                        <td>{{ $student->middlename }}</td>
-                                        <td>{{ $payment->level ?? 'N/A' }}</td>
-                                        <td>{{ $payment->fee_type ?? 'N/A' }}</td>
-                                        <td>{{ $payment->amount ?? 'N/A' }}</td>
-                                        <td>
-                                            <a href="proofofpayment/{{$payment->payment_id }}"
-                                               class="btn btn-info btn-sm view-studententry" title="View">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
-                                                    <path d="M7.998 2c-2.757 0-5.287 1.417-6.758 3.75a.748.748 0 0 0 0 .5c1.471 2.333 4.001 3.75 6.758 3.75s5.287-1.417 6.758-3.75a.748.748 0 0 0 0-.5c-1.471-2.333-4.001-3.75-6.758-3.75zm0 1.5a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5zm0 2a1.75 1.75 0 1 0 0 3.5 1.75 1.75 0 0 0 0-3.5z" />
-                                                </svg>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endif
-                            @empty
+                        @foreach ($students as $student)
+                            @php
+                                $payment = $payments->firstWhere('payment_id', $student->id); 
+                                $status = $payment ? $payment->status : 'No payment';
+                            @endphp
+                            @if ($payment && $status === 'pending') 
                                 <tr>
-                                    <td colspan="9" class="text-center">No students found.</td>
+                                    <td>
+                                        <input type="checkbox" name="payments[]" value="{{ $payment->id }}" class="paymentCheckbox">
+                                    </td>
+                                    <td>{{ $status }}</td>
+                                    <td>{{ $student->lastname }}</td>
+                                    <td>{{ $student->firstname }}</td>
+                                    <td>{{ $student->middlename }}</td>
+                                    <td>{{ $payment->level ?? 'N/A' }}</td>
+                                    <td>{{ $payment->fee_type ?? 'N/A' }}</td>
+                                    <td>{{ $payment->amount ?? 'N/A' }}</td>
+                                    <td>
+                                        <a href="{{ url('proofofpayment/' . $payment->id) }}"
+                                        class="btn btn-info btn-sm" title="View">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                                <path d="M7.998 2c-2.757 0-5.287 1.417-6.758 3.75a.748.748 0 0 0 0 .5c1.471 2.333 4.001 3.75 6.758 3.75s5.287-1.417 6.758-3.75a.748.748 0 0 0 0-.5c-1.471-2.333-4.001-3.75-6.758-3.75zm0 1.5a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5zm0 2a1.75 1.75 0 1 0 0 3.5 1.75 1.75 0 0 0 0-3.5z" />
+                                            </svg>
+                                        </a>
+                                    </td>
                                 </tr>
-                            @endforelse
+                            @endif
+                        @endforeach
                         </tbody>
                     </table>
                 </div>

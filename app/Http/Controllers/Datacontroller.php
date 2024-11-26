@@ -35,6 +35,7 @@ use App\Models\section;
 use App\Models\subject;
 use App\Models\QuarterSettings;
 use App\Models\teacher;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 
 
@@ -90,43 +91,42 @@ class Datacontroller extends Controller
         }
     }
 
-    // Attempt to log in with provided credentials
     if (Auth::attempt($credentials)) {
         $user = Auth::user();
 
-        // Handle non-default roles
         switch ($user->role) {
             case 'Teacher':
                 sweetalert()->success('Welcome Teacher!');
                 return redirect('/teacher')->with('success', 'Welcome, Teacher!');
 
                 case 'Newstudent':
-                    // Retrieve the associated register_form for the Newstudent
-                    $registerForm = register_form::where('user_id', $user->id)->first();
                 
-                    // Log the user ID and the register form retrieved for debugging
-                    Log::info('User ID:', ['user_id' => $user->id]);
-                    Log::info('Register Form:', ['registerForm' => $registerForm]);
+                    $registerForm = register_form::where('user_id', $user->id)->first();
+         
+                    // Log::info('User ID:', ['user_id' => $user->id]);
+                    // Log::info('Register Form:', ['registerForm' => $registerForm]);
                 
                     if ($registerForm) {
-                        // Check if the status is approved
                         if ($registerForm->status === register_form::STATUS_APPROVED) {
-                            // Log the successful status check
-                            Log::info('Register Form approved:', ['registerFormId' => $registerForm->user_id]);
+
+                            // Log::info('Register Form approved:', ['registerFormId' => $registerForm->user_id]);  
                             return redirect('/studentdetails/' . $registerForm->id)
                                 ->with('success', 'Welcome, New Student!');
                         } else {
-                            // If the registration is pending approval
+
                             sweetalert()->warning('Your account is pending approval.');
                             return redirect('/login')->with('error', 'Your registration is still pending approval.');
                         }
                     } else {
-                        // If no registration form found for the user
+
                         sweetalert()->warning('No registration details found.');
                         return redirect('/login')->with('error', 'No registration details found.');
                     }
-            case 'Oldstudent':
-                return redirect('/studentdashboard')->with('success', 'Welcome, Student!');
+            case 'NewStudent':
+                return redirect('/studentdashboard')->with('success', 'Welcome, New Student!');
+
+            case 'OldStudent':
+                return redirect('/oldstudentenrollment')->with('success', 'Welcome, Old Student!');
 
             case 'Record':
                 sweetalert()->success('Welcome Records!');
@@ -148,7 +148,6 @@ class Datacontroller extends Controller
                 return back()->with('error', 'Invalid user role.');
         }
     } else {
-        // Authentication failed
         sweetalert()->error('Pending account approval. Please try again.');
         return redirect('/login')->withErrors([
             'email' => 'The provided email is incorrect.',
@@ -177,18 +176,14 @@ class Datacontroller extends Controller
 
     public function studentdetailspost(Request $request)
 {
-    // Get the authenticated user
     $user = Auth::user();
 
-    // Fetch the user's register form
     $registerForm = register_form::where('user_id', $user->id)->first();
 
-    // Check if the register form exists
     if (!$registerForm) {
         return redirect()->back()->with('error', 'No registration form found for the current user.');
     }
 
-    // Validate incoming data
     $validateData = $request->validate([
         'firstname' => 'required',
         'middlename' => 'required',
@@ -213,13 +208,10 @@ class Datacontroller extends Controller
         'details_id' => 'required|in:' . $registerForm->id,
     ]);
 
-    // Optionally add the status field
     $validateData['status'] = 'pending';
 
-    // Create the student details record
     studentdetails::create($validateData);
 
-    // Check the status of the register form
     if ($registerForm->status === register_form::STATUS_APPROVED) {
         return redirect('/address_contact/' . $registerForm->id)->with('success', 'Welcome, New Student!');
     } else {
@@ -247,15 +239,13 @@ public function address_contactpost(Request $request)
         if ($registerForm->status === register_form::STATUS_APPROVED) {
             return redirect('/previous_school/' . $registerForm->id)->with('success', 'Address and contact submitted successfully.');
         } else {
-            // Handle case where status is not approved
-           
             return redirect('/address_contact')->with('error', 'Your registration is still pending approval.');
         }
    }
     public function recordapprovalpost(Request $request)
 {
     $validateData = $request->validate([
-        'id' => 'required|exists:register_form,id', // Ensure the record exists
+        'id' => 'required|exists:register_form,id', 
         'firstname' => 'required',
         'lastname' => 'required',
         'middlename' => 'required',
@@ -272,21 +262,19 @@ public function address_contactpost(Request $request)
         'middlename' => $validateData['middlename'],
         'suffix' => $validateData['suffix'],
         'role' => $validateData['role'],
-        'email' => $validateData['email'], // Fetching email from user input
-        'password' => bcrypt($validateData['password']), // Store hashed password
+        'email' => $validateData['email'], 
+        'password' => bcrypt($validateData['password']), 
     ]);
 
-    // Send approval email
     FacadesMail::to($user->email)->send(new ApproveStudent($user));
 
-    // Update the register_form status to approved
     $registerForm = register_form::findOrFail($validateData['id']);
     $registerForm->status = register_form::STATUS_APPROVED;
-    $registerForm->user_id = $user->id; // Set the user_id to the newly created user's ID
+    $registerForm->user_id = $user->id;
     $registerForm->save();
 
     sweetalert()->success('You have approved the student and created a user!');
-    return redirect('/studentapplicant'); // Redirect to the list of applicants
+    return redirect('/studentapplicant'); 
 }
 
     public function previous_schoolpost(Request $request)
@@ -335,22 +323,20 @@ public function address_contactpost(Request $request)
 {
     $validateData = $request->validate([
         'type' => 'required|array',
-        'type.*' => 'string|distinct', // Ensure that each type is unique
+        'type.*' => 'string|distinct', 
         'documents' => 'required|array',
         'documents.*' => 'file|max:10240|mimes:jpg,png,pdf',
         'required_id' => 'required|exists:register_form,id',
     ]);
 
-    // Prepare for document upload
-    $uploadedTypes = []; // Track uploaded types
-    $filesUploaded = []; // To track successfully uploaded files
+    $uploadedTypes = []; 
+    $filesUploaded = []; 
 
     foreach ($request->file('documents') as $index => $file) {
         $docType = $validateData['type'][$index];
 
-        // Check if this type has already been uploaded
         if (in_array($docType, $uploadedTypes)) {
-            continue; // Skip if already uploaded
+            continue; 
         }
 
         $filePath = $file->store('documents', 'public');
@@ -362,10 +348,9 @@ public function address_contactpost(Request $request)
         ]);
 
         $uploadedTypes[] = $docType;
-        $filesUploaded[] = $filePath; // Track uploaded files
+        $filesUploaded[] = $filePath;
     }
 
-    // Redirect based on registration status
     $user = Auth::user();
     $registerForm = register_form::where('user_id', $user->id)->first();
 
@@ -389,9 +374,8 @@ public function address_contactpost(Request $request)
             $file = $request->file('payment-proof');
             $filePath = $file->store('payment_proofs', 'public');
 
-            // Define the amount and fee type here
-            $amount = 500;  // Example amount, adjust as needed
-            $feeType = 'Enrollment Fee';  // Example fee type, adjust as needed
+            $amount = 500;  
+            $feeType = 'Enrollment Fee'; 
 
             $payment = new payment_form();
             $payment->fee_type = $feeType;
@@ -404,10 +388,9 @@ public function address_contactpost(Request $request)
 
             $user = Auth::user();
             if ($user instanceof User) {
-                $user->role = 'Oldstudent';
+                $user->role = 'NewStudent';
                 $user->save();
 
-                // Sending email with user data, amount, and fee type
                 FacadesMail::to($user->email)->send(new PendingPayment($user->toArray(), $amount, $feeType));
             }
             
@@ -417,7 +400,6 @@ public function address_contactpost(Request $request)
 
     public function updatedetailspost(Request $request)
 {
-    // Validate the incoming request data
     $validateData = $request->validate([
         'firstname' => 'required',
         'middlename' => 'required',
@@ -440,28 +422,23 @@ public function address_contactpost(Request $request)
         'guardian_contact' => 'required',
     ]);
 
-    // Get the authenticated user's ID
     $userId = Auth::user()->id;
 
-    // Find the register form associated with the authenticated user
     $registerForm = \App\Models\register_form::where('user_id', $userId)->first();
 
     if (!$registerForm) {
         return redirect()->route('enrollment.step')->withErrors('No registration form found.');
     }
 
-    // Find the student details using the register form ID
     $studentDetail = \App\Models\StudentDetails::where('details_id', $registerForm->id)->first();
 
     if ($studentDetail) {
-        // Update the student details
+
         $studentDetail->update($validateData);
         
-        // Update the status to 'approved'
         $studentDetail->status = 'approved';
         $studentDetail->save();
 
-        // Redirect with a success message
         return redirect()->route('enrollment.step')->with('success', 'Student details updated successfully.');
     } else {
         return redirect()->route('enrollment.step')->withErrors('Student details not found.');
@@ -480,21 +457,17 @@ public function address_contactpost(Request $request)
         ]);
         $userId = Auth::user()->id;
     
-        // Find the student details by the authenticated user's ID (details_id)
         $registerForm = \App\Models\register_form::where('user_id', $userId)->first();
-    
 
         $address = \App\Models\address::where('address_id', $registerForm->id)->first();
 
         if ($address) {
-            // Update the student details
+
             $address->update($validateData);
 
-            // Update the status to 'approved'
             $address->status = 'approved';
             $address->save();
 
-            // Redirect with a success message
             return redirect()->route('enrollment.step')->with('success', 'Address details updated successfully.');
         } else {
             return redirect()->route('enrollment.step')->withErrors('Address details not found.');
@@ -516,25 +489,21 @@ public function address_contactpost(Request $request)
             'primary_school_year_to' => 'required',
             'primary_school_type' => 'required',
 
-           
         ]);
 
         $userId = Auth::user()->id;
-    
-        // Find the student details by the authenticated user's ID (details_id)
+
         $registerForm = \App\Models\register_form::where('user_id', $userId)->first();
     
         $previousSchool = \App\Models\previous_school::where('school_id', $registerForm->id)->first();
         
         if ($previousSchool) {
-            // Update the student details
+
             $previousSchool->update($validateData);
 
-            // Update the status to 'approved'
             $previousSchool->status = 'approved';
             $previousSchool->save();
 
-            // Redirect with a success message
             return redirect()->route('enrollment.step')->with('success', 'Previous school details updated successfully.');
         } else {
             return redirect()->route('enrollment.step')->withErrors('Previous school details not found.');
@@ -653,26 +622,20 @@ public function address_contactpost(Request $request)
 
     public function enrollmentStep()
 {
-    // Ensure the user is authenticated
     if (!Auth::check()) {
         return redirect()->route('login');
     }
 
-    // Get the authenticated user
     $user = Auth::user();
 
-    // Fetch the register form associated with the authenticated user
     $registerForm = register_form::where('user_id', $user->id)->first();
 
-    // Handle case where no register form is found
     if (!$registerForm) {
         return redirect()->route('/enrollmentstep')->with('error', 'No registration form found.');
     }
 
-    // Use the registerForm's ID to fetch related records
     $registerFormId = $registerForm->id;
 
-    // Fetch related records using the primary key of register_form
     $studentDetail = studentdetails::where('details_id', $registerFormId)->first();
     $address = address::where('address_id', $registerFormId)->first();
     $payment = payment_form::where('payment_id', $registerFormId)->first();
@@ -712,7 +675,6 @@ public function address_contactpost(Request $request)
         $allCompleted = false;
     }
 
-    // Extract address_id
     $address_id = $address ? $address->address_id : null;
     $details_id = $studentDetail ? $studentDetail->details_id : null;
     $school_id  = $previousSchool ? $previousSchool->school_id : null;
@@ -720,9 +682,8 @@ public function address_contactpost(Request $request)
     $payment_id = $payment ? $payment->payment_id : null;
     $class_id = $assign ? $assign->class_id : null;
 
-    // Pass the statuses and the allCompleted flag to the view
     return view('enrollmentstep', compact(
-        'allCompleted', // Pass the combined status flag
+        'allCompleted', 
         'detailsStatus', 
         'addressStatus', 
         'previousStatus', 
@@ -740,28 +701,27 @@ public function address_contactpost(Request $request)
     ));
 }
 
-    public function approvePayment($id)
-    {
-        $paymentForm = payment_form::where('payment_id', $id)->first();
+public function approvePayment($id)
+{
+    $paymentForm = payment_form::find($id); 
 
-        if (!$paymentForm) {
-            return redirect('/cashierstudentfee')->with('error', 'Payment not found.');
-        }
-
-        if ($paymentForm->status === 'pending') {
-            $paymentForm->status = 'approved';
-            $paymentForm->save();
-        }
-
-        $user = Auth::user();
-        if ($user instanceof User) {
-            $user->role = 'Oldstudent';
-            $user->save();
-            FacadesMail::to($user->email)->send(new ApprovePayment($user->toArray()));
-        }
-
-        return redirect('/cashierstudentfee')->with('success', 'Payment approved successfully.');
+    if (!$paymentForm) {
+        return redirect('/cashierstudentfee')->with('error', 'Payment not found.');
     }
+
+    if ($paymentForm->status === 'pending') {
+        $paymentForm->status = 'approved';
+        $paymentForm->save();
+    }
+
+    $user = Auth::user();
+    if ($user instanceof User) {
+        $user->save();
+        FacadesMail::to($user->email)->send(new ApprovePayment($user->toArray()));
+    }
+
+    return redirect('/cashierstudentfee')->with('success', 'Payment approved successfully.');
+}
 
     //principal
 
@@ -870,42 +830,42 @@ public function address_contactpost(Request $request)
         ])->with('success', 'Classload added successfully.');
     }
 
-    public function principalclassload(Request $request)
-{
-    // Get selected values from the request
-    $selectedGrade = $request->input('grade', session('selectedGrade'));
-    $selectedSection = $request->input('section', session('selectedSection'));
-    $selectedSubject = $request->input('subject', session('selectedSubject'));
-    
-    // Get all classes
-    $class = classes::all();
-    
-    // Fetch all teachers
-    $teachers = teacher::all();
+        public function principalclassload(Request $request)
+    {
+        // Get selected values from the request
+        $selectedGrade = $request->input('grade', session('selectedGrade'));
+        $selectedSection = $request->input('section', session('selectedSection'));
+        $selectedSubject = $request->input('subject', session('selectedSubject'));
+        
+        // Get all classes
+        $class = classes::all();
+        
+        // Fetch all teachers
+        $teachers = teacher::all();
 
-    // Extract unique subjects from teachers
-    $subjects = [];
-    foreach ($teachers as $teacher) {
-        $teacherSubjects = explode(',', $teacher->subject); // Assuming subjects are comma-separated
-        foreach ($teacherSubjects as $subject) {
-            $subjects[trim($subject)] = true; 
-          }
-    }
-    $subjects = array_keys($subjects); 
-    $filteredTeachers = teacher::where('grade', $selectedGrade)
-                               ->where('subject', 'LIKE', '%' . $selectedSubject . '%')
-                               ->get();
-    
-    $schedules = []; 
+        // Extract unique subjects from teachers
+        $subjects = [];
+        foreach ($teachers as $teacher) {
+            $teacherSubjects = explode(',', $teacher->subject); // Assuming subjects are comma-separated
+            foreach ($teacherSubjects as $subject) {
+                $subjects[trim($subject)] = true; 
+            }
+        }
+            $subjects = array_keys($subjects);
+        $filteredTeachers = teacher::where('grade', $selectedGrade)
+        ->where('subject', 'LIKE', '%' . $selectedSubject . '%')
+        ->get();
+        
+        $schedules = []; 
 
-     if ($selectedGrade && $selectedSection) {
-        $schedules = classes::where('grade', $selectedGrade)
-                             ->where('section', $selectedSection)
-                             ->get();
+        if ($selectedGrade && $selectedSection) {
+            $schedules = classes::where('grade', $selectedGrade)
+                                ->where('section', $selectedSection)
+                                ->get();
+        }
+        
+        return view('principalclassload', compact('class', 'subjects', 'filteredTeachers', 'schedules', 'selectedGrade', 'selectedSection', 'selectedSubject'));
     }
-    
-    return view('principalclassload', compact('class', 'subjects', 'filteredTeachers', 'schedules', 'selectedGrade', 'selectedSection', 'selectedSubject'));
-}
 
 public function principaleditassessmentpost(Request $request)
 {
@@ -977,11 +937,9 @@ public function updateQuarters(Request $request)
 
 public function showEvaluateGrades()
 {
-    // Fetch the existing quarter settings
     $quarterSettings = QuarterSettings::first();
 
-    // Initialize with default values if no settings found
-    if (!$quarterSettings) {
+     if (!$quarterSettings) {
         $quarterSettings = new QuarterSettings();
         $quarterSettings->first_quarter_enabled = false;
         $quarterSettings->second_quarter_enabled = false;
@@ -990,7 +948,7 @@ public function showEvaluateGrades()
         $quarterSettings->quarter_status = 'inactive'; // Default status
     }
 
-    // Prepare the quarters enabled and status arrays
+
     $quartersEnabled = [
         '1st_quarter' => $quarterSettings->first_quarter_enabled,
         '2nd_quarter' => $quarterSettings->second_quarter_enabled,
@@ -998,7 +956,7 @@ public function showEvaluateGrades()
         '4th_quarter' => $quarterSettings->fourth_quarter_enabled,
     ];
 
-    // Prepare the quarters status array
+   
     $quartersStatus = [
         '1st_quarter' => $quarterSettings->quarter_status,
         '2nd_quarter' => $quarterSettings->quarter_status,
@@ -1109,32 +1067,42 @@ public function showEvaluateGrades()
         }
     }
 
-    public function section(Request $request)
+    public function sectionpost(Request $request)
     {
-        // Validate the incoming request
         $request->validate([
             'selected_classes' => 'required|array',
             'selected_classes.*' => 'string',
             'grade' => 'required|string',
-            'payment_id' => 'required|integer',
+            'payment_id' => 'required|integer'
         ]);
     
-        // Initialize a flag to check if any classes were assigned
+        $paymentId = $request->input('payment_id');
+        Log::info('Submitted payment_id:', ['payment_id' => $paymentId]);
+    
+        // Check if the payment_id exists in the payment_form table
+        $paymentExists = payment_form::where('payment_id', $paymentId)->exists();
+    
+        if (!$paymentExists) {
+            return redirect('/sectioning')->with('error', 'Invalid payment ID. Please check and try again.');
+        }
+    
+        // Use the payment_id as both class_id and assign_id
+        $paymentFormId = $paymentId; 
+    
         $anyAssigned = false;
-        $user = register_form::find($request->input('payment_id'));
     
         foreach ($request->selected_classes as $classEdpCode) {
-            $class = classes::where('edpcode', $classEdpCode)->first();
+            $class = Classes::where('edpcode', $classEdpCode)->first();
     
             if ($class) {
-                // Check for existing assignments to avoid duplicates
-                $existingAssignment = assign::where('edpcode', $class->edpcode)
-                    ->where('class_id', $request->input('payment_id'))
+                // Check for existing assignments using paymentFormId
+                $existingAssignment = Assign::where('edpcode', $class->edpcode)
+                    ->where('class_id', $paymentFormId) // Using paymentFormId as class_id
                     ->first();
     
                 if (!$existingAssignment) {
-                    // Create a new assignment
-                    $assignment = assign::create([
+                    // Create a new assignment using paymentFormId for class_id and assign_id
+                    $assignment = Assign::create([
                         'grade' => $request->input('grade'),
                         'adviser' => $class->adviser,
                         'section' => $class->section,
@@ -1147,15 +1115,15 @@ public function showEvaluateGrades()
                         'startTime' => $class->startTime,
                         'endTime' => $class->endTime,
                         'days' => $class->days,
-                        'class_id' => $request->input('payment_id'),
+                        'class_id' => $paymentFormId, // Use payment_id as class_id
                         'status' => 'assigned',
+                        'assign_id' => $paymentFormId, // Use payment_id as assign_id
                     ]);
     
-                    // Log the created assignment
                     Log::info('Assignment Created:', $assignment->toArray());
     
-                    // Update the class status
-                    $class->assign_id = $request->input('payment_id');
+                    // Update class status
+                    $class->assign_id = $paymentFormId; // Use payment_id as assign_id in class
                     $class->status = 'assigned';
                     $class->save();
     
@@ -1164,10 +1132,8 @@ public function showEvaluateGrades()
             }
         }
     
-        // Send email notification if any classes were assigned
         if ($anyAssigned) {
-            FacadesMail::to($user->email)->send(new ApproveSectioning($user));
-            return redirect('/sectioning')->with('success', 'Classload assigned successfully and email sent.');
+            return redirect('/sectioning')->with('success', 'Classload assigned successfully.');
         } else {
             return redirect('/sectioning')->with('error', 'No classes were assigned or duplicate entries were avoided.');
         }
@@ -1325,22 +1291,18 @@ public function showEvaluateGrades()
 
     public function cashierstudentfeepost(Request $request)
     {
-        // Validate the incoming request
         $request->validate([
             'payments' => 'required|array',
-            'payments.*' => 'exists:payment_form,id', // Ensure each payment ID exists
+            'payments.*' => 'exists:payment_form,id', 
         ]);
     
-        // Get the selected payment IDs
         $paymentIds = $request->input('payments');
         $approvedPayments = [];
     
         foreach ($paymentIds as $id) {
-            // Find the payment record
             $paymentForm = payment_form::where('id', $id)->first();
     
             if ($paymentForm && $paymentForm->status === 'pending') {
-                // Update the payment status
                 $paymentForm->status = 'approved';
                 $paymentForm->save();
     
@@ -1348,14 +1310,11 @@ public function showEvaluateGrades()
             }
         }
     
-        // Check if any payments were approved
         if (!empty($approvedPayments)) {
             $user = Auth::user();
             if ($user instanceof User) {
-                $user->role = 'Oldstudent';
                 $user->save();
     
-                // Send notification email
                 FacadesMail::to($user->email)->send(new ApprovePayment($user->toArray()));
             }
         }
@@ -1519,5 +1478,443 @@ public function showEvaluateGrades()
         }
 
         return response()->json(['message' => 'Grade not found.'], 404);
+    }
+
+
+    public function newstudentpost(Request $request)
+    {
+        $validatedData = $request->validate([
+            'firstname' => 'required',
+            'middlename' => 'required',
+            'lastname' => 'required',
+            'suffix' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8',
+            'nationality' => 'required',
+            'gender' => 'required',
+            'civilstatus' => 'required',
+            'birthdate' => 'required|date',
+            'birthplace' => 'required',
+            'religion' => 'required',
+            'mother_name' => 'required',
+            'mother_occupation' => 'required',
+            'mother_contact' => 'required',
+            'father_name' => 'required',
+            'father_occupation' => 'required',
+            'father_contact' => 'required',
+            'guardian_name' => 'required',
+            'guardian_occupation' => 'required',
+            'guardian_contact' => 'required',
+        ]);
+    
+        DB::beginTransaction();
+    
+        try {
+            // Create User with hashed password
+            $user = User::create([
+                'firstname' => $validatedData['firstname'],
+                'middlename' => $validatedData['middlename'],
+                'lastname' => $validatedData['lastname'],
+                'suffix' => $validatedData['suffix'],
+                'email' => $validatedData['email'],
+                'password' => bcrypt($validatedData['password']), // Hash the password
+                'role' => 'NewStudent',
+            ]);
+    
+            // Create Register Form without hashing the password
+            $registerForm = register_form::create([
+                'firstname' => $validatedData['firstname'],
+                'middlename' => $validatedData['middlename'],
+                'lastname' => $validatedData['lastname'],
+                'suffix' => $validatedData['suffix'],
+                'email' => $validatedData['email'],
+                'password' => $validatedData['password'], // Store plain password
+                'status' => register_form::STATUS_APPROVED, // Set status to approved
+                'user_id' => $user->id, 
+            ]);
+    
+            // Create Student Details
+        studentdetails::create([
+            'details_id' => $registerForm->id, 
+            'firstname' => $validatedData['firstname'], // Ensure this is included
+            'middlename' => $validatedData['middlename'], // Include if needed
+            'lastname' => $validatedData['lastname'], // Include if needed
+            'suffix' => $validatedData['suffix'], // Include if needed
+            'nationality' => $validatedData['nationality'],
+            'gender' => $validatedData['gender'],
+            'civilstatus' => $validatedData['civilstatus'],
+            'birthdate' => $validatedData['birthdate'],
+            'birthplace' => $validatedData['birthplace'],
+            'religion' => $validatedData['religion'],
+            'mother_name' => $validatedData['mother_name'],
+            'mother_occupation' => $validatedData['mother_occupation'],
+            'mother_contact' => $validatedData['mother_contact'],
+            'father_name' => $validatedData['father_name'],
+            'father_occupation' => $validatedData['father_occupation'],
+            'father_contact' => $validatedData['father_contact'],
+            'guardian_name' => $validatedData['guardian_name'],
+            'guardian_occupation' => $validatedData['guardian_occupation'],
+            'guardian_contact' => $validatedData['guardian_contact'],
+            'status' => studentdetails::STATUS_APPROVED, // Set status to approved
+        ]);
+    
+            DB::commit();
+    
+            return response()->json(['message' => 'Student registered successfully!'], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Registration failed: '.$e->getMessage());
+            return response()->json(['error' => 'Registration failed, please try again.'], 500);
+        }
+    }
+
+
+    public function oldstudentpost(Request $request)
+    {
+        $validatedData = $request->validate([
+            'firstname' => 'required',
+            'middlename' => 'required',
+            'lastname' => 'required',
+            'suffix' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8',
+            'nationality' => 'required',
+            'gender' => 'required',
+            'civilstatus' => 'required',
+            'birthdate' => 'required|date',
+            'birthplace' => 'required',
+            'religion' => 'required',
+            'mother_name' => 'required',
+            'mother_occupation' => 'required',
+            'mother_contact' => 'required',
+            'father_name' => 'required',
+            'father_occupation' => 'required',
+            'father_contact' => 'required',
+            'guardian_name' => 'required',
+            'guardian_occupation' => 'required',
+            'guardian_contact' => 'required',
+        ]);
+    
+        DB::beginTransaction();
+    
+        try {
+            $user = User::create([
+                'firstname' => $validatedData['firstname'],
+                'middlename' => $validatedData['middlename'],
+                'lastname' => $validatedData['lastname'],
+                'suffix' => $validatedData['suffix'],
+                'email' => $validatedData['email'],
+                'password' => bcrypt($validatedData['password']), 
+                'role' => 'OldStudent',
+            ]);
+
+            $registerForm = register_form::create([
+                'firstname' => $validatedData['firstname'],
+                'middlename' => $validatedData['middlename'],
+                'lastname' => $validatedData['lastname'],
+                'suffix' => $validatedData['suffix'],
+                'email' => $validatedData['email'],
+                'password' => $validatedData['password'], 
+                'status' => register_form::STATUS_APPROVED, 
+                'user_id' => $user->id, 
+            ]);
+
+            session(['register_form_id' => $registerForm->id]);
+    
+        studentdetails::create([
+            'details_id' => $registerForm->id, 
+            'firstname' => $validatedData['firstname'], // Ensure this is included
+            'middlename' => $validatedData['middlename'], // Include if needed
+            'lastname' => $validatedData['lastname'], // Include if needed
+            'suffix' => $validatedData['suffix'], // Include if needed
+            'nationality' => $validatedData['nationality'],
+            'gender' => $validatedData['gender'],
+            'civilstatus' => $validatedData['civilstatus'],
+            'birthdate' => $validatedData['birthdate'],
+            'birthplace' => $validatedData['birthplace'],
+            'religion' => $validatedData['religion'],
+            'mother_name' => $validatedData['mother_name'],
+            'mother_occupation' => $validatedData['mother_occupation'],
+            'mother_contact' => $validatedData['mother_contact'],
+            'father_name' => $validatedData['father_name'],
+            'father_occupation' => $validatedData['father_occupation'],
+            'father_contact' => $validatedData['father_contact'],
+            'guardian_name' => $validatedData['guardian_name'],
+            'guardian_occupation' => $validatedData['guardian_occupation'],
+            'guardian_contact' => $validatedData['guardian_contact'],
+            'status' => studentdetails::STATUS_PENDING, 
+        ]);
+    
+            DB::commit();
+    
+            return redirect('oldstudentaddress');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Registration failed: '.$e->getMessage());
+            return response()->json(['error' => 'Registration failed, please try again.'], 500);
+        }
+    }
+
+    public function oldstudentaddresspost(Request $request)
+    {
+
+        $registerFormId = session('register_form_id'); 
+
+        if (!$registerFormId) {
+            return response()->json(['error' => 'Register form ID not found.'], 404);
+        }
+
+        $registerForm = \App\Models\register_form::find($registerFormId);
+
+        if (!$registerForm) {
+            return response()->json(['error' => 'Register form not found.'], 404);
+        }
+
+        $validatedData = $request->validate([
+            'zipcode' => 'required',
+            'province' => 'required',
+            'city' => 'required',
+            'barangay' => 'required',
+            'streetaddress' => 'required',
+            
+        ]);
+    
+
+        $validatedData['address_id'] = $registerForm->id; 
+        $validatedData['status'] = address::STATUS_PENDING;
+
+        address::create($validatedData); 
+
+        return redirect('oldstudentprevious');
+    }
+
+    public function oldstudentpreviouspost(Request $request)
+    {
+        $registerFormId = session('register_form_id'); 
+
+        if (!$registerFormId) {
+            return response()->json(['error' => 'Register form ID not found.'], 404);
+        }
+
+        $registerForm = \App\Models\register_form::find($registerFormId);
+
+        if (!$registerForm) {
+            return response()->json(['error' => 'Register form not found.'], 404);
+        }
+
+        $validatedData = $request->validate([
+            'second_school_name' => 'required',
+            'second_last_year_level' => 'required',
+            'second_school_year_from' => 'required|digits:4|integer|min:1900|max:2100',
+            'second_school_year_to' => 'required|digits:4|integer|min:1900|max:2100|gte:second_school_year_from',
+            'second_school_type' => 'required',
+
+            'primary_school_name' => 'required',
+            'primary_last_year_level' => 'required',
+            'primary_school_year_from' => 'required|digits:4|integer|min:1900|max:2100',
+            'primary_school_year_to' => 'required|digits:4|integer|min:1900|max:2100|gte:primary_school_year_from',
+            'primary_school_type' => 'required',
+        ]);
+
+        $validatedData['school_id'] = $registerForm->id; 
+        $validatedData['status'] = previous_school::STATUS_PENDING;
+
+        previous_school::create($validatedData); 
+
+        return redirect('admin');
+    }
+
+    public function oldstudentupdatedocumentspost(Request $request)
+    {
+        $validateData = $request->validate([
+            'type' => 'required|array',
+            'type.*' => 'string|distinct',
+            'documents' => 'required|array',
+            'documents.*' => 'file|max:10240|mimes:jpg,png,pdf',
+            'required_id' => 'required|exists:register_form,id',
+        ]);
+    
+        $uploadedTypes = [];
+        $filesUploaded = [];
+    
+        foreach ($request->file('documents') as $index => $file) {
+            $docType = $validateData['type'][$index];
+    
+            if (in_array($docType, $uploadedTypes)) {
+                continue;
+            }
+    
+            $filePath = $file->store('documents', 'public');
+    
+            required_docs::create([
+                'type' => $docType,
+                'documents' => $filePath,
+                'required_id' => $validateData['required_id'],
+                'status' => 'approved'
+            ]);
+    
+            $uploadedTypes[] = $docType;
+            $filesUploaded[] = $filePath;
+        }
+    
+        $user = Auth::user();
+        $registerForm = register_form::where('user_id', $user->id)->first();
+    
+        if (!$registerForm) {
+            return redirect('/oldstudentenrollment')->with('error', 'Register form not found.');
+        }
+    
+        return redirect()->route('oldstudentenrollment')
+                         ->with('success', 'Required Documents submitted successfully.');
+    }
+
+    public function oldstudentpaymentpost(Request $request)
+    {
+        $registerFormId = session('register_form_id'); 
+
+        if (!$registerFormId) {
+            return response()->json(['error' => 'Register form ID not found.'], 404);
+        }
+    
+        $registerForm = \App\Models\register_form::find($registerFormId);
+    
+        if (!$registerForm) {
+            return response()->json(['error' => 'Register form not found.'], 404);
+        }
+
+        $request->validate([
+            'payment-proof' => 'required|image|mimes:jpg,jpeg,png,bmp|max:2048',
+            'level' => 'required|string',
+            'payment-details' => 'required|string|max:1000',
+        ]);
+
+        if ($request->hasFile('payment-proof')) {
+            $file = $request->file('payment-proof');
+            $filePath = $file->store('payment_proofs', 'public');
+
+            $payment = new payment_form();
+            $payment->fee_type = 'Enrollment Fee'; 
+            $payment->amount = 500; 
+            $payment->payment_proof = $filePath;
+            $payment->payment_details = $request->input('payment-details');
+            $payment->payment_id = $registerFormId; 
+            $payment->level = $request->input('level');
+            $payment->status = 'pending'; 
+            $payment->save();
+        }
+        return redirect('oldstudentenrollment')->with('success', 'Payment submitted successfully. Please wait for cashier approval');
+    }
+
+
+    public function oldstudentupdatedetailspost(Request $request)
+    {
+        $validateData = $request->validate([
+            'firstname' => 'required',
+            'middlename' => 'required',
+            'lastname' => 'required',
+            'suffix' => 'required',
+            'nationality' => 'required',
+            'gender' => 'required',
+            'civilstatus' => 'required',
+            'birthdate' => 'required',
+            'birthplace' => 'required',
+            'religion' => 'required',
+            'mother_name' => 'required',
+            'mother_occupation' => 'required',
+            'mother_contact' => 'required',
+            'father_name' => 'required',
+            'father_occupation' => 'required',
+            'father_contact' => 'required',
+            'guardian_name' => 'required',
+            'guardian_occupation' => 'required',
+            'guardian_contact' => 'required',
+        ]);
+    
+        $userId = Auth::user()->id;
+    
+        $registerForm = \App\Models\register_form::where('user_id', $userId)->first();
+    
+        if (!$registerForm) {
+            return redirect()->route('oldstudentenrollment')->withErrors('No registration form found.');
+        }
+    
+        $studentDetail = \App\Models\StudentDetails::where('details_id', $registerForm->id)->first();
+    
+        if ($studentDetail) {
+    
+            $studentDetail->update($validateData);
+            
+            $studentDetail->status = 'approved';
+            $studentDetail->save();
+    
+            return redirect()->route('oldstudentenrollment')->with('success', 'Student details updated successfully.');
+        } else {
+            return redirect()->route('oldstudentenrollment')->withErrors('Student details not found.');
+        }
+    }
+    public function oldstudentupdateaddresspost(Request $request)
+    {
+        $validateData = $request->validate([
+            'zipcode' => 'required',
+            'province' => 'required',
+            'city' => 'required',
+            'barangay' => 'required',
+            'streetaddress' => 'required',
+            
+        ]);
+        $userId = Auth::user()->id;
+
+        $registerForm = \App\Models\register_form::where('user_id', $userId)->first();
+
+        $address = \App\Models\address::where('address_id', $registerForm->id)->first();
+
+        if ($address) {
+            $address->update($validateData);
+
+            $address->status = 'approved';
+            $address->save();
+
+            return redirect('oldstudentenrollment')->with('success', 'Address details updated successfully.');
+        } else {
+            return redirect()->route('oldstudentenrollment')->withErrors('Address details not found.');
+        }
+    }
+
+    public function oldstudentupdatepreviouspost(Request $request)
+    {
+        $validateData = $request->validate([
+            'second_school_name' => 'required',
+            'second_last_year_level' => 'required',
+            'second_school_year_from' => 'required',
+            'second_school_year_to' => 'required',
+            'second_school_type' => 'required',
+
+            'primary_school_name' => 'required',
+            'primary_last_year_level' => 'required',
+            'primary_school_year_from' => 'required',
+            'primary_school_year_to' => 'required',
+            'primary_school_type' => 'required',
+
+           
+        ]);
+
+        $userId = Auth::user()->id;
+
+        $registerForm = \App\Models\register_form::where('user_id', $userId)->first();
+    
+        $previousSchool = \App\Models\previous_school::where('school_id', $registerForm->id)->first();
+        
+        if ($previousSchool) {
+
+            $previousSchool->update($validateData);
+
+            $previousSchool->status = 'approved';
+            $previousSchool->save();
+
+            return redirect('oldstudentenrollment')->with('success', 'Previous school details updated successfully.');
+        } else {
+            return redirect('oldstudentenrollment')->withErrors('Previous school details not found.');
+        }
     }
 }

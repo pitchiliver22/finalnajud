@@ -234,7 +234,7 @@
         const subjectSelect = document.getElementById('subject');
         const selectedSubject = subjectSelect.value;
         const teacherSelect = document.getElementById('assignedTeacher');
-        teacherSelect.innerHTML = '<option value="">Select Teacher</option>'; // Clear previous options
+        teacherSelect.innerHTML = '<option value="">Select Teacher</option>'; 
 
         const selectedGrade = document.getElementById('grade').value;
 
@@ -246,8 +246,7 @@
                         teacherSelect.innerHTML += `<option value="${teacher.id}">${teacher.name}</option>`;
                     });
                     
-                    // Retain the selected teacher if it was submitted
-                    const selectedAdviser = '{{ old('adviser') }}'; // Use old value
+                    const selectedAdviser = '{{ old('adviser') }}'; 
                     if (selectedAdviser) {
                         teacherSelect.value = selectedAdviser;
                     }

@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('days');
             $table->string('status')->nullable();
             $table->unsignedBigInteger('class_id');
-            $table->foreign('class_id')->references('id')->on('payment_form');
+            $table->foreign('class_id')->references('payment_id')->on('payment_form');
 
             $table->timestamps();
         });

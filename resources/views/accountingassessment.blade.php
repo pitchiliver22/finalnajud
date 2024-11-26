@@ -8,11 +8,10 @@
         </div>
     </div>
 
+    <br>
     <div class="row mb-3">
         <div class="col">
             <a href="/createassessment" class="btn btn-primary">Create Assessment</a>
-            <button class="btn btn-secondary">Edit Assessment</button>
-            <button class="btn btn-danger">Delete Assessment</button>
         </div>
     </div>
 

@@ -12,5 +12,6 @@ class section extends Model
     protected $fillable = [
         'grade',
         'section',
+    
     ];
 }

@@ -62,10 +62,11 @@
                 <label for="document-upload" class="form-label">Select Document</label>
                 <select name="type[]" class="form-select">
                     <option value="" disabled selected>Select document type</option>
-                    <option value="2x2 ID Picture">2x2 ID Picture</option>
-                    <option value="Birth Certificate">Birth Certificate</option>
-                    <option value="LCR">Local Civil Registrar (LCR)</option>
-                    <option value="ESC Grantee Certificate">ESC Grantee Certificate</option>
+                    <option value="F-138A or Report Card">F-138A or Report Card</option>
+                    <option value="Certificate of Good Moral Character">Certificate of Good Moral Character</option>
+                    <option value="Birth Certificate in Security Paper(NSO)">Birth Certificate in Security Paper(NSO)</option>
+                    <option value="Medical Certificate">Medical Certificate</option>
+                    <option value="2 pcs of latest and 2x2 colored picture">2 pcs of latest and 2x2 colored picture</option>
                     <option value="Other">Other</option>
                 </select>
                 <input type="file" name="documents[]" accept=".pdf,.jpg,.png" class="form-control mt-2">
@@ -145,10 +146,11 @@
             select.required = true;
             select.innerHTML = `
                 <option value="" disabled selected>Select document type</option>
-                <option value="2x2 ID Picture">2x2 ID Picture</option>
-                <option value="Birth Certificate">Birth Certificate</option>
-                <option value="LCR">Local Civil Registrar (LCR)</option>
-                <option value="ESC Grantee Certificate">ESC Grantee Certificate</option>
+                    <option value="F-138A or Report Card">F-138A or Report Card</option>
+                    <option value="Certificate of Good Moral Character">Certificate of Good Moral Character</option>
+                    <option value="Birth Certificate in Security Paper(NSO)">Birth Certificate in Security Paper(NSO)</option>
+                    <option value="Medical Certificate">Medical Certificate</option>
+                    <option value="2 pcs of latest and 2x2 colored picture">2 pcs of latest and 2x2 colored picture</option>
                 <option value="Other">Other</option>
             `;
             newUpload.appendChild(select);

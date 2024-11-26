@@ -51,7 +51,7 @@
             </div>
         @endif
 
-        <form action="/address_contact" method="POST">
+        <form action="/oldstudentaddress" method="POST">
             @csrf
             <div class="row g-3">
                 <div class="col-md-6">
@@ -59,7 +59,7 @@
                     <input type="text" class="form-control" id="zipcode" name="zipcode" pattern="\d*"
                         title="Please enter numbers only"
                         onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="4"
-                        placeholder="e.g. 1234">
+                        placeholder="e.g. 1234" required>
                 </div>
                 <div class="col-md-6">
                     <label for="province" class="form-label">Province *</label>
@@ -85,13 +85,14 @@
                         placeholder="e.g. Naga Street" pattern="[A-Za-z\s]*" title="Only letters and spaces are allowed"
                         required>
                 </div>
-                
-                <input type="hidden" id="address_id" name="address_id" value="{{ $registerForm->id }}">
+
+                <input type="hidden" name="register_form_id" value="{{ $registerForm->id }}">
                
                 <div class="col-12">
                     <button type="submit" class="btn btn-primary">Next</button>
                 </div>
             </div>
+            
         </form>
     </div>
 </body>

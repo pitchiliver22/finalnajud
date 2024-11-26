@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use tidy;
 use App\Http\Controllers\showAssessment;
+use App\Mail\PublishAssessment;
+use Illuminate\Support\Facades\Mail as FacadesMail;
 
 class Usercontroller extends Controller
 {
@@ -82,25 +84,19 @@ class Usercontroller extends Controller
 
     public function required_documents($registerFormId)
     {
-                   // Fetch the corresponding register_form record using the provided ID
         $registerForm = register_form::findOrFail($registerFormId);
-    
-            // Fetch existing student details linked to this register_form
+
         $details = required_docs::where('required_id', $registerFormId)->get();
-    
-        // Pass both the register form and details to the view
+
         return view('required_documents', compact('registerForm', 'details'));
     }
 
     public function payment_process($registerFormId)
     {
-                   // Fetch the corresponding register_form record using the provided ID
         $registerForm = register_form::findOrFail($registerFormId);
-    
-            // Fetch existing student details linked to this register_form
+
         $details = payment_form::where('payment_id', $registerFormId)->get();
     
-        // Pass both the register form and details to the view
         return view('payment_process', compact('registerForm', 'details'));
     }
 
@@ -155,9 +151,11 @@ class Usercontroller extends Controller
     public function cashierstudentfee($id)
     {
         $student = register_form::findOrFail($id);
-        $proof = payment_form::findOrFail($id);
+
+        $proof = payment_form::where('payment_id', $student->id)->first(); 
+    
         $data = [
-            'title' => 'Student Payment ',
+            'title' => 'Student Payment',
             'account' => $student,
             'proof' => $proof
         ];
@@ -167,75 +165,95 @@ class Usercontroller extends Controller
     public function sectioning($id)
     {
         $student = register_form::findOrFail($id);
-        $proof = payment_form::findOrFail($id);
+
+        $proof = payment_form::where('payment_id', $student->id)->first(); 
+    
         $data = [
-            'title' => 'Sectioning ',
+            'title' => 'Student Payment',
             'account' => $student,
             'proof' => $proof
         ];
-        return view('sectioning', $data);
+        return view('studentapplicant', $data);
     }
 
-    public function assigning($id)
+        public function assigning($id)
     {
-        $students = register_form::findOrFail($id);
-        $proof = payment_form::findOrFail($id);
+        // Fetch the student using the register_form ID
+        $student = register_form::findOrFail($id);
+        
+        // Log the student ID
+        Log::info('Student ID:', [$student->id]);
+        
+        // Fetch the payment proof where payment_id matches the student's ID
+        $proof = payment_form::where('payment_id', $student->id)->first(); 
 
+        // Log the fetched payment proof
+        Log::info('Fetched Payment Proof:', $proof ? [$proof->id] : ['Not found']);
+        
+        // Check if the payment proof exists
+        if (!$proof) {
+            return redirect('/sectioning')->with('error', 'Payment proof not found.');
+        }
+
+        // Fetch classes based on grade levels
         $classes = classes::whereIn('grade', [
-            'kindergarten',
-            'Grade 1',
-            'Grade 2',
-            'Grade 3',
-            'Grade 4',
-            'Grade 5',
-            'Grade 6',
-            'Grade 7',
-            'Grade 8',
-            'Grade 9',
-            'Grade 10'
+            'kindergarten', 'Grade 1', 'Grade 2',
+            'Grade 3', 'Grade 4', 'Grade 5',
+            'Grade 6', 'Grade 7', 'Grade 8',
+            'Grade 9', 'Grade 10'
         ])->get();
 
+        // Prepare data for the view
         $data = [
             'title' => 'Assigning',
-            'students' => $students,
+            'students' => $student,
             'proof' => $proof,
-            'classes' => $classes,
+            'classes' => $classes,  
         ];
 
         return view('assigning', $data);
     }
 
-    public function section($id, $sectionName)
-{
-    $students = register_form::findOrFail($id);
-    $proof = payment_form::where('id', $id)->firstOrFail(); // Adjust if necessary
+    public function section($paymentId, $sectionName)
+    {
+        $proof = payment_form::where('payment_id', $paymentId)->firstOrFail(); 
+    
+        $students = register_form::where('id', $proof->payment_id)->firstOrFail(); 
+    
+        $classes = classes::where('grade', $proof->level)
+            ->where('section', $sectionName)
+            ->get();
+    
+        $data = [
+            'title' => 'Assigning',
+            'students' => $students,
+            'proof' => $proof,
+            'classes' => $classes,
+            'sectionName' => $sectionName 
+        ];
+    
+        return view('section', $data);
+    }
 
-    $classes = classes::where('grade', $proof->level)
-        ->where('section', $sectionName)
-        ->get();
-
-    $data = [
-        'title' => 'Assigning',
-        'students' => $students,
-        'proof' => $proof,
-        'classes' => $classes,
-        'sectionName' => $sectionName // Pass section name for the view
-    ];
-
-    return view('section', $data);
-}
     public function getSectionDetails($edpcode)
 {
-    // Fetch the class details for the specific edpcode
     $sectionDetails = classes::where('edpcode', $edpcode)->get(['edpcode', 'room', 'subject', 'description', 'type', 'unit', 'time', 'days']);
 
     return response()->json($sectionDetails);
 }
+
     public function proofofpayment($id)
     {
-        $proof = payment_form::findOrFail($id);
-        $student = register_form::findOrFail($proof->payment_id);
-
+        $proof = payment_form::find($id); 
+        if (!$proof) {
+            return redirect()->back()->with('error', 'Payment proof not found.');
+        }
+    
+        $student = register_form::find($proof->payment_id);
+        if (!$student) {
+            return redirect()->back()->with('error', 'Student not found.');
+        }
+    
         return view('proofofpayment', compact('proof', 'student'));
     }
 
@@ -288,58 +306,24 @@ class Usercontroller extends Controller
     ]);
 }
 
-    public function publishgrade($id)
-    {
-        $assign = assign::findOrFail($id);
+public function publishgrade($gradeId)
+{
+    $grades = Grade::where('grade_id', $gradeId)->get(); 
+    return view('publishgrade', [
+        'grades' => $grades,
+    ]);
+}
 
-        $grades = grade::find($id);
-        if (!$grades) {
-            return view('publishgrade', [
-                'grades' => null,
-                'assign' => $assign,
-                'paymentForm' => null,
-                'fullName' => null,
-                'edpcode' => $assign->edpcode,
-                'subject' => $assign->subject,
-                'first_quarter' => 'N/A',
-                'second_quarter' => 'N/A',
-                'third_quarter' => 'N/A',
-                'fourth_quarter' => 'N/A',
-                'overall_grade' => 'N/A',
-                'status' => 'N/A',
-            ]);
-        }
 
-        $paymentForm = Payment_form::where('payment_id', $assign->class_id)->first();
+public function publishGrades()
+{
+    // Update the status of all pending grades to approved
+    Grade::where('status', 'pending')->update(['status' => 'approved']);
 
-        $student = Register_form::findOrFail($assign->class_id);
+    // Optionally, redirect back with a success message
+    return redirect()->back()->with('success', 'Grades have been published successfully.');
+}
 
-        $fullName = "{$student->firstname} {$student->middlename} {$student->lastname}";
-
-        return view('publishgrade', [
-            'grades' => $grades,
-            'assign' => $assign,
-            'paymentForm' => $paymentForm,
-            'fullName' => $fullName,
-            'edpcode' => $assign->edpcode,
-            'subject' => $assign->subject,
-            'first_quarter' => $grades->{"1st_quarter"} ?? 'N/A', // Access using curly braces for special characters
-            'second_quarter' => $grades->{"2nd_quarter"} ?? 'N/A',
-            'third_quarter' => $grades->{"3rd_quarter"} ?? 'N/A',
-            'fourth_quarter' => $grades->{"4th_quarter"} ?? 'N/A',
-            'overall_grade' => $grades->overall_grade ?? 'N/A',
-            'status' => $grades->status ?? 'N/A',
-        ]);
-    }
-
-    public function publish($id)
-    {
-        $grades = grade::findOrFail($id);
-        $grades->status = 'approved';
-        $grades->save();
-
-        return redirect()->route('grades.publish', $id)->with('success', 'Grade status updated to approved.');
-    }
 
     public function gradesubmit($id)
     {
@@ -419,17 +403,13 @@ class Usercontroller extends Controller
 
     public function getSubject($teacherId)
 {
-    // Fetch the teacher by ID
     $teacher = teacher::find($teacherId);
-
     if ($teacher) {
-        // Split the subjects by comma and trim whitespace
-        $subjects = array_map('trim', explode(',', $teacher->subject)); // Assuming 'subject' is a comma-separated string
+        $subjects = array_map('trim', explode(',', $teacher->subject)); 
         return response()->json([
             'subjects' => $subjects,
         ]);
     }
-
     return response()->json([
         'subjects' => [],
     ]);
@@ -438,7 +418,7 @@ class Usercontroller extends Controller
 public function getAssignedTeacher($subject)
 {
     
-    $teachers = teacher::where('subject', 'like', '%' . $subject . '%')->get(); // Adjust this as needed
+    $teachers = teacher::where('subject', 'like', '%' . $subject . '%')->get(); 
 
     if ($teachers->isNotEmpty()) {
         $teacherList = $teachers->map(function($teacher) {
@@ -491,6 +471,8 @@ public function publishAssessment($id)
     $assessment->status = 'Published'; // Example status change
     $assessment->save();
 
+    FacadesMail::to('accounting@example.com')->send(new PublishAssessment($assessment));
+
     return redirect()->back()->with('success', 'Assessment published successfully.');
 }
 
@@ -509,4 +491,50 @@ public function deleteAssessment($id)
 
     return redirect()->back()->with('success', 'Assessment deleted successfully.');
 }
+
+
+    public function oldstudentaddress($registerFormId)
+    {
+        $registerForm = register_form::findOrFail($registerFormId);
+
+        $addresses = address::where('address_id', $registerFormId)->get();
+
+        return view('oldstudentaddress', compact('registerForm', 'addresses'));
+    }
+
+    public function oldstudentupdatedetails($id)
+    {
+        $details = \App\Models\studentdetails::where('details_id', $id)->first();
+    
+        if (!$details) {
+            return redirect('/oldstudentenrollment')->with('error', 'Student details not found.');
+        }
+        return view('oldstudentupdatedetails', compact('details'));
+    }
+
+    public function oldstudentupdateaddress($id)
+    {
+        $address = \App\Models\address::where('address_id', $id)->first();
+
+        if (!$address) {
+            return redirect('/oldstudentenrollment')->with('error', 'address not found.');
+        }
+        return view('oldstudentupdateaddress', compact('address'));
+    }
+
+    public function oldstudentupdateprevious($id)
+    {
+        $school = \App\Models\previous_school::where('school_id', $id)->first();
+
+        if (!$school) {
+            return redirect('/oldstudentenrollment')->with('error', 'Previous school details not found.');
+        }
+    
+        $userId = Auth::user()->id;  
+        $registerForm = \App\Models\register_form::where('user_id', $userId)->first();  
+    
+        return view('oldstudentupdateprevious', compact('school', 'registerForm'));
+    }
+
+
 }

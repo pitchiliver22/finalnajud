@@ -36,8 +36,6 @@
                     <label for="role" class="form-label">Role<span class="required">*</span></label>
                     <select name="role" id="role" class="form-select" required>
                         <option value="">Select Role</option>
-                        <option value="Newstudent">New Student</option>
-                        <option value="Oldstudent">Old Student</option>
                         <option value="Teacher">Teacher</option>
                         <option value="Cashier">Cashier</option>
                         <option value="Record">Record</option>

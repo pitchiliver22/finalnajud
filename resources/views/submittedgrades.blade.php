@@ -243,7 +243,7 @@
                     <tbody>
                         @foreach ($assigns as $assign)
                             @php
-                                $grade = $grades->firstWhere('id', $assign->id);
+                                $grade = $grades->firstWhere('grade_id', $assign->id);
                             @endphp
 
                             <tr>
@@ -253,7 +253,7 @@
                                 <td>{{ $assign->section }}</td>
                                 <td>{{ $assign->grade }}</td>
                                 <td>
-                                    <a href="/publishgrade/{{ $assign->id }}" class="btn btn-info btn-sm" title="View">
+                                    <a href="{{ route('publishgrade', ['gradeId' => $assign->id]) }}" class="btn btn-info btn-sm" title="View">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
                                             <path d="M7.998 2c-2.757 0-5.287 1.417-6.758 3.75a.748.748 0 0 0 0 .5c1.471 2.333 4.001 3.75 6.758 3.75s5.287-1.417 6.758-3.75a.748.748 0 0 0 0-.5c-1.471-2.333-4.001-3.75-6.758-3.75zm0 1.5a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5zm0 2a1.75 1.75 0 1 0 0 3.5 1.75 1.75 0 0 0 0-3.5z"/>
                                         </svg>
