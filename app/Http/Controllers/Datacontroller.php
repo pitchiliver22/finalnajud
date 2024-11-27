@@ -121,7 +121,7 @@ class Datacontroller extends Controller
                 return redirect('/studentdashboard')->with('success', 'Welcome, New Student!');
 
             case 'OldStudent':
-                return redirect('/oldstudentenrollment')->with('success', 'Welcome, Old Student!');
+                return redirect('/oldstudentdashboard')->with('success', 'Welcome, Old Student!');
 
             case 'Record':
                 sweetalert()->success('Welcome Records!');
