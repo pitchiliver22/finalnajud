@@ -80,8 +80,11 @@ Route::get('gradesubmit/{id}', [Usercontroller::class, 'gradesubmit'])->middlewa
 
 
 Route::get('teacherattendance', [Pagecontroller::class, 'teacherattendance'])->middleware('auth');
-Route::get('teachercorevalue', [Pagecontroller::class, 'teachercorevalue'])->middleware('auth');
 
+
+Route::get('teachercorevalue', [Pagecontroller::class, 'teachercorevalue'])->middleware('auth');
+Route::post('/teachercorevalue', [Datacontroller::class, 'teachercorevaluepost'])->name('teachercorevaluesubmit');
+Route::get('teachercorevalue/{id}', [Usercontroller::class, 'teachercorevalue'])->middleware('auth');
 
 
 //principal
@@ -239,6 +242,7 @@ Route::get('oldstudentclassload', [Pagecontroller::class, 'oldstudentclassload']
 
 Route::get('oldstudentgrades', [PageController::class, 'oldstudentgrades'])->middleware('auth');
 
+Route::get('oldstudentassessment', [Pagecontroller::class, 'oldstudentassessment']);
 
 
 

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width= , initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -13,39 +13,80 @@
     <title>Student Dashboard</title>
 
     <style>
-        .w3-bar-item {
+        .w3-sidebar {
+            background-color: #0c3b6d; /* Sidebar background color */
+            color: white; /* Default text color */
+            width: 250px; /* Fixed width */
+            transition: width 0.3s; /* Smooth transition for width */
+            overflow-y: auto; /* Enable scrolling if content exceeds height */
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5); /* Shadow effect for the sidebar */
+        }
+
+        .profile-section {
             display: flex;
             align-items: center;
             padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .profile-picture {
+            width: 40px; /* Adjust size as needed */
+            height: 40px; /* Adjust size as needed */
+            border-radius: 50%; /* Circular profile picture */
+            margin-right: 10px; /* Space between image and name */
+        }
+
+        .profile-name {
+            color: white; /* Name text color */
+        }
+
+        .w3-bar-item {
+            display: flex;
+            align-items: center;
+            padding: 2px 10px; /* Reduced padding for closer items */
             text-decoration: none;
-            color: #333;
-            transition: background-color 0.3s, color 0.3s;
+            color: white; /* White text */
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+            border-radius: 5px; /* Rounded corners */
+            margin: 0; /* Remove default margin */
         }
 
         .w3-bar-item svg {
-            margin-right: 8px;
-            transition: fill 0.3s;
+            width: 20px; /* Set a smaller width */
+            height: 20px; /* Set a smaller height */
+            margin-right: 5px; /* Space between icon and text */
+            transition: fill 0.3s; /* Smooth transition for color changes */
         }
 
         .w3-bar-item:hover {
-            background-color: #f0f0f0;
-            color: #007bff;
+            background-color: white; /* Background color on hover */
+            color: #007bff; /* Text color on hover */
         }
 
         .w3-bar-item:hover svg {
-            fill: #007bff;
+            fill: #0800e4; /* Change icon color on hover */
         }
 
-        .w3-bar-item svg {
-            width: 24px;
-            height: 24px;
+        /* Close Button Style */
+        .w3-bar-item.w3-button {
+            color: rgb(255, 255, 255); /* Text color for close button */
+            border: none; /* No border */
+            border-radius: 5px; /* Rounded corners */
+            margin-bottom: 10px; /* Reduced space below the close button */
+        }
+
+        .w3-bar-item.w3-button:hover {
+            background-color: #0004d6; /* Darker close button on hover */
         }
     </style>
 </head>
 
 <body>
     <div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="mySidebar">
-        <button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Close &times;</button>
+        <div class="profile-section">
+            <img src="image/cler.jpg" alt="Profile Picture" class="profile-picture">
+            <span class="profile-name" style="margin-top:-3.5%; font-size: 17px;">Mary Claire Dungog</span> 
+        </div>
 
         <h5>
             <a href="/oldstudentdashboard" class="w3-bar-item w3-button">
@@ -81,13 +122,11 @@
                 </svg> Enrollment
             </a>
             <a href="/oldstudentgrades" class="w3-bar-item w3-button">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-bar-chart-line"
-                    viewBox="0 0 16 16">
-                    <path
-                        d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z" />
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-bar-chart-line" viewBox="0 0 16 16">
+                    <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z"/>
                 </svg> Grades
             </a>
-            <a href="#" class="w3-bar-item w3-button">
+            <a href="oldstudentassessment" class="w3-bar-item w3-button">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-credit-card-2-back-fill"
                     viewBox="0 0 16 16">
                     <path
@@ -98,10 +137,14 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-box-arrow-left"
                     viewBox="0 0 16 16">
                     <path fill-rule="evenodd"
-                        d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z" />
+                        d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 z   0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z" />
                     <path fill-rule="evenodd"
                         d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z" />
                 </svg> Logout
             </a>
+            <button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Close &times;</button>
         </h5>
     </div>
+</body>
+
+</html>

@@ -2,31 +2,39 @@
 
 <style>
     body {
-        background-color: #f7f9fc; /* Light background for better contrast */
         font-family: Arial, sans-serif;
+        background-color: #f4f4f4; /* Match the dashboard background */
+        margin: 0;
+        padding: 0;
     }
 
     #main {
-        padding: 20px;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 0px;
+        background-color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        position: relative; /* Ensure positioning context for event handling */
     }
 
-    .w3-teal {
-        background-color: #007bff; /* Teal background */
-        padding: 10px;
-        border-radius: 0.5rem;
-        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
+    .header-container {
+        display: flex; 
+        align-items: center; 
+        background-color: #0c3b6d; 
         color: white;
-        margin: 0;
-        font-size: 2.5rem;
+        padding: 10px; 
+    }
+
+    .nav-button {
+        margin-right: 15px; 
+        margin-bottom: 4px;
     }
 
     h2 {
-        margin-top: 20px;
-        font-size: 1.75rem;
-        color: #343a40;
+        color: white;
+        margin: 0;
+        font-size: 1.75rem; /* Adjusted font size */
         text-align: center; /* Centered heading */
     }
 
@@ -47,7 +55,7 @@
     }
 
     .table-primary th {
-        background-color: #4CAF50;
+        background-color: #4CAF50; /* Match dashboard header color */
         color: white;
         text-transform: uppercase; /* Uppercase headers */
     }
@@ -87,10 +95,10 @@
     }
 </style>
 
-<div id="main">
-    <div class="w3-teal">
-        <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <h2 style="text-align: center;">Grades S.Y 2024-2025</h2>
+<div id="main" onclick="w3_close()">
+    <div class="header-container">
+        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open(event)">&#9776;</button>
+        <h2>Grades S.Y 2024-2025</h2>
     </div>
 
     @if ($gradesApproved)
@@ -135,3 +143,14 @@
 </div>
 
 @include('templates.oldstudentfooter')
+
+<script>
+    function w3_open(event) {
+        event.stopPropagation();
+        document.getElementById("mySidebar").style.display = "block";
+    }
+
+    function w3_close() {
+        document.getElementById("mySidebar").style.display = "none";
+    }
+</script>

@@ -1,14 +1,70 @@
 @include('templates.oldstudentheader')
 
-<div id="main">
-    <div class="w3-teal">
-        <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <div class="w3-container">
-            <h1 class="text-center text-light">STUDENT CLASS LOAD</h1>
-        </div>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+    #main {
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 0px;
+        background-color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        position: relative;
+    }
+
+    .header-container {
+        display: flex; 
+        align-items: center; 
+        background-color: #0c3b6d; 
+        color: white;
+        padding: 10px; 
+    }
+
+    .nav-button {
+        margin-right: 15px; 
+    }
+
+    h1 {
+        margin: 0; 
+        font-size: 24px;
+    }
+
+    .content {
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem; 
+    }
+
+    .table th, .table td {
+        vertical-align: middle; 
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f1f1; 
+    }
+
+    @media print {
+        .btn {
+            display: none; 
+        }
+    }
+</style>
+
+<div id="main" onclick="w3_close(event)">
+    <div class="header-container"> 
+        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open(event)">&#9776;</button>
+        <h1>Student Class Load</h1> 
     </div>
 
-    <div class="container py-4">
+    <div class="content">
         <a href="{{ route('student.classload.pdf', ['student_id' => $student->id]) }}" class="btn btn-primary mb-3" target="_blank">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
                 <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1" />
@@ -18,15 +74,15 @@
 
         <div class="form-group">
             <label for="studyLoadName">Student Name:</label>
-            <input type="text" class="form-control" id="studyLoadName" value="{{ $student->firstname }} {{ $student->middlename }} {{ $student->lastname }}" readonly>
+            <input style="text-align:center;" type="text" class="form-control" id="studyLoadName" value="{{ $student->firstname }} {{ $student->middlename }} {{ $student->lastname }}" readonly>
         </div>
         <div class="form-group">
             <label for="yearLevel">Year Level:</label>
-            <input type="text" class="form-control" id="yearLevel" value="{{ $proof->level ?? 'N/A' }}" readonly>
+            <input style="text-align:center;" type="text" class="form-control" id="yearLevel" value="{{ $proof->level ?? 'N/A' }}" readonly>
         </div>
         <div class="form-group">
             <label for="section">Section:</label>
-            <input type="text" class="form-control" id="section" value="{{ $assignedClasses->isNotEmpty() ? $assignedClasses->first()->section : 'N/A' }}" readonly>
+            <input style="text-align:center;" type="text" class="form-control" id="section" value="{{ $assignedClasses->isNotEmpty() ? $assignedClasses->first()->section : 'N/A' }}" readonly>
         </div>
 
         <table class="table table-striped table-hover">
@@ -66,32 +122,15 @@
 
 @include('templates.oldstudentfooter')
 
-<style>
-    /* Custom styles for the table */
-    .table th, .table td {
-        vertical-align: middle; /* Center content vertically */
+<script>
+    function w3_open(event) {
+        event.stopPropagation();
+        document.getElementById("mySidebar").style.display = "block";
     }
 
-    .table-hover tbody tr:hover {
-        background-color: #f1f1f1; /* Light background on hover for web view */
+    function w3_close(event) {
+        
+        if (event && event.target.closest("#mySidebar")) return;
+        document.getElementById("mySidebar").style.display = "none";
     }
-
-    .form-group {
-        margin-bottom: 1.5rem; /* Increased spacing between form groups */
-    }
-
-    /* Ensure print styles are well-defined */
-    @media print {
-        .btn {
-            display: none; /* Hide buttons when printing */
-        }
-    }
-
-    .bi-file-arrow-down {
-        transition: fill 0.2s ease;
-    }
-
-    .bi-file-arrow-down:hover {
-        fill: #0056b3; /* Change color on hover */
-    }
-</style>
+</script>

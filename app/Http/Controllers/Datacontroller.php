@@ -96,20 +96,15 @@ class Datacontroller extends Controller
 
         switch ($user->role) {
             case 'Teacher':
-                sweetalert()->success('Welcome Teacher!');
                 return redirect('/teacher')->with('success', 'Welcome, Teacher!');
 
-                case 'Newstudent':
+                case 'NewstudentFill':
                 
                     $registerForm = register_form::where('user_id', $user->id)->first();
          
-                    // Log::info('User ID:', ['user_id' => $user->id]);
-                    // Log::info('Register Form:', ['registerForm' => $registerForm]);
-                
                     if ($registerForm) {
                         if ($registerForm->status === register_form::STATUS_APPROVED) {
 
-                            // Log::info('Register Form approved:', ['registerFormId' => $registerForm->user_id]);  
                             return redirect('/studentdetails/' . $registerForm->id)
                                 ->with('success', 'Welcome, New Student!');
                         } else {
@@ -261,12 +256,14 @@ public function address_contactpost(Request $request)
         'lastname' => $validateData['lastname'],
         'middlename' => $validateData['middlename'],
         'suffix' => $validateData['suffix'],
-        'role' => $validateData['role'],
+        'role' => 'NewstudentFill',
         'email' => $validateData['email'], 
         'password' => bcrypt($validateData['password']), 
     ]);
 
     FacadesMail::to($user->email)->send(new ApproveStudent($user));
+
+    $user->role = 'NewstudentFill';
 
     $registerForm = register_form::findOrFail($validateData['id']);
     $registerForm->status = register_form::STATUS_APPROVED;
@@ -621,85 +618,85 @@ public function address_contactpost(Request $request)
     }
 
     public function enrollmentStep()
-{
-    if (!Auth::check()) {
-        return redirect()->route('login');
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+    
+        $user = Auth::user();
+    
+        $registerForm = register_form::where('user_id', $user->id)->first();
+    
+        if (!$registerForm) {
+            return redirect()->route('/enrollmentstep')->with('error', 'No registration form found.');
+        }
+    
+        $registerFormId = $registerForm->id;
+    
+        $studentDetail = studentdetails::where('details_id', $registerFormId)->first();
+        $address = address::where('address_id', $registerFormId)->first();
+        $payment = payment_form::where('payment_id', $registerFormId)->first(); // Correct usage
+        $previousSchool = previous_school::where('school_id', $registerFormId)->first();
+        $requiredDocs = required_docs::where('required_id', $registerFormId)->first();
+        $assign = assign::where('class_id', $registerFormId)->first();
+    
+        $allCompleted = true;
+    
+        $paymentStatus = $payment ? $payment->status : null;
+        if ($paymentStatus !== 'approved') {
+            $allCompleted = false;
+        }
+    
+        $detailsStatus = $studentDetail ? $studentDetail->status : null;
+        if ($detailsStatus !== 'approved') {
+            $allCompleted = false;
+        }
+    
+        $addressStatus = $address ? $address->status : null;
+        if ($addressStatus !== 'approved') {
+            $allCompleted = false;
+        }
+    
+        $previousStatus = $previousSchool ? $previousSchool->status : null;
+        if ($previousStatus !== 'approved') {
+            $allCompleted = false;
+        }
+    
+        $requiredStatus = $requiredDocs ? $requiredDocs->status : null;
+        if ($requiredStatus !== 'approved') {
+            $allCompleted = false;
+        }
+    
+        $assignStatus = $assign ? $assign->status : null;
+        if ($assignStatus !== 'assigned') {
+            $allCompleted = false;
+        }
+    
+        $address_id = $address ? $address->address_id : null;
+        $details_id = $studentDetail ? $studentDetail->details_id : null;
+        $school_id  = $previousSchool ? $previousSchool->school_id : null;
+        $required_id = $requiredDocs ? $requiredDocs->required_id : null;
+        $payment_id = $payment ? $payment->payment_id : null; 
+        $class_id = $assign ? $assign->class_id : null;
+    
+        return view('enrollmentstep', compact(
+            'allCompleted', 
+            'detailsStatus', 
+            'addressStatus', 
+            'previousStatus', 
+            'paymentStatus', 
+            'requiredStatus', 
+            'assignStatus', 
+            'registerFormId', 
+            'registerForm',  
+            'address_id',
+            'details_id',
+            'school_id',
+            'required_id',
+            'payment_id',
+            'class_id'
+        ));
     }
-
-    $user = Auth::user();
-
-    $registerForm = register_form::where('user_id', $user->id)->first();
-
-    if (!$registerForm) {
-        return redirect()->route('/enrollmentstep')->with('error', 'No registration form found.');
-    }
-
-    $registerFormId = $registerForm->id;
-
-    $studentDetail = studentdetails::where('details_id', $registerFormId)->first();
-    $address = address::where('address_id', $registerFormId)->first();
-    $payment = payment_form::where('payment_id', $registerFormId)->first();
-    $previousSchool = previous_school::where('school_id', $registerFormId)->first();
-    $requiredDocs = required_docs::where('required_id', $registerFormId)->first();
-    $assign = assign::where('class_id', $registerFormId)->first();
-
-    $allCompleted = true;
-
-    $paymentStatus = $payment ? $payment->status : null;
-    if ($paymentStatus !== 'approved') {
-        $allCompleted = false;
-    }
-
-    $detailsStatus = $studentDetail ? $studentDetail->status : null;
-    if ($detailsStatus !== 'approved') {
-        $allCompleted = false;
-    }
-
-    $addressStatus = $address ? $address->status : null;
-    if ($addressStatus !== 'approved') {
-        $allCompleted = false;
-    }
-
-    $previousStatus = $previousSchool ? $previousSchool->status : null;
-    if ($previousStatus !== 'approved') {
-        $allCompleted = false;
-    }
-
-    $requiredStatus = $requiredDocs ? $requiredDocs->status : null;
-    if ($requiredStatus !== 'approved') {
-        $allCompleted = false;
-    }
-
-    $assignStatus = $assign ? $assign->status : null;
-    if ($assignStatus !== 'assigned') {
-        $allCompleted = false;
-    }
-
-    $address_id = $address ? $address->address_id : null;
-    $details_id = $studentDetail ? $studentDetail->details_id : null;
-    $school_id  = $previousSchool ? $previousSchool->school_id : null;
-    $required_id = $requiredDocs ? $requiredDocs->required_id : null;
-    $payment_id = $payment ? $payment->payment_id : null;
-    $class_id = $assign ? $assign->class_id : null;
-
-    return view('enrollmentstep', compact(
-        'allCompleted', 
-        'detailsStatus', 
-        'addressStatus', 
-        'previousStatus', 
-        'paymentStatus', 
-        'requiredStatus', 
-        'assignStatus', 
-        'registerFormId', 
-        'registerForm',  
-        'address_id',
-        'details_id',
-        'school_id',
-        'required_id',
-        'payment_id',
-        'class_id'
-    ));
-}
 
 public function approvePayment($id)
 {
@@ -1234,28 +1231,42 @@ public function showEvaluateGrades()
     public function teachercorevaluepost(Request $request)
     {
         $request->validate([
+            'student_ids.*' => 'required|exists:grades,id', // Ensure each student ID exists
             'respect.*' => 'required|string',
             'excellence.*' => 'required|string',
             'teamwork.*' => 'required|string',
             'innovation.*' => 'required|string',
             'sustainability.*' => 'required|string',
-            'student_ids.*' => 'required|exists:grades,id', // Adjust as necessary
+            'fullname' => 'required|string',
+            'section' => 'required|string',
         ]);
-
-        // Loop through student IDs and save core values
-        foreach ($request->student_ids as $index => $studentId) {
-            corevalues::create([
-                'student_id' => $studentId,
-                'respect' => $request->respect[$index],
-                'excellence' => $request->excellence[$index],
-                'teamwork' => $request->teamwork[$index],
-                'innovation' => $request->innovation[$index],
-                'sustainability' => $request->sustainability[$index],
-            ]);
+    
+        DB::beginTransaction();
+        try {
+            foreach ($request->student_ids as $index => $studentId) {
+                corevalues::create([
+                    'student_id' => $studentId,
+                    'respect' => $request->respect[$index],
+                    'excellence' => $request->excellence[$index],
+                    'teamwork' => $request->teamwork[$index],
+                    'innovation' => $request->innovation[$index],
+                    'sustainability' => $request->sustainability[$index],
+                    'fullname' => $request->fullname, 
+                    'section' => $request->section, 
+                ]);
+            }
+                DB::commit();
+    
+            return redirect()->back()->with('success', 'Core values saved successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+    
+            Log::error('Error saving core values: ' . $e->getMessage());
+    
+            return redirect()->back()->with('error', 'An error occurred while saving core values.');
         }
-
-        return redirect()->back()->with('success', 'Core values saved successfully!');
     }
+
     public function studentapplicant(Request $request)
     {
 
@@ -1273,7 +1284,7 @@ public function showEvaluateGrades()
                 'lastname' => $student->lastname,
                 'middlename' => $student->middlename,
                 'suffix' => $student->suffix,
-                'role' => 'Newstudent',
+                'role' => 'NewstudentFill',
                 'email' => $student->email,
                 'password' => $student->password,
             ]);

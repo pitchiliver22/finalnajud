@@ -77,22 +77,18 @@ class Pagecontroller extends Controller
     }
     public function studentclassload()
 {
-    $userId = Auth::id(); // Get the authenticated user's ID
+    $userId = Auth::id(); 
 
-    // Find the register form associated with the authenticated user
     $registerForm = \App\Models\register_form::where('user_id', $userId)->first();
 
     if (!$registerForm) {
         return redirect()->route('login')->withErrors('No registration form found.');
     }
 
-    // Use the registerForm ID to get assigned classes
     $assignedClasses = assign::where('class_id', $registerForm->id)->get();
 
-    // The student variable now refers to the register form record
     $student = $registerForm;
 
-    // Get payment proof associated with the register form
     $proof = payment_form::where('payment_id', $registerForm->id)->first();
 
     return view('studentclassload', [
@@ -230,19 +226,17 @@ public function studentassessment(Request $request)
     }
     public function teacherclassload()
     {
-        $user = Auth::user(); // Get the authenticated user
-        $fullName = trim("{$user->firstname} {$user->middlename} {$user->lastname}"); // Create the full name
+        $user = Auth::user(); 
+        $fullName = trim("{$user->firstname} {$user->middlename} {$user->lastname}"); 
+
+        $classes = assign::where('adviser', $fullName)->get(); 
     
-        // Get all classes from the 'assign' table
-        $classes = assign::where('adviser', $fullName)->get(); // Fetch classes where adviser matches full name
-    
-        // Get all payment records from the 'payment_form' table
-        $proofs = payment_form::whereNotNull('level')->get(); // Fetch all records with a level
+        $proofs = payment_form::whereNotNull('level')->get(); 
     
         return view('teacherclassload', [
             'title' => 'Teacher Class Load',
             'classes' => $classes,
-            'proofs' => $proofs // Pass all proofs to the view
+            'proofs' => $proofs 
         ]);
     }
     public function gradesubmit()
@@ -295,17 +289,24 @@ public function studentassessment(Request $request)
     {
         return view('teacherattendance');
     }
+
     public function teachercorevalue()
     {
-        $assign = assign::findOrFail('class_id');
 
-        $student = grade::where('grade_id', $assign->class_id);
+        $user = Auth::user(); 
+        $fullName = trim("{$user->firstname} {$user->middlename} {$user->lastname}"); 
 
+        $classes = assign::where('adviser', $fullName)->get(); 
+    
+        $proofs = payment_form::whereNotNull('level')->get(); 
+    
         return view('teachercorevalue', [
-            'student' => $student,
-            'assign' => $assign
+            'title' => 'Teacher Core Value Load',
+            'classes' => $classes,
+            'proofs' => $proofs 
         ]);
     }
+
 
     //principal
     public function principal()
@@ -618,6 +619,32 @@ public function approvedpayment()
     
         return view('oldstudentpayment', compact('payment', 'registerForm'));
     }
+
+        public function oldstudentassessment(Request $request)
+    {
+        $schoolYears = assessment::select('school_year')->distinct()->pluck('school_year');
+
+        $user = Auth::user();
+        $paymentId = $user ? $user->payment_id : null; 
+
+        $userPayment = payment_form::where('payment_id', $paymentId)->first();
+        $authGradeLevel = $userPayment ? strtolower(str_replace(' ', '', trim($userPayment->level))) : null;
+
+        $assessments = assessment::where('status', 'Published');
+
+        if ($request->has('school_year') && $request->school_year !== '') {
+            $assessments = $assessments->where('school_year', $request->school_year);
+        }
+
+        if ($authGradeLevel) {
+            $assessments = $assessments->where('grade_level', '=', $authGradeLevel); // Exact match
+        }
+
+        $assessments = $assessments->get();
+
+        return view('oldstudentassessment', compact('assessments', 'schoolYears', 'authGradeLevel'));
+    }
+
 
         public function oldstudentenrollment()
         {

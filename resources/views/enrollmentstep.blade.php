@@ -231,12 +231,6 @@
                             </div>
                         </li>
 
-                        @php
-                            $assignStatus = App\Models\Assign::where('class_id', $registerForm->id)
-                                ->where('payment_id', $registerForm->payment_id)
-                                ->first();
-                            $assignStatus = $assignStatus ? $assignStatus->status : null; 
-                        @endphp
                     <li class="list-group-item d-flex justify-content-between align-items-start">
                         <div class="ms-2 me-auto">
                             <div class="fw-bold">Sectioning</div>
@@ -278,13 +272,13 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti/dist/confetti.browser.min.js"></script>
 
 <script>
-    let confettiLaunched = false; // Flag to track if confetti has been shown
+    let confettiLaunched = false; 
 
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.updateInfoBtn').forEach(button => {
             button.addEventListener('click', function(event) {
                 event.preventDefault();
-                const url = this.getAttribute('href'); // Get the URL from the href attribute
+                const url = this.getAttribute('href'); 
 
                 Swal.fire({
                     title: 'Are you sure?',
@@ -296,24 +290,22 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(() => {
-                            window.location.href = url; // Redirect to the correct URL
+                            window.location.href = url; 
                         }, 1000);
                     }
                 });
             });
         });
 
-        // Check if all steps are completed to show confetti
         const allCompleted = @json($allCompleted);
         if (allCompleted && !confettiLaunched) {
             launchConfetti();
-            confettiLaunched = true; // Set the flag to true after launching confetti
+            confettiLaunched = true; 
         }
     });
 
-    // Function to launch confetti
     function launchConfetti() {
-        const duration = 1 * 1000; // Duration of the confetti effect in milliseconds
+        const duration = 1 * 1000; 
         const animationEnd = Date.now() + duration;
 
         (function frame() {

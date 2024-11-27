@@ -288,41 +288,59 @@ class Usercontroller extends Controller
         $classes = classes::findOrFail($id);
         return view('update_class', compact('classes'));
     }
-    public function teacherclassload()
-{
-    $user = Auth::user(); // Get the authenticated user
-    $fullName = trim("{$user->firstname} {$user->middlename} {$user->lastname}"); // Create the full name
 
-    // Get all classes from the 'assign' table
-    $classes = assign::where('adviser', $fullName)->get(); // Fetch classes where adviser matches full name
+        public function teacherclassload()
+    {
+        $user = Auth::user(); 
+        $fullName = trim("{$user->firstname} {$user->middlename} {$user->lastname}"); 
 
-    // Get all payment records from the 'payment_form' table
-    $proofs = payment_form::whereNotNull('level')->get(); // Fetch all records with a level
+        $classes = assign::where('adviser', $fullName)->get(); 
 
-    return view('teacherclassload', [
-        'title' => 'Teacher Class Load',
-        'classes' => $classes,
-        'proofs' => $proofs // Pass all proofs to the view
-    ]);
-}
+        $proofs = payment_form::whereNotNull('level')->get(); 
 
-public function publishgrade($gradeId)
-{
-    $grades = Grade::where('grade_id', $gradeId)->get(); 
-    return view('publishgrade', [
-        'grades' => $grades,
-    ]);
-}
+        return view('teacherclassload', [
+            'title' => 'Teacher Class Load',
+            'classes' => $classes,
+            'proofs' => $proofs 
+        ]);
+    }
+
+    public function teachercorevaluesubmit($id)
+    {
+        $assign = Assign::findOrFail($id);
+        $paymentForm = payment_form::where('payment_id', $assign->class_id)->first();
+        $student = register_form::findOrFail($assign->class_id);
+        
+        $fullName = "{$student->firstname} {$student->middlename} {$student->lastname}";
+        
+        $grade = grade::where('grade_id', $assign->id)->first();
+        
+        return view('teachercorevaluesubmit', [
+            'assign' => $assign,
+            'paymentForm' => $paymentForm,
+            'fullName' => $fullName,
+            'section' => $assign->section,
+            'grade' => $grade,
+        ]);
+    }
+
+    
+
+    public function publishgrade($gradeId)
+    {
+        $grades = Grade::where('grade_id', $gradeId)->get(); 
+        return view('publishgrade', [
+            'grades' => $grades,
+        ]);
+    }
 
 
-public function publishGrades()
-{
-    // Update the status of all pending grades to approved
-    Grade::where('status', 'pending')->update(['status' => 'approved']);
+    public function publishGrades()
+    {
+        Grade::where('status', 'pending')->update(['status' => 'approved']);
 
-    // Optionally, redirect back with a success message
-    return redirect()->back()->with('success', 'Grades have been published successfully.');
-}
+        return redirect()->back()->with('success', 'Grades have been published successfully.');
+    }
 
 
     public function gradesubmit($id)
@@ -377,14 +395,6 @@ public function publishGrades()
 
         return view('principaleditassessment', compact('assessment'));  
     }
-
-
-    public function teachercorevalue() {}
-
-
-
-
-
 
     public function showStudentDetails($id)
     {
