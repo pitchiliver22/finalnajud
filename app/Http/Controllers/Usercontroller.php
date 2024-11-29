@@ -289,40 +289,39 @@ class Usercontroller extends Controller
         return view('update_class', compact('classes'));
     }
 
-        public function teacherclassload()
-    {
-        $user = Auth::user(); 
-        $fullName = trim("{$user->firstname} {$user->middlename} {$user->lastname}"); 
+    public function teachercorevaluesubmit($teacher_id)
+{
+    // Retrieve assignments for the given teacher_id
+    $assignments = assign::where('teacher_id', $teacher_id)->get();
 
-        $classes = assign::where('adviser', $fullName)->get(); 
+    // Get the payment form associated with the teacher_id
+    $paymentForm = payment_form::where('payment_id', $teacher_id)->first();
 
-        $proofs = payment_form::whereNotNull('level')->get(); 
-
-        return view('teacherclassload', [
-            'title' => 'Teacher Class Load',
-            'classes' => $classes,
-            'proofs' => $proofs 
-        ]);
+    // Check if assignments exist
+    if ($assignments->isEmpty()) {
+        return redirect()->back()->with('error', 'No assignments found for this teacher.');
     }
 
-    public function teachercorevaluesubmit($id)
-    {
-        $assign = Assign::findOrFail($id);
-        $paymentForm = payment_form::where('payment_id', $assign->class_id)->first();
-        $student = register_form::findOrFail($assign->class_id);
-        
-        $fullName = "{$student->firstname} {$student->middlename} {$student->lastname}";
-        
-        $grade = grade::where('grade_id', $assign->id)->first();
-        
-        return view('teachercorevaluesubmit', [
-            'assign' => $assign,
-            'paymentForm' => $paymentForm,
-            'fullName' => $fullName,
-            'section' => $assign->section,
-            'grade' => $grade,
-        ]);
-    }
+    // Retrieve class IDs from assignments
+    $classIds = $assignments->pluck('class_id')->unique();
+
+    // Fetch students based on class IDs
+    $students = register_form::whereIn('id', $classIds)->get();
+
+    // Map students with their corresponding class_id
+    $studentClassIds = $students->keyBy('id')->map(function($student) use ($assignments) {
+        $assignment = $assignments->firstWhere('class_id', $student->id);
+        return $assignment ? $assignment->class_id : null;
+    });
+
+    // Pass data to the view
+    return view('teachercorevaluesubmit', [
+        'students' => $students,
+        'paymentForm' => $paymentForm,
+        'studentClassIds' => $studentClassIds,
+        'section' => $assignments->first()->section ?? 'N/A', // Ensure this is defined
+    ]);
+}
 
     
 
@@ -343,44 +342,57 @@ class Usercontroller extends Controller
     }
 
 
-    public function gradesubmit($id)
+    public function gradesubmit($edp_code, $teacher_id)
     {
-        $assign = Assign::findOrFail($id);
-        $paymentForm = payment_form::where('payment_id', $assign->class_id)->first();
-        $student = register_form::findOrFail($assign->class_id);
-        
-        $fullName = "{$student->firstname} {$student->middlename} {$student->lastname}";
-        
-        $grade = grade::where('grade_id', $assign->id)->first();
-        
-        $quartersEnabled = QuarterSettings::first();
-
-        $quartersEnabledArray = [
-            '1st_quarter' => $quartersEnabled->first_quarter_enabled ?? false,
-            '2nd_quarter' => $quartersEnabled->second_quarter_enabled ?? false,
-            '3rd_quarter' => $quartersEnabled->third_quarter_enabled ?? false,
-            '4th_quarter' => $quartersEnabled->fourth_quarter_enabled ?? false,
-        ];
+        $assignments = assign::where('edpcode', $edp_code)
+                             ->where('teacher_id', $teacher_id)
+                             ->get();
     
-        $quartersStatusArray = [
-            '1st_quarter' => $quartersEnabled->first_quarter_status ?? 'inactive',
-            '2nd_quarter' => $quartersEnabled->second_quarter_status ?? 'inactive',
-            '3rd_quarter' => $quartersEnabled->third_quarter_status ?? 'inactive',
-            '4th_quarter' => $quartersEnabled->fourth_quarter_status ?? 'inactive',
-        ];
-        
+        if ($assignments->isEmpty()) {
+            return redirect()->back()->with('error', 'No assignments found for this EDP code and teacher.');
+        }
+    
+        $paymentForm = payment_form::where('payment_id', $teacher_id)->first();
+        $quartersEnabled = QuarterSettings::first();
+    
+        $classIds = $assignments->pluck('class_id')->unique();
+        $students = register_form::whereIn('id', $classIds)->get();
+    
+        // Map students with their corresponding class_id
+        $studentClassIds = $students->keyBy('id')->map(function($student) use ($assignments) {
+            $assignment = $assignments->firstWhere('class_id', $student->id);
+            return $assignment ? $assignment->class_id : null;
+        });
+    
+        $subjects = $assignments->pluck('subject')->unique();
+        $sections = $assignments->pluck('section')->unique();
+    
+        $fullNames = $students->map(function($student) {
+            return "{$student->firstname} {$student->middlename} {$student->lastname}";
+        })->toArray();
+    
+        $firstFullName = !empty($fullNames) ? $fullNames[0] : 'No student found';
+    
         return view('gradesubmit', [
-            'assign' => $assign,
+            'assignments' => $assignments,
             'paymentForm' => $paymentForm,
-            'fullName' => $fullName,
-            'edpcode' => $assign->edpcode,
-            'subject' => $assign->subject,
-            'section' => $assign->section,
-            'grade' => $grade,
-            'quartersEnabled' => $quartersEnabledArray,
-            'quartersStatus' => $quartersStatusArray, // Pass the status array to the view
+            'students' => $students,
+            'studentClassIds' => $studentClassIds, // Pass the student class IDs
+            'edpcode' => $edp_code,
+            'subject' => $subjects->first(),
+            'section' => $sections->first(),
+            'firstFullName' => $firstFullName,
+            'quartersEnabled' => [
+                '1st_quarter' => $quartersEnabled->first_quarter_enabled ?? false,
+                '2nd_quarter' => $quartersEnabled->second_quarter_enabled ?? false,
+                '3rd_quarter' => $quartersEnabled->third_quarter_enabled ?? false,
+                '4th_quarter' => $quartersEnabled->fourth_quarter_enabled ?? false,
+            ],
         ]);
     }
+
+   
+    
     public function submittedgrades()
     {
         return view('submittedgrades');
@@ -398,10 +410,8 @@ class Usercontroller extends Controller
 
     public function showStudentDetails($id)
     {
-        // Fetch the student details
         $student = studentdetails::findOrFail($id);
 
-        // Fetch related data using the student's ID
         $address = address::where('address_id', $id)->first(); // Assuming 'student_id' links the address
         $previous = previous_school::where('school_id', $id)->first(); // Assuming 'student_id' links previous school
         $require = required_docs::where('required_id', $id)->get(); // Assuming this returns multiple documents

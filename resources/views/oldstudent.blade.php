@@ -58,9 +58,14 @@
     </div>
 @endif
 
-   <div class="container">
+    <div class="container">
+        <div class="mb-3">
+            <a href="javascript:history.back()" class="btn btn-secondary">Back</a>
+        </div>
+
         <h1>Personal Details</h1>
         <h4>Please fill in the required fields diligently. All required fields are marked with an asterisk (*).</h4>
+        
         <div class="personal-details">
             <form action="/oldstudent" method="POST">
                 @csrf
@@ -97,8 +102,6 @@
                             <label class="form-check-label" for="showPassword">Show Password</label>
                         </div>
                     </div>
-
-
 
                     <div class="col-md-6">
                         <label for="nationality" class="form-label">Nationality *</label>
@@ -216,8 +219,6 @@
         </div>
     </div>
 
-
-
     <script>
         document.getElementById('birthdate').addEventListener('change', function() {
             const birthdateInput = this.value;
@@ -243,7 +244,6 @@
             }
         });
     </script>
-
 
 </body>
 

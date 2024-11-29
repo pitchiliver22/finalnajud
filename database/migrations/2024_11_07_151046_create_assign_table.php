@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('status')->nullable();
             $table->unsignedBigInteger('class_id');
             $table->foreign('class_id')->references('payment_id')->on('payment_form');
-
+            $table->unsignedBigInteger('teacher_id');
             $table->timestamps();
         });
     }

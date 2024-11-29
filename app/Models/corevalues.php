@@ -13,11 +13,12 @@ class corevalues extends Model
     protected $fillable = [
         'fullname',
         'section',
-        'student_id',
+        'grade_level',
         'respect',
         'excellence',
         'teamwork',
         'innovation',
         'sustainability',
+        'core_id',
     ];
 }

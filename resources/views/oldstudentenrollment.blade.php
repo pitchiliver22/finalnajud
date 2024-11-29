@@ -41,7 +41,7 @@
         }
 
         .list-group-item:last-child {
-            border-bottom: none; /* Remove border for the last item */
+            border-bottom: none; 
         }
 
         .list-group-item:hover {
@@ -206,7 +206,7 @@
                                     @else
                                     <a href="/oldstudentupdatedocuments"
                                         class="btn btn-primary mt-3 rounded-pill updateInfoBtn">
-                                        Confirm Information
+                                        Upload Required Documents
                                     </a>
                                     @endif
                                 </div>

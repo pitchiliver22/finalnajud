@@ -224,13 +224,23 @@ public function studentassessment(Request $request)
     {
         return view('teacherprofile');
     }
+
     public function teacherclassload()
     {
-        $user = Auth::user(); 
-        $fullName = trim("{$user->firstname} {$user->middlename} {$user->lastname}"); 
-
-        $classes = assign::where('adviser', $fullName)->get(); 
+        $teachers = Teacher::all(); 
     
+        $classes = collect();
+    
+        foreach ($teachers as $teacher) {
+            $assignedClasses = assign::where('teacher_id', $teacher->id)
+                ->select('class_id', 'section', 'edpcode', 'subject', 'grade', 'teacher_id')
+                ->get(); 
+            Log::info('Assigned Classes for Teacher ID ' . $teacher->id . ': ', $assignedClasses->toArray());
+    
+            $classes = $classes->merge($assignedClasses);
+        }
+    
+        
         $proofs = payment_form::whereNotNull('level')->get(); 
     
         return view('teacherclassload', [
@@ -239,50 +249,8 @@ public function studentassessment(Request $request)
             'proofs' => $proofs 
         ]);
     }
-    public function gradesubmit()
-    {
-        $userId = Auth::id();
-        $assign = Assign::findOrFail($userId);
-        $paymentForm = payment_form::where('payment_id', $assign->class_id)->first();
-        $student = register_form::findOrFail($assign->class_id);
-        
-        // Fetch the full name of the student
-        $fullName = "{$student->firstname} {$student->middlename} {$student->lastname}";
-        
-        // Fetch the grade if it exists
-        $grade = grade::where('grade_id', $assign->id)->first();
-        
-        // Fetch the latest quarter settings
-        $quartersEnabled = QuarterSettings::first();
-        
-        // Prepare the quarters enabled array
-        $quartersEnabledArray = [
-            '1st_quarter' => $quartersEnabled->first_quarter_enabled ?? false,
-            '2nd_quarter' => $quartersEnabled->second_quarter_enabled ?? false,
-            '3rd_quarter' => $quartersEnabled->third_quarter_enabled ?? false,
-            '4th_quarter' => $quartersEnabled->fourth_quarter_enabled ?? false,
-        ];
-    
-        // Prepare the quarters status array
-        $quartersStatusArray = [
-            '1st_quarter' => $quartersEnabled->first_quarter_status ?? 'inactive',
-            '2nd_quarter' => $quartersEnabled->second_quarter_status ?? 'inactive',
-            '3rd_quarter' => $quartersEnabled->third_quarter_status ?? 'inactive',
-            '4th_quarter' => $quartersEnabled->fourth_quarter_status ?? 'inactive',
-        ];
-        
-        return view('gradesubmit', [
-            'assign' => $assign,
-            'paymentForm' => $paymentForm,
-            'fullName' => $fullName,
-            'edpcode' => $assign->edpcode,
-            'subject' => $assign->subject,
-            'section' => $assign->section,
-            'grade' => $grade,
-            'quartersEnabled' => $quartersEnabledArray,
-            'quartersStatus' => $quartersStatusArray, // Pass the status array to the view
-        ]);
-    }
+
+
 
     
     public function teacherattendance()
@@ -291,22 +259,23 @@ public function studentassessment(Request $request)
     }
 
     public function teachercorevalue()
-    {
+{
+    $teachers = Teacher::all(); 
+    $classes = collect();
 
-        $user = Auth::user(); 
-        $fullName = trim("{$user->firstname} {$user->middlename} {$user->lastname}"); 
-
-        $classes = assign::where('adviser', $fullName)->get(); 
-    
-        $proofs = payment_form::whereNotNull('level')->get(); 
-    
-        return view('teachercorevalue', [
-            'title' => 'Teacher Core Value Load',
-            'classes' => $classes,
-            'proofs' => $proofs 
-        ]);
+    foreach ($teachers as $teacher) {
+        $assignedClasses = assign::where('teacher_id', $teacher->id)
+            ->select('class_id', 'section', 'edpcode', 'subject', 'grade', 'teacher_id')
+            ->get(); 
+        $classes = $classes->merge($assignedClasses);
     }
 
+    // Pass the $classes variable to the view
+    return view('teachercorevalue', [
+        'classes' => $classes,
+        'teachers' => $teachers,
+    ]);
+}
 
     //principal
     public function principal()
@@ -552,12 +521,6 @@ public function approvedpayment()
     public function adminprofile()
     {
         return view('adminprofile');
-    }
-
-
-    public function newstudent()
-    {
-        return view('newstudent');
     }
 
     public function oldstudent()

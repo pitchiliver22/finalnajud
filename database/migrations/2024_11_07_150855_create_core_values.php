@@ -11,16 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('code_values', function (Blueprint $table) {
+        Schema::create('core_values', function (Blueprint $table) {
             $table->id();
             $table->string('fullname');
             $table->string('section');
-            $table->string('student_id');
+            $table->string('grade_level');
             $table->string('respect');
             $table->string('excellence');
             $table->string('teamwork');
             $table->string('innovation');
             $table->string('sustainability');
+            $table->unsignedBigInteger('core_id');
+            $table->foreign('core_id')->references('class_id')->on('assign');
+           
             $table->timestamps();
         });
     }

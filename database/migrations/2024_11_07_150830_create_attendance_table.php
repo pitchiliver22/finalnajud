@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('fullname');
             $table->string('section');
-            $table->string('student_id');
+            $table->string('grade_level');
             $table->string('edp_code');
             $table->string('subject');
             $table->string('1st_quarter');

@@ -70,13 +70,12 @@ Route::get('studentassessment', [Pagecontroller::class, 'studentassessment']);
 Route::get('teacher', [Pagecontroller::class, 'teacher'])->middleware('auth');
 Route::get('teachernotification', [Pagecontroller::class, 'teachernotification'])->middleware('auth');
 Route::get('teacherprofile', [Pagecontroller::class, 'teacherprofile'])->middleware('auth');
+
 Route::get('teacherclassload', [Pagecontroller::class, 'teacherclassload'])->middleware('auth');
-Route::get('teacherclassload', [Usercontroller::class, 'teacherclassload'])->middleware('auth');
 
 
-Route::get('gradesubmit', [Pagecontroller::class, 'gradesubmit'])->middleware('auth');
-Route::post('/gradesubmit', [Datacontroller::class, 'gradesubmitpost'])->name('gradesubmit');
-Route::get('gradesubmit/{id}', [Usercontroller::class, 'gradesubmit'])->middleware('auth');
+Route::get('/gradesubmit/{edp_code}/{teacher_id}', [Usercontroller::class, 'gradesubmit'])->name('gradesubmit');
+Route::post('/gradesubmit', [Datacontroller::class, 'gradesubmitpost'])->name('gradesubmitpost');
 
 
 Route::get('teacherattendance', [Pagecontroller::class, 'teacherattendance'])->middleware('auth');
@@ -84,10 +83,11 @@ Route::get('teacherattendance', [Pagecontroller::class, 'teacherattendance'])->m
 
 Route::get('teachercorevalue', [Pagecontroller::class, 'teachercorevalue'])->middleware('auth');
 Route::post('/teachercorevalue', [Datacontroller::class, 'teachercorevaluepost'])->name('teachercorevaluesubmit');
-Route::get('teachercorevalue/{id}', [Usercontroller::class, 'teachercorevalue'])->middleware('auth');
-
-
-//principal
+Route::get('/teachercorevaluesubmit/{teacher_id}', [UserController::class, 'teachercorevaluesubmit'])
+    ->name('teachercorevaluesubmit');
+    
+    
+   
 Route::get('principal', [Pagecontroller::class, 'principal']);
 Route::get('sectioning', [Pagecontroller::class, 'sectioning']);
 Route::get('sectioning/{id}', [Usercontroller::class, 'sectioning']);
@@ -196,10 +196,6 @@ Route::get('adminnotification', [Pagecontroller::class, 'adminnotification']);
 Route::get('adminstudent', [Pagecontroller::class, 'adminstudent']);
 Route::get('adminreport', [Pagecontroller::class, 'adminreport']);
 Route::get('adminprofile', [Pagecontroller::class, 'adminprofile']);
-
-Route::get('newstudent', [Pagecontroller::class, 'newstudent']);
-Route::post('newstudent', [Datacontroller::class, 'newstudentpost']);
-
 
 Route::get('oldstudent', [Pagecontroller::class, 'oldstudent']);
 Route::post('oldstudent', [Datacontroller::class, 'oldstudentpost']);

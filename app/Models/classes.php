@@ -24,6 +24,7 @@ class classes extends Model
         'days',
         'status',
         'assign_id',
+        'teacher_id'
     ];
 
     const STATUS_PENDING = 'not assign';

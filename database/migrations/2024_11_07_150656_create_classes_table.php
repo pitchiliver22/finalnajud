@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('days');
             $table->string('status');
             $table->unsignedBigInteger('assign_id')->nullable();
-
+            $table->unsignedBigInteger('teacher_id')->references('id')->on('teacher');
             $table->timestamps();
         });
     }

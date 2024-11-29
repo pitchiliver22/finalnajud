@@ -85,11 +85,6 @@
                                 <span>Old Student</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="/newstudent" class="nav-link px-0">
-                                <span>New Student</span>
-                            </a>
-                        </li>
                     </ul>
                     <li class="nav-item">
                         <a href="/adminstudent" class="nav-link px-0">

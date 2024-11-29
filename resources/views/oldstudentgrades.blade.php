@@ -121,11 +121,10 @@
                         <td>{{ $grade->subject }}</td>
                         <td>{{ $grade->edp_code }}</td>
                         <td>{{ $grade->section }}</td>
-                        <td>{{ $grade->{'1st_quarter'} ?? 'N/A' }}</td>
-                        <td>{{ $grade->{'2nd_quarter'} ?? 'N/A' }}</td>
-                        <td>{{ $grade->{'3rd_quarter'} ?? 'N/A' }}</td>
-                        <td>{{ $grade->{'4th_quarter'} ?? 'N/A' }}</td>
-                        <td>{{ $grade->overall_grade ?? 'N/A' }}</td>
+                        <td>{{ $grade->{'1st_quarter'} ?? '-' }}</td>
+                        <td>{{ $grade->{'2nd_quarter'} ?? '-' }}</td>
+                        <td>{{ $grade->{'3rd_quarter'} ?? '-' }}</td>
+                        <td>{{ $grade->overall_grade ?? '-' }}</td>
                     </tr>
                 @endforeach
                 <tr>

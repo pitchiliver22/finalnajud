@@ -12,7 +12,7 @@ class attendance extends Model
     protected $fillable = [
         'fullname',
         'section',
-        'student_id',
+        'grade_level',
         'edp_code',
         'subject',
         '1st_quarter',

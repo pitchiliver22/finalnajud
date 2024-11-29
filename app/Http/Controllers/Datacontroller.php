@@ -722,13 +722,11 @@ public function approvePayment($id)
 
     //principal
 
-
     public function classloadpost(Request $request)
     {
-        // Validate the incoming request data
         $validatedData = $request->validate([
             'grade' => 'required',
-            'adviser' => 'required|exists:teachers,id',
+            'adviser' => 'required|exists:teachers,id', 
             'section' => 'required',
             'edpcode' => 'required',
             'subject' => 'required',
@@ -741,18 +739,14 @@ public function approvePayment($id)
             'days' => 'required',
         ]);
     
-        $teacher = Teacher::find($validatedData['adviser']);
-        if (!$teacher) {
-            return redirect('/principalclassload')->withErrors(['error' => 'Selected teacher not found.'])->withInput();
-        }
-        $teacherName = trim($teacher->name);
+        $teacherId = $validatedData['adviser'];
     
-        // Check existing schedules for the specified section
+        $teacherName = teacher::find($teacherId)->name; 
+    
         $existingSchedules = classes::where('grade', $validatedData['grade'])
-            ->where('section', strtoupper($validatedData['section'])) // Ensure case consistency
+            ->where('section', strtoupper($validatedData['section'])) 
             ->count();
     
-        // Handle warnings and maximum schedule checks
         if ($existingSchedules >= 10) {
             return redirect('/principalclassload')->withErrors(['error' => 'Maximum of 10 schedules reached for this section.'])->withInput()->with([
                 'sections' => section::all(),
@@ -760,25 +754,14 @@ public function approvePayment($id)
                 'selectedGrade' => $validatedData['grade'],
                 'selectedSection' => strtoupper($validatedData['section']),
                 'selectedSubject' => strtoupper($validatedData['subject']),
-                'selectedAdviser' => $validatedData['adviser'],
+                'selectedAdviser' => $teacherId,
             ]);
         }
     
-        if ($existingSchedules == 10) {
-            return redirect('/principalclassload')->with('warning', 'Warning: The section has reached 10 schedules. Maximum is 10.')->withInput()->with([
-                'sections' => section::all(),
-                'teachers' => teacher::all(),
-                'selectedGrade' => $validatedData['grade'],
-                'selectedSection' => strtoupper($validatedData['section']),
-                'selectedSubject' => strtoupper($validatedData['subject']),
-                'selectedAdviser' => $validatedData['adviser'],
-            ]);
-        }
-    
-        // Prepare class entry data
         $classData = [
             'grade' => $validatedData['grade'],
-            'adviser' => $teacherName,
+            'teacher_id' => $teacherId,   
+            'adviser' => $teacherName,    
             'section' => strtoupper($validatedData['section']),
             'edpcode' => strtoupper($validatedData['edpcode']),
             'subject' => strtoupper($validatedData['subject']),
@@ -792,7 +775,6 @@ public function approvePayment($id)
             'status' => 'not assigned',
         ];
     
-        // Check for conflicts: any teacher scheduled at the same time on the same day
         $timeConflict = classes::where('grade', $classData['grade'])
             ->where('section', $classData['section'])
             ->where('days', $classData['days'])
@@ -802,7 +784,6 @@ public function approvePayment($id)
             })
             ->exists();
     
-        // Handle conflict for any teacher at the same time
         if ($timeConflict) {
             return redirect('/principalclassload')->withErrors(['error' => 'Conflict detected: Another class is scheduled at this time on the same day.'])->withInput()->with([
                 'sections' => section::all(),
@@ -810,11 +791,10 @@ public function approvePayment($id)
                 'selectedGrade' => $validatedData['grade'],
                 'selectedSection' => strtoupper($validatedData['section']),
                 'selectedSubject' => strtoupper($validatedData['subject']),
-                'selectedAdviser' => $validatedData['adviser'],
+                'selectedAdviser' => $teacherId,
             ]);
         }
     
-        // Create the class entry
         classes::create($classData);
     
         return redirect('/principalclassload')->with([
@@ -823,27 +803,23 @@ public function approvePayment($id)
             'selectedGrade' => $validatedData['grade'],
             'selectedSection' => strtoupper($validatedData['section']),
             'selectedSubject' => strtoupper($validatedData['subject']),
-            'selectedAdviser' => $validatedData['adviser'],
+            'selectedAdviser' => $teacherId,
         ])->with('success', 'Classload added successfully.');
     }
 
         public function principalclassload(Request $request)
     {
-        // Get selected values from the request
         $selectedGrade = $request->input('grade', session('selectedGrade'));
         $selectedSection = $request->input('section', session('selectedSection'));
         $selectedSubject = $request->input('subject', session('selectedSubject'));
         
-        // Get all classes
         $class = classes::all();
         
-        // Fetch all teachers
         $teachers = teacher::all();
 
-        // Extract unique subjects from teachers
         $subjects = [];
         foreach ($teachers as $teacher) {
-            $teacherSubjects = explode(',', $teacher->subject); // Assuming subjects are comma-separated
+            $teacherSubjects = explode(',', $teacher->subject); 
             foreach ($teacherSubjects as $subject) {
                 $subjects[trim($subject)] = true; 
             }
@@ -1076,32 +1052,27 @@ public function showEvaluateGrades()
         $paymentId = $request->input('payment_id');
         Log::info('Submitted payment_id:', ['payment_id' => $paymentId]);
     
-        // Check if the payment_id exists in the payment_form table
         $paymentExists = payment_form::where('payment_id', $paymentId)->exists();
     
         if (!$paymentExists) {
             return redirect('/sectioning')->with('error', 'Invalid payment ID. Please check and try again.');
         }
     
-        // Use the payment_id as both class_id and assign_id
         $paymentFormId = $paymentId; 
-    
         $anyAssigned = false;
     
         foreach ($request->selected_classes as $classEdpCode) {
             $class = Classes::where('edpcode', $classEdpCode)->first();
     
             if ($class) {
-                // Check for existing assignments using paymentFormId
                 $existingAssignment = Assign::where('edpcode', $class->edpcode)
-                    ->where('class_id', $paymentFormId) // Using paymentFormId as class_id
+                    ->where('class_id', $paymentFormId) 
                     ->first();
     
                 if (!$existingAssignment) {
-                    // Create a new assignment using paymentFormId for class_id and assign_id
                     $assignment = Assign::create([
                         'grade' => $request->input('grade'),
-                        'adviser' => $class->adviser,
+                        'adviser' => $class->adviser, 
                         'section' => $class->section,
                         'edpcode' => $class->edpcode,
                         'room' => $class->room,
@@ -1112,15 +1083,15 @@ public function showEvaluateGrades()
                         'startTime' => $class->startTime,
                         'endTime' => $class->endTime,
                         'days' => $class->days,
-                        'class_id' => $paymentFormId, // Use payment_id as class_id
+                        'class_id' => $paymentFormId, 
                         'status' => 'assigned',
-                        'assign_id' => $paymentFormId, // Use payment_id as assign_id
+                        'assign_id' => $paymentFormId, 
+                        'teacher_id' => $class->teacher_id, 
                     ]);
     
                     Log::info('Assignment Created:', $assignment->toArray());
     
-                    // Update class status
-                    $class->assign_id = $paymentFormId; // Use payment_id as assign_id in class
+                    $class->assign_id = $paymentFormId; 
                     $class->status = 'assigned';
                     $class->save();
     
@@ -1154,7 +1125,6 @@ public function showEvaluateGrades()
             return response()->json(['error' => 'Profile not found.'], 404);
         }
 
-        // Update the profile in the database
         $profile->update($validatedData);
         $users->update($validatedData);
         $studentdetails->update($validatedData);
@@ -1165,53 +1135,70 @@ public function showEvaluateGrades()
     }
 
     public function gradesubmitpost(Request $request)
-{
-    try {
-        // Validate the incoming request data
-        $validateData = $request->validate([
-            'edp_code' => 'required',
-            'subject' => 'required',
-            'grade_id' => 'required|integer',
-            'fullname' => 'required',
-            'section' => 'required',
-            '1st_quarter' => 'nullable|numeric|min:0|max:100',
-            '2nd_quarter' => 'nullable|numeric|min:0|max:100',
-            '3rd_quarter' => 'nullable|numeric|min:0|max:100',
-            '4th_quarter' => 'nullable|numeric|min:0|max:100',
-            'overall_grade' => 'required|numeric|min:0|max:100'
-        ]);
-
-        // Prepare the data for insertion/updating
-        $gradesData = [
-            'fullname' => $validateData['fullname'],
-            'section' => $validateData['section'],
-            'edp_code' => $validateData['edp_code'],
-            'subject' => $validateData['subject'],
-            'grade_id' => $validateData['grade_id'],
-            '1st_quarter' => $validateData['1st_quarter'] ?? null,
-            '2nd_quarter' => $validateData['2nd_quarter'] ?? null,
-            '3rd_quarter' => $validateData['3rd_quarter'] ?? null,
-            '4th_quarter' => $validateData['4th_quarter'] ?? null,
-            'overall_grade' => $validateData['overall_grade'],
-            'status' => 'pending'
-        ];
-
-        // Use updateOrCreate
-        Grade::updateOrCreate(
-            [
-                'edp_code' => $validateData['edp_code'], // Unique identifier
-                'subject' => $validateData['subject'],
-                'grade_id' => $validateData['grade_id'],
-            ],
-            $gradesData
-        );
-
-        return redirect()->back()->with('success', 'Student Grade submitted successfully.');
-    } catch (\Exception $e) {
-        Log::error($e->getMessage());
-        return redirect()->back()->withInput()->withErrors(['Failed to submit grade: ' . $e->getMessage()]);
+    {
+        Log::info($request->all());
+    
+        try {
+            // Validate the incoming data
+            $validatedData = $request->validate([
+                'edp_code.*' => 'required',
+                'subject.*' => 'required',
+                'grade_id.*' => 'required|integer',
+                'fullname.*' => 'required|string',
+                'section.*' => 'required',
+                'grades.*.1st_quarter' => 'nullable|numeric|min:0|max:100',
+                'grades.*.2nd_quarter' => 'nullable|numeric|min:0|max:100',
+                'grades.*.3rd_quarter' => 'nullable|numeric|min:0|max:100',
+                'grades.*.4th_quarter' => 'nullable|numeric|min:0|max:100',
+                'grades.*.overall_grade' => 'nullable|numeric|min:0|max:100',
+            ]);
+    
+            // Check if the form was submitted properly
+            if (!$request->has('submit')) {
+                throw new \Exception("Submit button not clicked.");
+            }
+    
+            // Process the form data
+            foreach ($validatedData['edp_code'] as $index => $edp_code) {
+                $gradesData = [
+                    'edp_code' => $edp_code,
+                    'subject' => $validatedData['subject'][$index],
+                    'grade_id' => $validatedData['grade_id'][$index],
+                    'fullname' => $validatedData['fullname'][$index],
+                    'section' => $validatedData['section'][$index],
+                    '1st_quarter' => $validatedData['grades'][$index]['1st_quarter'] ?? null,
+                    '2nd_quarter' => $validatedData['grades'][$index]['2nd_quarter'] ?? null,
+                    '3rd_quarter' => $validatedData['grades'][$index]['3rd_quarter'] ?? null,
+                    '4th_quarter' => $validatedData['grades'][$index]['4th_quarter'] ?? null,
+                    'overall_grade' => $validatedData['grades'][$index]['overall_grade'] ?? null,
+                    'status' => 'pending',
+                ];
+    
+                // Save or update the grade record
+                Grade::updateOrCreate(
+                    [
+                        'edp_code' => $gradesData['edp_code'],
+                        'subject' => $gradesData['subject'],
+                        'grade_id' => $gradesData['grade_id'],
+                    ],
+                    $gradesData
+                );
+            }
+    
+            // Success message
+            return redirect()->back()->with('success', 'Student Grades submitted successfully.');
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return redirect()->back()->withInput()->withErrors(['Failed to submit grade: ' . $e->getMessage()]);
+        }
     }
-}
+    
+    
+    
+    
+    
+    
+    
     public function publish($id)
     {
         $grades = grade::findOrFail($id);
@@ -1229,43 +1216,48 @@ public function showEvaluateGrades()
     }
 
     public function teachercorevaluepost(Request $request)
-    {
-        $request->validate([
-            'student_ids.*' => 'required|exists:grades,id', // Ensure each student ID exists
-            'respect.*' => 'required|string',
-            'excellence.*' => 'required|string',
-            'teamwork.*' => 'required|string',
-            'innovation.*' => 'required|string',
-            'sustainability.*' => 'required|string',
-            'fullname' => 'required|string',
-            'section' => 'required|string',
-        ]);
-    
-        DB::beginTransaction();
-        try {
-            foreach ($request->student_ids as $index => $studentId) {
-                corevalues::create([
-                    'student_id' => $studentId,
-                    'respect' => $request->respect[$index],
-                    'excellence' => $request->excellence[$index],
-                    'teamwork' => $request->teamwork[$index],
-                    'innovation' => $request->innovation[$index],
-                    'sustainability' => $request->sustainability[$index],
-                    'fullname' => $request->fullname, 
-                    'section' => $request->section, 
-                ]);
-            }
-                DB::commit();
-    
-            return redirect()->back()->with('success', 'Core values saved successfully!');
-        } catch (\Exception $e) {
-            DB::rollBack();
-    
-            Log::error('Error saving core values: ' . $e->getMessage());
-    
-            return redirect()->back()->with('error', 'An error occurred while saving core values.');
+{
+    $request->validate([
+        'grade_level.*' => 'required|string',
+        'fullname.*' => 'required|string',
+        'section.*' => 'required|string',
+        'core_id.*' => 'required|integer', // Ensure core_id exists in your reference table
+        'core_values.*.respect' => 'required|string',
+        'core_values.*.excellence' => 'required|string',
+        'core_values.*.teamwork' => 'required|string',
+        'core_values.*.innovation' => 'required|string',
+        'core_values.*.sustainability' => 'required|string',
+    ]);
+
+    DB::beginTransaction();
+    try {
+        foreach ($request->core_id as $index => $coreId) {
+            corevalues::updateOrCreate(
+                ['core_id' => $coreId], // Use core_id to find the existing record
+                [
+                    'respect' => $request->core_values[$coreId]['respect'],
+                    'excellence' => $request->core_values[$coreId]['excellence'],
+                    'teamwork' => $request->core_values[$coreId]['teamwork'],
+                    'innovation' => $request->core_values[$coreId]['innovation'],
+                    'sustainability' => $request->core_values[$coreId]['sustainability'],
+                    'fullname' => $request->fullname[$index], // Assuming these are arrays
+                    'section' => $request->section[$index],
+                    'grade_level' => $request->grade_level[$index], // If you need to include grade level
+                ]
+            );
         }
+
+        DB::commit();
+
+        return redirect()->back()->with('success', 'Core values saved successfully!');
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        Log::error('Error saving core values: ' . $e->getMessage());
+
+        return redirect()->back()->with('error', 'An error occurred while saving core values.');
     }
+}
 
     public function studentapplicant(Request $request)
     {
@@ -1335,7 +1327,6 @@ public function showEvaluateGrades()
 
     public function showTeachers()
     {
-        // Fetch users with the role 'teacher'
         $teachers = User::where('role', 'teacher')->get()->map(function ($user) {
             return [
                 'id' => $user->id,
@@ -1352,39 +1343,36 @@ public function showEvaluateGrades()
     $validatedData = $request->validate([
         'name' => 'required|exists:users,id', 
         'grade' => 'required|string',
-        'subject' => 'required|array', // Change to array to accept multiple subjects
-        'subject.*' => 'string', // Validate each subject as a string
+        'subject' => 'required|array', 
+        'subject.*' => 'string', 
     ]);
 
-    // Fetch the teacher by ID from the User table
+
     $user = User::find($validatedData['name']);
 
-    // Check if the teacher's record already exists
     $teacherRecord = Teacher::where('name', trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname))
                             ->where('grade', $validatedData['grade'])
                             ->first();
 
     if ($teacherRecord) {
-        // Update existing record with new subjects
+
         $existingSubjects = explode(', ', $teacherRecord->subject);
         $newSubjects = $validatedData['subject'];
-        $allSubjects = array_unique(array_merge($existingSubjects, $newSubjects)); // Merge and remove duplicates
+        $allSubjects = array_unique(array_merge($existingSubjects, $newSubjects)); 
 
-        $teacherRecord->subject = implode(', ', $allSubjects); // Concatenate subjects
+        $teacherRecord->subject = implode(', ', $allSubjects); 
         $teacherRecord->updated_at = now();
         $teacherRecord->save();
     } else {
-        // Create a new record
         teacher::create([
             'name' => trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname),
-            'subject' => implode(', ', $validatedData['subject']), // Store subjects as a single string
+            'subject' => implode(', ', $validatedData['subject']), 
             'grade' => $validatedData['grade'],
             'created_at' => now(),
             'updated_at' => now(),
         ]);
     }
 
-    // Fetch teachers again to pass back to the view
     $teachers = User::where('role', 'teacher')->get()->map(function ($user) {
         return [
             'id' => $user->id,
@@ -1406,21 +1394,18 @@ public function showEvaluateGrades()
             'grade' => 'required|string|max:255',
         ]);
     
-        // Check for duplicate section regardless of grade
         $existingSection = section::where('section', $validatedData['section'])->first();
     
         if ($existingSection) {
-            // Redirect back with an error message
+
             return redirect()->back()->withErrors(['section' => 'This section already exists.']);
         }
     
-        // Create a new section schedule
         $section = section::create([
             'section' => $validatedData['section'],
             'grade' => $validatedData['grade'],
         ]);
     
-        // Redirect to the principalclassload with the created section data
         return redirect()->route('principalclassload', [
             'grade' => $section->grade,
             'section' => $section->section
@@ -1490,95 +1475,6 @@ public function showEvaluateGrades()
 
         return response()->json(['message' => 'Grade not found.'], 404);
     }
-
-
-    public function newstudentpost(Request $request)
-    {
-        $validatedData = $request->validate([
-            'firstname' => 'required',
-            'middlename' => 'required',
-            'lastname' => 'required',
-            'suffix' => 'required',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8',
-            'nationality' => 'required',
-            'gender' => 'required',
-            'civilstatus' => 'required',
-            'birthdate' => 'required|date',
-            'birthplace' => 'required',
-            'religion' => 'required',
-            'mother_name' => 'required',
-            'mother_occupation' => 'required',
-            'mother_contact' => 'required',
-            'father_name' => 'required',
-            'father_occupation' => 'required',
-            'father_contact' => 'required',
-            'guardian_name' => 'required',
-            'guardian_occupation' => 'required',
-            'guardian_contact' => 'required',
-        ]);
-    
-        DB::beginTransaction();
-    
-        try {
-            // Create User with hashed password
-            $user = User::create([
-                'firstname' => $validatedData['firstname'],
-                'middlename' => $validatedData['middlename'],
-                'lastname' => $validatedData['lastname'],
-                'suffix' => $validatedData['suffix'],
-                'email' => $validatedData['email'],
-                'password' => bcrypt($validatedData['password']), // Hash the password
-                'role' => 'NewStudent',
-            ]);
-    
-            // Create Register Form without hashing the password
-            $registerForm = register_form::create([
-                'firstname' => $validatedData['firstname'],
-                'middlename' => $validatedData['middlename'],
-                'lastname' => $validatedData['lastname'],
-                'suffix' => $validatedData['suffix'],
-                'email' => $validatedData['email'],
-                'password' => $validatedData['password'], // Store plain password
-                'status' => register_form::STATUS_APPROVED, // Set status to approved
-                'user_id' => $user->id, 
-            ]);
-    
-            // Create Student Details
-        studentdetails::create([
-            'details_id' => $registerForm->id, 
-            'firstname' => $validatedData['firstname'], // Ensure this is included
-            'middlename' => $validatedData['middlename'], // Include if needed
-            'lastname' => $validatedData['lastname'], // Include if needed
-            'suffix' => $validatedData['suffix'], // Include if needed
-            'nationality' => $validatedData['nationality'],
-            'gender' => $validatedData['gender'],
-            'civilstatus' => $validatedData['civilstatus'],
-            'birthdate' => $validatedData['birthdate'],
-            'birthplace' => $validatedData['birthplace'],
-            'religion' => $validatedData['religion'],
-            'mother_name' => $validatedData['mother_name'],
-            'mother_occupation' => $validatedData['mother_occupation'],
-            'mother_contact' => $validatedData['mother_contact'],
-            'father_name' => $validatedData['father_name'],
-            'father_occupation' => $validatedData['father_occupation'],
-            'father_contact' => $validatedData['father_contact'],
-            'guardian_name' => $validatedData['guardian_name'],
-            'guardian_occupation' => $validatedData['guardian_occupation'],
-            'guardian_contact' => $validatedData['guardian_contact'],
-            'status' => studentdetails::STATUS_APPROVED, // Set status to approved
-        ]);
-    
-            DB::commit();
-    
-            return response()->json(['message' => 'Student registered successfully!'], 201);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Registration failed: '.$e->getMessage());
-            return response()->json(['error' => 'Registration failed, please try again.'], 500);
-        }
-    }
-
 
     public function oldstudentpost(Request $request)
     {
