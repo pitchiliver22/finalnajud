@@ -159,7 +159,7 @@
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
         
-            @if ($errors->any())
+            {{-- @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul>
                         @foreach ($errors->all() as $error)
@@ -167,7 +167,7 @@
                         @endforeach
                     </ul>
                 </div>
-            @endif
+            @endif --}}
 
             <div class="form-group">
                 <label class="toggle-switch">
@@ -217,55 +217,78 @@
     <!-- Container for Evaluating Grade Submission -->
     <div class="container">
         <h4>Evaluate Grade Submissions</h4>
-        <form action="#" method="GET">
+        <form action="{{ route('evaluate.grades') }}" method="GET">
             @csrf
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div class="input-group mr-3">
-                    <input type="text" class="form-control" placeholder="Search..." aria-label="Search" name="search">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="submit">Refresh Search</button>
+                    <input type="text" id="searchInput" class="form-control" name="query"
+                    placeholder="Search account entries..." aria-label="Search account entries"
+                    aria-describedby="button-addon2" value="{{ request()->input('query') }}">                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary ml-2" type="button" onclick="location.reload();">Refresh Search</button>                    
                     </div>
                 </div>
             </div>
-
+    
             <div class="table-responsive">
-                <table class="table table-striped">
+                <table class="table table-striped" id="searchTable">
                     <thead>
                         <tr>
                             <th>Status</th>
                             <th>Adviser</th>
-                            <th>Subject</th>
                             <th>Section</th>
+                            <th>Subject</th>
                             <th>Grade Level</th>
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="results"> 
                         @foreach ($assigns as $assign)
                             @php
-                                $grade = $grades->firstWhere('grade_id', $assign->id);
+                                $grade = $grades->firstWhere('subject', $assign->subject);
                             @endphp
-
-                            <tr>
-                                <td>{{ $grade ? $grade->status : 'pending' }}</td>
-                                <td>{{ $assign->adviser }}</td>
-                                <td>{{ $assign->subject }}</td>
-                                <td>{{ $assign->section }}</td>
-                                <td>{{ $assign->grade }}</td>
-                                <td>
-                                    <a href="{{ route('publishgrade', ['gradeId' => $assign->id]) }}" class="btn btn-info btn-sm" title="View">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
-                                            <path d="M7.998 2c-2.757 0-5.287 1.417-6.758 3.75a.748.748 0 0 0 0 .5c1.471 2.333 4.001 3.75 6.758 3.75s5.287-1.417 6.758-3.75a.748.748 0 0 0 0-.5c-1.471-2.333-4.001-3.75-6.758-3.75zm0 1.5a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5zm0 2a1.75 1.75 0 1 0 0 3.5 1.75 1.75 0 0 0 0-3.5z"/>
-                                        </svg>
-                                    </a>
-                                </td>
-                            </tr>
+                            @if ($grade)
+                                <tr>
+                                    <td>{{ $grade->status }}</td>
+                                    <td>{{ $assign->adviser }}</td>
+                                    <td>{{ $assign->section }}</td>
+                                    <td>{{ $assign->subject }}</td>
+                                    <td>{{ $assign->grade }}</td>
+                                    <td>
+                                        <a href="{{ route('publishgrade', ['grade_id' => $grade->grade_id, 'edp_code' => $grade->edp_code, 'subject' => $grade->subject]) }}" class="btn btn-info btn-sm" title="View">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                                <path d="M7.998 2c-2.757 0-5.287 1.417-6.758 3.75a.748.748 0 0 0 0 .5c1.471 2.333 4.001 3.75 6.758 3.75s5.287-1.417 6.758-3.75a.748.748 0 0 0 0-.5c-1.471-2.333-4.001-3.75-6.758-3.75zm0 1.5a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5zm0 2a1.75 1.75 0 1 0 0 3.5 1.75 1.75 0 0 0 0-3.5z"/>
+                                            </svg>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endif
                         @endforeach
                     </tbody>
                 </table>
             </div>
         </form>
     </div>
-</div>
+
+
+    <script>
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            const query = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#searchTable tbody tr');
+    
+            rows.forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                let match = false;
+    
+                for (let i = 0; i < cells.length; i++) {
+                    if (cells[i].textContent.toLowerCase().includes(query)) {
+                        match = true;
+                        break;
+                    }
+                }
+    
+                row.style.display = match ? '' : 'none';
+            });
+        });
+    </script>
 
 @include('templates.principalfooter')

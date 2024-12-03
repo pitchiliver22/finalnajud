@@ -171,24 +171,27 @@
                                                         Password
                                                     </label>
                                                 </div>
+                                                <div class="form-check mb-3">
+                                                    <input type="checkbox" class="form-check-input" id="showPassword">
+                                                    <label class="form-check-label" for="showPassword">Show Password</label>
+                                                </div>                        
                                             </div>
+                                            
                                             <div class="col-md-6 mb-4">
                                                 <div data-mdb-input-init class="form-outline">
-                                                    <input type="password" id="password_confirmation"
-                                                        name="password_confirmation"
-                                                        class="form-control form-control-lg" required />
+                                                    <input type="password" id="password_confirmation" name="password_confirmation" class="form-control form-control-lg" required />
                                                     <label class="form-label" for="password_confirmation">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                            height="24" fill="#e74c3c"
-                                                            class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
-                                                            <path
-                                                                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#e74c3c" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
+                                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
                                                         </svg>
                                                         Confirm Password
                                                     </label>
                                                 </div>
+                                                <div class="form-check mb-3">
+                                                    <input type="checkbox" class="form-check-input" id="showPasswordConfirm">
+                                                    <label class="form-check-label" for="showPasswordConfirm">Show Password</label> <!-- Update the 'for' attribute -->
+                                                </div>                        
                                             </div>
-                                        </div>
 
                                         <div class="d-flex justify-content-end pt-3">
                                             <button type="button" class="btn btn-light btn-lg"
@@ -211,15 +214,27 @@
 
     <script>
         function resetForm() {
-            // Get all input fields in the form
             const inputs = document.querySelectorAll(
                 '#registrationForm input[type="text"], #registrationForm input[type="email"], #registrationForm input[type="password"]'
             );
-            // Clear the value of each input field
             inputs.forEach(input => {
                 input.value = '';
             });
         }
+
+        const passwordInput = document.getElementById('password');
+        const passwordInputConfirm = document.getElementById('password_confirmation');
+
+        const showPasswordCheckbox = document.getElementById('showPassword');
+        const showPasswordCheckboxConfirm = document.getElementById('showPasswordConfirm');
+
+        showPasswordCheckbox.addEventListener('change', () => {
+            passwordInput.type = showPasswordCheckbox.checked ? 'text' : 'password';
+        });
+
+        showPasswordCheckboxConfirm.addEventListener('change', () => {
+            passwordInputConfirm.type = showPasswordCheckboxConfirm.checked ? 'text' : 'password';
+        });
     </script>
 
 </body>

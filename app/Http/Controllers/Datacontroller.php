@@ -31,12 +31,14 @@ use App\Mail\ApproveStudent;
 use App\Mail\PendingPayment;
 use App\Mail\PendingStudent;
 use App\Models\assessment;
+use App\Models\attendance;
 use App\Models\section;
 use App\Models\subject;
 use App\Models\QuarterSettings;
 use App\Models\teacher;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail as FacadesMail;
+use Illuminate\Support\Carbon;
 
 
 class Datacontroller extends Controller
@@ -63,93 +65,66 @@ class Datacontroller extends Controller
 
 
     public function loginPost(Request $request)
-{
-    $credentials = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|min:8'
-    ]);
-
-    // Define default credentials
-    $defaultCredentials = [
-        'Teacher' => ['email' => 'teacher@example.com', 'password' => 'teacher123'],
-        'Principal' => ['email' => 'principal@example.com', 'password' => 'principal123'],
-        'Cashier' => ['email' => 'cashier@example.com', 'password' => 'cashier123'],
-        'Record' => ['email' => 'record@example.com', 'password' => 'record123'],
-        'Accounting' => ['email' => 'accounting@example.com', 'password' => 'accounting123'],
-    ];
-
-    // Check for default credentials
-    foreach ($defaultCredentials as $role => $default) {
-        if ($credentials['email'] === $default['email'] && $credentials['password'] === $default['password']) {
-            // Create a user instance with the role
-            $user = User::where('email', $default['email'])->first();
-            if ($user) {
-                Auth::login($user); // Log in the user
-                sweetalert()->success("Welcome {$role}!");
-                return redirect(strtolower($role))->with('success', "Welcome, {$role}!");
-            }
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:8'
+        ]);
+    
+        $adminEmail = 'admin@gmail.com';
+        $adminPassword = 'adminpassword'; 
+    
+        if ($credentials['email'] === $adminEmail && $credentials['password'] === $adminPassword) {
+            return redirect('/admin')->with('success', 'Welcome, Admin!');
         }
-    }
-
-    if (Auth::attempt($credentials)) {
-        $user = Auth::user();
-
-        switch ($user->role) {
-            case 'Teacher':
-                return redirect('/teacher')->with('success', 'Welcome, Teacher!');
-
+    
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            
+            switch ($user->role) {
+                case 'Teacher':
+                    return redirect('/teacher')->with('success', 'Welcome, Teacher!');
                 case 'NewstudentFill':
-                
                     $registerForm = register_form::where('user_id', $user->id)->first();
-         
                     if ($registerForm) {
                         if ($registerForm->status === register_form::STATUS_APPROVED) {
-
                             return redirect('/studentdetails/' . $registerForm->id)
                                 ->with('success', 'Welcome, New Student!');
                         } else {
-
                             sweetalert()->warning('Your account is pending approval.');
                             return redirect('/login')->with('error', 'Your registration is still pending approval.');
                         }
                     } else {
-
                         sweetalert()->warning('No registration details found.');
                         return redirect('/login')->with('error', 'No registration details found.');
                     }
-            case 'NewStudent':
-                return redirect('/studentdashboard')->with('success', 'Welcome, New Student!');
-
-            case 'OldStudent':
-                return redirect('/oldstudentdashboard')->with('success', 'Welcome, Old Student!');
-
-            case 'Record':
-                sweetalert()->success('Welcome Records!');
-                return redirect('/record')->with('success', 'Welcome, Record!');
-
-            case 'Cashier':
-                sweetalert()->success('Welcome Cashier!');
-                return redirect('/cashier')->with('success', 'Welcome, Cashier!');
-
-            case 'Principal':
-                sweetalert()->success('Welcome Principal!');
-                return redirect('/principal')->with('success', 'Welcome, Principal!');
-
-            case 'Accounting':
-                sweetalert()->success('Welcome Accounting!');
-                return redirect('/accounting')->with('success', 'Welcome, Accounting!');
-
-            default:
-                return back()->with('error', 'Invalid user role.');
+                case 'NewStudent':
+                    return redirect('/studentdashboard')->with('success', 'Welcome, New Student!');
+                case 'OldStudent':
+                    return redirect('/oldstudentdashboard')->with('success', 'Welcome, Old Student!');
+                case 'Record':
+                    sweetalert()->success('Welcome Records!');
+                    return redirect('/record')->with('success', 'Welcome, Record!');
+                case 'Cashier':
+                    sweetalert()->success('Welcome Cashier!');
+                    return redirect('/cashier')->with('success', 'Welcome, Cashier!');
+                case 'Principal':
+                    sweetalert()->success('Welcome Principal!');
+                    return redirect('/principal')->with('success', 'Welcome, Principal!');
+                case 'Accounting':
+                    sweetalert()->success('Welcome Accounting!');
+                    return redirect('/accounting')->with('success', 'Welcome, Accounting!');
+                default:
+                    return back()->with('error', 'Invalid user role.');
+            }
+        } else {
+            sweetalert()->error('Invalid credentials. Please try again.');
+            return redirect('/login')->withErrors([
+                'email' => 'The provided email is incorrect.',
+                'password' => 'The provided password is incorrect.',
+            ])->onlyInput('email');
         }
-    } else {
-        sweetalert()->error('Pending account approval. Please try again.');
-        return redirect('/login')->withErrors([
-            'email' => 'The provided email is incorrect.',
-            'password' => 'The provided password is incorrect.',
-        ])->onlyInput('email');
     }
-}
 
 
     public function adminuserspost(Request $request)
@@ -908,48 +883,6 @@ public function updateQuarters(Request $request)
     return redirect()->back()->with('success', 'Quarter settings updated successfully.');
 }
 
-public function showEvaluateGrades()
-{
-    $quarterSettings = QuarterSettings::first();
-
-     if (!$quarterSettings) {
-        $quarterSettings = new QuarterSettings();
-        $quarterSettings->first_quarter_enabled = false;
-        $quarterSettings->second_quarter_enabled = false;
-        $quarterSettings->third_quarter_enabled = false;
-        $quarterSettings->fourth_quarter_enabled = false;
-        $quarterSettings->quarter_status = 'inactive'; // Default status
-    }
-
-
-    $quartersEnabled = [
-        '1st_quarter' => $quarterSettings->first_quarter_enabled,
-        '2nd_quarter' => $quarterSettings->second_quarter_enabled,
-        '3rd_quarter' => $quarterSettings->third_quarter_enabled,
-        '4th_quarter' => $quarterSettings->fourth_quarter_enabled,
-    ];
-
-   
-    $quartersStatus = [
-        '1st_quarter' => $quarterSettings->quarter_status,
-        '2nd_quarter' => $quarterSettings->quarter_status,
-        '3rd_quarter' => $quarterSettings->quarter_status,
-        '4th_quarter' => $quarterSettings->quarter_status,
-    ];
-
-    // Fetch other necessary data
-    $assigns = Assign::all();
-    $grades = Grade::all();
-
-    // Return the principal interface view with all necessary variables
-    return view('submittedgrades', [
-        'quartersEnabled' => $quartersEnabled,
-        'quartersStatus' => $quartersStatus,
-        'quarterSettings' => $quarterSettings,
-        'assigns' => $assigns,
-        'grades' => $grades,
-    ]);
-}
     public function update_class(Request $request, $id)
     {
 
@@ -1136,10 +1069,9 @@ public function showEvaluateGrades()
 
     public function gradesubmitpost(Request $request)
     {
-        Log::info($request->all());
+        // Log::info($request->all());
     
         try {
-            // Validate the incoming data
             $validatedData = $request->validate([
                 'edp_code.*' => 'required',
                 'subject.*' => 'required',
@@ -1153,12 +1085,10 @@ public function showEvaluateGrades()
                 'grades.*.overall_grade' => 'nullable|numeric|min:0|max:100',
             ]);
     
-            // Check if the form was submitted properly
             if (!$request->has('submit')) {
                 throw new \Exception("Submit button not clicked.");
             }
     
-            // Process the form data
             foreach ($validatedData['edp_code'] as $index => $edp_code) {
                 $gradesData = [
                     'edp_code' => $edp_code,
@@ -1174,7 +1104,6 @@ public function showEvaluateGrades()
                     'status' => 'pending',
                 ];
     
-                // Save or update the grade record
                 Grade::updateOrCreate(
                     [
                         'edp_code' => $gradesData['edp_code'],
@@ -1185,7 +1114,6 @@ public function showEvaluateGrades()
                 );
             }
     
-            // Success message
             return redirect()->back()->with('success', 'Student Grades submitted successfully.');
         } catch (\Exception $e) {
             Log::error($e->getMessage());
@@ -1221,7 +1149,7 @@ public function showEvaluateGrades()
         'grade_level.*' => 'required|string',
         'fullname.*' => 'required|string',
         'section.*' => 'required|string',
-        'core_id.*' => 'required|integer', // Ensure core_id exists in your reference table
+        'core_id.*' => 'required|integer',  
         'core_values.*.respect' => 'required|string',
         'core_values.*.excellence' => 'required|string',
         'core_values.*.teamwork' => 'required|string',
@@ -1256,6 +1184,66 @@ public function showEvaluateGrades()
         Log::error('Error saving core values: ' . $e->getMessage());
 
         return redirect()->back()->with('error', 'An error occurred while saving core values.');
+    }
+}
+
+public function teacherAttendancePost(Request $request)
+{
+    // Log the incoming request data for debugging
+    Log::info($request->all());
+
+    // Validate the incoming request data
+    $request->validate([
+        'grade_level.*' => 'required|string',
+        'fullname.*' => 'required|string',
+        'section.*' => 'required|string',
+        'attendance_id.*' => 'required|integer', // Ensure attendance_id exists in your reference table
+        'edp_code.*' => 'required|string', // Ensure this is included
+        'subject.*' => 'required|string', // Ensure this is included
+        '1st_quarter.*' => 'required|string', 
+        '2nd_quarter.*' => 'required|string',
+        '3rd_quarter.*' => 'required|string',
+        '4th_quarter.*' => 'required|string',
+        'overall_attendance.*' => 'required|string', 
+    ]);
+
+    DB::beginTransaction();
+    try {
+        foreach ($request->attendance_id as $attendanceId) {
+            // Find the index of the current attendanceId
+            $index = array_search($attendanceId, $request->attendance_id);
+            
+            // Ensure we guard against undefined indexes
+            // if ($index === false) {
+            //     throw new Exception("Attendance ID not found in the array.");
+            // }
+
+            Attendance::updateOrCreate(
+                ['attendance_id' => $attendanceId], // Use attendance_id to find the existing record
+                [
+                    'fullname' => $request->fullname[$index],
+                    'section' => $request->section[$index],
+                    'grade_level' => $request->grade_level[$index],
+                    'edp_code' => $request->edp_code[$attendanceId] ?? null, // Access by attendance ID
+                    'subject' => $request->subject[$attendanceId] ?? null, // Access by attendance ID
+                    '1st_quarter' => $request->input('1st_quarter.' . $attendanceId) ?? null,
+                    '2nd_quarter' => $request->input('2nd_quarter.' . $attendanceId) ?? null,
+                    '3rd_quarter' => $request->input('3rd_quarter.' . $attendanceId) ?? null,
+                    '4th_quarter' => $request->input('4th_quarter.' . $attendanceId) ?? null,
+                    'overall_attendance' => $request->input('overall_attendance.' . $attendanceId) ?? null,
+                ]
+            );
+        }
+
+        DB::commit();
+
+        return redirect()->back()->with('success', 'Attendance saved successfully!');
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        Log::error('Error saving attendance: ' . $e->getMessage());
+
+        return redirect()->back()->with('error', 'An error occurred while saving attendance: ' . $e->getMessage());
     }
 }
 
@@ -1432,8 +1420,8 @@ public function showEvaluateGrades()
         $assessment->description = $validatedData['description'];
         $assessment->assessment_date = $validatedData['assessment_date'];
     
-        $assessment->assessment_time = \Carbon\Carbon::createFromFormat('H:i', $validatedData['assessment_time'])->format('h:i A');
-    
+        $assessment->assessment_time = Carbon::createFromFormat('H:i', $validatedData['assessment_time'])->format('h:i A');
+        
         $assessment->assessment_fee = $validatedData['assessment_fee'];
         
         $assessment->status = 'pending';
@@ -1823,5 +1811,20 @@ public function showEvaluateGrades()
         } else {
             return redirect('oldstudentenrollment')->withErrors('Previous school details not found.');
         }
+    }
+    public function publishGrades(Request $request)
+    {
+        $request->validate([
+            'grade_id' => 'required|array',
+            'grade_id.*' => 'exists:grade,grade_id', 
+        ]);
+
+        $gradeIds = $request->input('grade_id');
+
+        $updatedRows = grade::whereIn('grade_id', $gradeIds)->where('status', 'pending')->update(['status' => 'approved']);
+
+        Log::info('Number of rows updated:', [$updatedRows]);
+
+        return redirect('/submittedgrades')->with('success', 'Grades have been published successfully.');
     }
 }

@@ -20,5 +20,6 @@ class attendance extends Model
         '3rd_quarter',
         '4th_quarter',
         'overall_attendance',
+        'attendance_id',
     ];
 }

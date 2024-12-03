@@ -9,6 +9,9 @@
         "barryvdh/laravel-dompdf": "^3.0",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
+        "maatwebsite/excel": "^3.1",
+        "phpoffice/phpspreadsheet": "^1.0",
+        "nesbot/carbon": "^3.8",
         "php-flasher/flasher-laravel": "^2.0",
         "php-flasher/flasher-sweetalert-laravel": "^2.0",
         "php-flasher/flasher-toastr-laravel": "^2.0"
@@ -67,4 +70,6 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true
+
+
 }

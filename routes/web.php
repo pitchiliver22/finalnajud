@@ -79,11 +79,12 @@ Route::post('/gradesubmit', [Datacontroller::class, 'gradesubmitpost'])->name('g
 
 
 Route::get('teacherattendance', [Pagecontroller::class, 'teacherattendance'])->middleware('auth');
-
+Route::get('/teacherattendance/{teacher_id}/{section}', [Usercontroller::class, 'teacherAttendanceSubmit'])->name('teacherattendance');
+Route::post('/teacherattendance', [Datacontroller::class, 'teacherattendancepost']);
 
 Route::get('teachercorevalue', [Pagecontroller::class, 'teachercorevalue'])->middleware('auth');
 Route::post('/teachercorevalue', [Datacontroller::class, 'teachercorevaluepost'])->name('teachercorevaluesubmit');
-Route::get('/teachercorevaluesubmit/{teacher_id}', [UserController::class, 'teachercorevaluesubmit'])
+Route::get('/teachercorevaluesubmit/{teacher_id}/{section}', [UserController::class, 'teachercorevaluesubmit'])
     ->name('teachercorevaluesubmit');
     
     
@@ -96,9 +97,9 @@ Route::get('principalteacher', [Pagecontroller::class, 'principalteacher']);
 Route::get('/principalteacher', [DataController::class, 'showTeachers'])->name('principalteacher');
 Route::post('/principalteacher', [DataController::class, 'teachersubjectpost']);
 
-Route::get('/submittedgrades', [Pagecontroller::class, 'submittedgrades'])->name('submittedgrades');
+
 Route::post('/update-quarters', [Datacontroller::class, 'updateQuarters'])->name('update.quarters');
-Route::get('/submittedgrades', [Datacontroller::class, 'showEvaluateGrades'])->name('evaluate.grades');
+Route::get('/submittedgrades', [Pagecontroller::class, 'showEvaluateGrades'])->name('evaluate.grades');
 
 
 Route::get('assigning', [Pagecontroller::class, 'assigning']);
@@ -138,8 +139,8 @@ Route::put('/update_class/{id}', [Datacontroller::class, 'updateClass'])->name('
 Route::get('/delete_class/{id}', [UserController::class, 'delete_class']);
 
 Route::get('publishgrade', [Pagecontroller::class, 'publishgrade']);
-Route::get('/publishgrade/grade_id/{gradeId}', [Usercontroller::class, 'publishgrade'])->name('publishgrade');
-Route::post('/publishgrades', [Usercontroller::class, 'publishGrades']);
+Route::get('/publishgrade', [Usercontroller::class, 'publishgrade'])->name('publishgrade');
+Route::post('/publishgrades', [Datacontroller::class, 'publishGrades'])->name('publishgrade.post');
 
 
 Route::get('principalassessment', [Pagecontroller::class, 'principalassessment'])->name('/principalassessment');;

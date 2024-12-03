@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('3rd_quarter');
             $table->string('4th_quarter');
             $table->string('overall_attendance');
+
+
             $table->timestamps();
         });
     }

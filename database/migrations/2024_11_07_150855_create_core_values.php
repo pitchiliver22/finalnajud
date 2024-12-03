@@ -21,9 +21,6 @@ return new class extends Migration
             $table->string('teamwork');
             $table->string('innovation');
             $table->string('sustainability');
-            $table->unsignedBigInteger('core_id');
-            $table->foreign('core_id')->references('class_id')->on('assign');
-           
             $table->timestamps();
         });
     }

@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Log;
 use tidy;
 use App\Http\Controllers\showAssessment;
 use App\Mail\PublishAssessment;
+use App\Models\attendance;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 
 class Usercontroller extends Controller
@@ -289,57 +290,110 @@ class Usercontroller extends Controller
         return view('update_class', compact('classes'));
     }
 
-    public function teachercorevaluesubmit($teacher_id)
+    public function teachercorevaluesubmit($teacher_id, $section)
 {
-    // Retrieve assignments for the given teacher_id
     $assignments = assign::where('teacher_id', $teacher_id)->get();
 
-    // Get the payment form associated with the teacher_id
     $paymentForm = payment_form::where('payment_id', $teacher_id)->first();
 
-    // Check if assignments exist
     if ($assignments->isEmpty()) {
         return redirect()->back()->with('error', 'No assignments found for this teacher.');
     }
 
-    // Retrieve class IDs from assignments
     $classIds = $assignments->pluck('class_id')->unique();
 
-    // Fetch students based on class IDs
+    // Retrieve students based on the class IDs
     $students = register_form::whereIn('id', $classIds)->get();
 
-    // Map students with their corresponding class_id
-    $studentClassIds = $students->keyBy('id')->map(function($student) use ($assignments) {
+    // Filter students by the specified section
+    $studentsInSection = $students->filter(function($student) use ($assignments, $section) {
+        return $assignments->contains(function($assignment) use ($student, $section) {
+            return $assignment->class_id == $student->id && $assignment->section == $section;
+        });
+    });
+
+    // Prepare student class IDs for mapping
+    $studentClassIds = $studentsInSection->keyBy('id')->map(function($student) use ($assignments) {
         $assignment = $assignments->firstWhere('class_id', $student->id);
         return $assignment ? $assignment->class_id : null;
     });
 
-    // Pass data to the view
     return view('teachercorevaluesubmit', [
-        'students' => $students,
+        'students' => $studentsInSection,
         'paymentForm' => $paymentForm,
         'studentClassIds' => $studentClassIds,
-        'section' => $assignments->first()->section ?? 'N/A', // Ensure this is defined
+        'section' => $section,
     ]);
 }
 
-    
+public function teacherAttendanceSubmit($teacher_id, $section)
+{
+    $attendanceRecords = assign::where('teacher_id', $teacher_id)->get();
+    $paymentForm = payment_form::where('payment_id', $teacher_id)->first();
 
-    public function publishgrade($gradeId)
-    {
-        $grades = Grade::where('grade_id', $gradeId)->get(); 
-        return view('publishgrade', [
-            'grades' => $grades,
-        ]);
+    if ($attendanceRecords->isEmpty()) {
+        return redirect()->back()->with('error', 'No attendance records found for this teacher.');
     }
 
+    $classIds = $attendanceRecords->pluck('class_id')->unique();
 
-    public function publishGrades()
-    {
-        Grade::where('status', 'pending')->update(['status' => 'approved']);
+    $students = register_form::whereIn('id', $classIds)->get();
 
-        return redirect()->back()->with('success', 'Grades have been published successfully.');
+    $studentsInSection = $students->filter(function($student) use ($attendanceRecords, $section) {
+        return $attendanceRecords->contains(function($attendance) use ($student, $section) {
+            return $attendance->class_id == $student->id && $attendance->section == $section;
+        });
+    });
+
+    $studentClassIds = $studentsInSection->keyBy('id')->map(function($student) use ($attendanceRecords) {
+        $attendance = $attendanceRecords->firstWhere('class_id', $student->id);
+        return $attendance ? $attendance->class_id : null;
+    });
+
+    $studentsWithDetails = $studentsInSection->map(function($student) use ($attendanceRecords) {
+        $attendance = $attendanceRecords->firstWhere('class_id', $student->id);
+        return [
+            'student' => $student,
+            'edpcode' => $attendance ? $attendance->edpcode : null,
+            'subject' => $attendance ? $attendance->subject : null,
+            'section' => $attendance ? $attendance->section : null,
+            'grade_level' => $attendance ? $attendance->grade : null,
+        ];
+    });
+
+    return view('teacherattendancesubmit', [
+        'students' => $studentsWithDetails,
+        'paymentForm' => $paymentForm,
+        'studentClassIds' => $studentClassIds,
+        'section' => $section, 
+    ]);
+}
+
+public function publishgrade(Request $request)
+{
+    $edp_code = $request->input('edp_code');
+    $subject = $request->input('subject');
+
+    $grades = grade::where('subject', $subject)
+        ->where('edp_code', $edp_code)
+        ->where('status', 'pending')
+        ->select('grade_id','fullname', 'section', 'subject', 'edp_code', 
+                 '1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter', 
+                 'overall_grade', 'status')
+        ->get();
+
+    if ($grades->isEmpty()) {
+        return redirect()->back()->with('error', 'No grades found for this subject and EDP code.');
     }
+
+    return view('publishgrade', [
+        'grades' => $grades,
+        'edpcode' => $edp_code,
+        'subject' => $subject,
+    ]);
+}
+
+   
 
 
     public function gradesubmit($edp_code, $teacher_id)
@@ -358,7 +412,6 @@ class Usercontroller extends Controller
         $classIds = $assignments->pluck('class_id')->unique();
         $students = register_form::whereIn('id', $classIds)->get();
     
-        // Map students with their corresponding class_id
         $studentClassIds = $students->keyBy('id')->map(function($student) use ($assignments) {
             $assignment = $assignments->firstWhere('class_id', $student->id);
             return $assignment ? $assignment->class_id : null;
@@ -377,7 +430,7 @@ class Usercontroller extends Controller
             'assignments' => $assignments,
             'paymentForm' => $paymentForm,
             'students' => $students,
-            'studentClassIds' => $studentClassIds, // Pass the student class IDs
+            'studentClassIds' => $studentClassIds, 
             'edpcode' => $edp_code,
             'subject' => $subjects->first(),
             'section' => $sections->first(),
@@ -407,6 +460,8 @@ class Usercontroller extends Controller
 
         return view('principaleditassessment', compact('assessment'));  
     }
+
+    
 
     public function showStudentDetails($id)
     {

@@ -26,7 +26,7 @@
     </div>
 
     <div class="container mt-4">
-        <form action="/publishgrade" method="GET">
+        
             <div class="input-group mb-3">
                 <input type="text" id="searchInput" class="form-control" name="query"
                     placeholder="Search grades..." aria-label="Search grades"
@@ -50,18 +50,24 @@
                     Refresh
                 </a>
             </div>
-        </form>
+     
 
-        <form action="/publishgrades" method="POST" id="publishGradesForm">
+        <form action="{{ route('publishgrade.post') }}" method="POST" id="publishGradesForm">
             @csrf
+            @foreach ($grades as $grade)
+            <input type="hidden" name="grade_id[]" value="{{ $grade->grade_id }}">
+            @endforeach
             <button type="submit" class="btn btn-success mb-3">Publish Grades</button>
         </form>
 
+        <div class="mb-3">
+            <a href="javascript:history.back()" class="btn btn-secondary">Back</a>
+        </div>
+        
         <div class="table-responsive">
             <table class="table table-striped table-hover" id="gradesTable">
                 <thead class="thead-light">
                     <tr>
-    
                         <th>Student Name</th>
                         <th>Section</th>
                         <th>Subject</th>
@@ -77,7 +83,6 @@
                 <tbody>
                     @foreach($grades as $grade)
                     <tr>
-                    
                         <td>{{ $grade->fullname }}</td>
                         <td>{{ $grade->section }}</td>
                         <td>{{ $grade->subject }}</td>
@@ -105,7 +110,6 @@
             const cells = row.getElementsByTagName('td');
             let match = false;
 
-            // Check through each cell in the row
             for (let i = 0; i < cells.length; i++) {
                 if (cells[i].textContent.toLowerCase().includes(query)) {
                     match = true;
@@ -113,7 +117,6 @@
                 }
             }
 
-            // Show or hide row based on match
             row.style.display = match ? '' : 'none';
         });
     });

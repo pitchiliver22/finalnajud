@@ -22,6 +22,8 @@
                         </div>
                     </div>
                 </div>
+          
+
                 <div class="table-responsive">
                     @if($classes->isEmpty())
                         <div class="alert alert-warning">No assigned classes yet.</div>
@@ -37,22 +39,22 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($classes->groupBy('section') as $section => $group)
-                                <tr>
-                                    <td>{{ $section }}</td>
-                                    <td>{{ $group->first()->edpcode }}</td> <!-- This should display the correct edpcode -->
-                                    <td>{{ $group->first()->subject }}</td>
-                                    <td>{{ $group->first()->grade ?? 'N/A' }}</td>
-                                    <td>
-                                        <a href="{{ route('gradesubmit', ['edp_code' => $group->first()->edpcode, 'teacher_id' => $group->first()->teacher_id]) }}" 
-                                           class="btn btn-info btn-sm view-studententry" 
-                                           title="View Student Entry for {{ $section }}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
-                                                <path d="M7.998 2c-2.757 0-5.287 1.417-6.758 3.75a.748.748 0 0 0 0 .5c1.471 2.333 4.001 3.75 6.758 3.75s5.287-1.417 6.758-3.75a.748.748 0 0 0 0-.5c-1.471-2.333-4.001-3.75-6.758-3.75zm0 1.5a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5zm0 2a1.75 1.75 0 1 0 0 3.5 1.75 1.75 0 0 0 0-3.5z" />
-                                            </svg>
-                                        </a>
-                                    </td>
-                                </tr>
+                                @foreach ($classes as $class) 
+                                    <tr>
+                                        <td>{{ $class->section }}</td>
+                                        <td>{{ $class->edpcode }}</td>
+                                        <td>{{ $class->subject }}</td>
+                                        <td>{{ $class->grade ?? 'N/A' }}</td>
+                                        <td>
+                                            <a href="{{ route('gradesubmit', ['edp_code' => $class->edpcode, 'teacher_id' => $class->teacher_id]) }}" 
+                                               class="btn btn-info btn-sm view-studententry" 
+                                               title="View Student Entry for {{ $class->section }}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                                    <path d="M7.998 2c-2.757 0-5.287 1.417-6.758 3.75a.748.748 0 0 0 0 .5c1.471 2.333 4.001 3.75 6.758 3.75s5.287-1.417 6.758-3.75a.748.748 0 0 0 0-.5c-1.471-2.333-4.001-3.75-6.758-3.75zm0 1.5a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5zm0 2a1.75 1.75 0 1 0 0 3.5 1.75 1.75 0 0 0 0-3.5z" />
+                                                </svg>
+                                            </a>
+                                        </td>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>

@@ -227,20 +227,29 @@ public function studentassessment(Request $request)
 
     public function teacherclassload()
     {
-        $teachers = Teacher::all(); 
+        // Fetch all teachers to identify the current teacher
+        $teachers = Teacher::all(); // Assuming you have a Teacher model
     
-        $classes = collect();
+        // Log the available teacher IDs for debugging
+        Log::info('Available Teachers: ', $teachers->toArray());
     
-        foreach ($teachers as $teacher) {
-            $assignedClasses = assign::where('teacher_id', $teacher->id)
-                ->select('class_id', 'section', 'edpcode', 'subject', 'grade', 'teacher_id')
-                ->get(); 
-            Log::info('Assigned Classes for Teacher ID ' . $teacher->id . ': ', $assignedClasses->toArray());
+        // Initialize an array to hold valid teacher IDs
+        $validTeacherIds = $teachers->pluck('id')->toArray();
     
-            $classes = $classes->merge($assignedClasses);
+        // Fetch classes for valid teacher IDs
+        $classes = classes::whereIn('teacher_id', $validTeacherIds)
+            ->select('section', 'edpcode', 'subject', 'grade', 'teacher_id')
+            ->get();
+    
+        // Log the retrieved classes for debugging
+        Log::info('Assigned Classes for Teachers: ', $classes->toArray());
+    
+        // Check if classes were found
+        if ($classes->isEmpty()) {
+            Log::warning('No classes found for valid teacher IDs.');
         }
     
-        
+        // Fetch payment forms
         $proofs = payment_form::whereNotNull('level')->get(); 
     
         return view('teacherclassload', [
@@ -251,11 +260,24 @@ public function studentassessment(Request $request)
     }
 
 
-
     
     public function teacherattendance()
     {
-        return view('teacherattendance');
+        $teachers = Teacher::all(); 
+    $classes = collect();
+
+    foreach ($teachers as $teacher) {
+        $assignedClasses = assign::where('teacher_id', $teacher->id)
+            ->select('class_id', 'section', 'edpcode', 'subject', 'grade', 'teacher_id')
+            ->get(); 
+        $classes = $classes->merge($assignedClasses);
+    }
+
+    // Pass the $classes variable to the view
+    return view('teacherattendance', [
+        'classes' => $classes,
+        'teachers' => $teachers,
+    ]);
     }
 
     public function teachercorevalue()
@@ -290,37 +312,48 @@ public function studentassessment(Request $request)
         $teachers = teacher::all();
         return view('principalclassload', compact('class', 'teachers', 'section'));
     }
+    
+    public function showEvaluateGrades(Request $request)
+    {
+        $quarterSettings = QuarterSettings::first();
+    
+        if (!$quarterSettings) {
+            $quarterSettings = new QuarterSettings();
+            $quarterSettings->first_quarter_enabled = false;
+            $quarterSettings->second_quarter_enabled = false;
+            $quarterSettings->third_quarter_enabled = false;
+            $quarterSettings->fourth_quarter_enabled = false;
+            $quarterSettings->quarter_status = 'inactive'; 
+        }
+    
+        $quartersEnabled = [
+            '1st_quarter' => $quarterSettings->first_quarter_enabled,
+            '2nd_quarter' => $quarterSettings->second_quarter_enabled,
+            '3rd_quarter' => $quarterSettings->third_quarter_enabled,
+            '4th_quarter' => $quarterSettings->fourth_quarter_enabled,
+        ];
+    
+        $quartersStatus = [
+            '1st_quarter' => $quarterSettings->quarter_status,
+            '2nd_quarter' => $quarterSettings->quarter_status,
+            '3rd_quarter' => $quarterSettings->quarter_status,
+            '4th_quarter' => $quarterSettings->quarter_status,
+        ];
+    
+        $assignsQuery = classes::distinct()->select('teacher_id', 'subject', 'adviser', 'section','grade');
 
-    public function submittedgrades(Request $request)
-{
-    // Fetch all assignments
-    $assigns = assign::all();
-
-    // Fetch all grades related to assignments
-    $grades = grade::all();
-
-    // Optional: Handle search functionality
-    if ($request->has('search') && $request->search != '') {
-        $searchTerm = $request->search;
-
-        // Filter assignments based on search criteria
-        $assigns = $assigns->filter(function ($assign) use ($searchTerm) {
-            return stripos($assign->subject, $searchTerm) !== false ||
-                   stripos($assign->adviser, $searchTerm) !== false ||
-                   stripos($assign->section, $searchTerm) !== false;
-        });
+        $assigns = $assignsQuery->get();
+        
+        $grades = grade::where('status', 'pending')->get()->unique('subject');
+    
+        return view('submittedgrades', [
+            'quartersEnabled' => $quartersEnabled,
+            'quartersStatus' => $quartersStatus,
+            'quarterSettings' => $quarterSettings,
+            'assigns' => $assigns,
+            'grades' => $grades,
+        ]);
     }
-
-    $data = [
-        'title' => 'Submitted Grades',
-        'assigns' => $assigns,
-        'grades' => $grades
-    ];
-
-    return view('submittedgrades', $data);
-}
-    
-    
 
     public function publishgrade()
     {
@@ -434,21 +467,27 @@ public function principaleditassessment()
 }
 
 
-public function approvedpayment()
-{
-    $students = register_form::where('status', 'approved')->get();
-    $payments = payment_form::where('status', 'approved')->get();
+    public function approvedpayment()
+    {
+        $students = register_form::where('status', 'approved')->get();
+        $payments = payment_form::where('status', 'approved')->get();
 
-    return view('approvedpayment', compact('students', 'payments'));
-}
+        return view('approvedpayment', compact('students', 'payments'));
+    }
 
     public function sectioning()
     {
         $students = register_form::all();
         $payments = payment_form::all();
 
+        $assignedStudentIds = assign::pluck('class_id')->toArray();
+
+        $unassignedStudents = $students->reject(function ($student) use ($assignedStudentIds) {
+            return in_array($student->id, $assignedStudentIds);
+        });
+
         return view('sectioning', [
-            'students' => $students,
+            'students' => $unassignedStudents,
             'payments' => $payments,
         ]);
     }

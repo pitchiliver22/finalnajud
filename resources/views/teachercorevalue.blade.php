@@ -4,7 +4,7 @@
     <div class="w3-teal">
         <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
         <div class="w3-container">
-            <h1>Teacher Submit Grades</h1>
+            <h1>Teacher Submit Core Values</h1>
         </div>
     </div>
 
@@ -42,7 +42,7 @@
                                     <td>{{ $group->first()->subject }}</td>
                                     <td>{{ $group->first()->grade ?? 'N/A' }}</td>
                                     <td>
-                                        <a href="{{ route('teachercorevaluesubmit', ['teacher_id' => $group->first()->teacher_id]) }}" 
+                                        <a href="{{ route('teachercorevaluesubmit', ['teacher_id' => $group->first()->teacher_id, 'section' => $section]) }}" 
                                             class="btn btn-info btn-sm view-studententry" 
                                             title="View Core Value Submission for {{ $section }}">
                                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">

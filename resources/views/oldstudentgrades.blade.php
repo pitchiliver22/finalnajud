@@ -15,7 +15,7 @@
         background-color: white;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         border-radius: 8px;
-        position: relative; /* Ensure positioning context for event handling */
+        position: relative;
     }
 
     .header-container {
@@ -34,8 +34,8 @@
     h2 {
         color: white;
         margin: 0;
-        font-size: 1.75rem; /* Adjusted font size */
-        text-align: center; /* Centered heading */
+        font-size: 1.75rem; 
+        text-align: center; 
     }
 
     .table-primary {
@@ -43,7 +43,7 @@
         margin-top: 20px;
         border-collapse: collapse;
         border-radius: 0.5rem;
-        overflow: hidden; /* Rounded borders */
+        overflow: hidden; 
         box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1);
     }
 
@@ -55,13 +55,13 @@
     }
 
     .table-primary th {
-        background-color: #4CAF50; /* Match dashboard header color */
+        background-color: #4CAF50; 
         color: white;
-        text-transform: uppercase; /* Uppercase headers */
+        text-transform: uppercase; 
     }
 
     .table-primary tr:hover {
-        background-color: #f1f1f1; /* Highlight on hover */
+        background-color: #f1f1f1; 
     }
 
     .alert {
@@ -70,8 +70,25 @@
         color: #856404;
         border: 1px solid #ffeeba;
         border-radius: 5px;
-        margin-top: 20px; /* Spacing for alert */
-        text-align: center; /* Centered alert message */
+        margin-top: 20px; 
+        text-align: center; 
+    }
+
+    .btn-report {
+        background-color: #4CAF50; 
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 20px;
+        display: block; /* Center the button below the table */
+        text-align: center;
+        font-size: 16px;
+    }
+
+    .btn-report:hover {
+        background-color: #45a049; /* Darker green on hover */
     }
 
     /* Responsive design */
@@ -124,6 +141,7 @@
                         <td>{{ $grade->{'1st_quarter'} ?? '-' }}</td>
                         <td>{{ $grade->{'2nd_quarter'} ?? '-' }}</td>
                         <td>{{ $grade->{'3rd_quarter'} ?? '-' }}</td>
+                        <td>{{ $grade->{'4th_quarter'} ?? '-' }}</td>
                         <td>{{ $grade->overall_grade ?? '-' }}</td>
                     </tr>
                 @endforeach
@@ -134,6 +152,13 @@
                 </tr>
             </tbody>
         </table>
+
+        <!-- Button to generate report card -->
+        <form action="" method="POST">
+            @csrf
+            <button type="submit" class="btn-report">Generate Report Card</button>
+        </form>
+        
     @else
         <div class="alert">
             <strong>Notice:</strong> Your grades are currently under evaluation by the principal. Please check back later.
