@@ -54,6 +54,7 @@
 
         <form action="{{ route('publishgrade.post') }}" method="POST" id="publishGradesForm">
             @csrf
+            <input type="hidden" name="subject" value="{{ $subject }}"> <!-- Add subject as a hidden input -->
             @foreach ($grades as $grade)
             <input type="hidden" name="grade_id[]" value="{{ $grade->grade_id }}">
             @endforeach

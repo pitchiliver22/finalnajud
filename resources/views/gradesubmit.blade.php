@@ -25,6 +25,7 @@
                 <label for="file">Import Grades (Excel File)</label>
                 <input type="file" class="form-control" name="file" id="file" required>
             </div>
+            <br>
             <button type="submit" class="btn btn-primary">Import Grades</button>
         </form>
 

@@ -1114,7 +1114,7 @@ public function updateQuarters(Request $request)
                 );
             }
     
-            return redirect()->back()->with('success', 'Student Grades submitted successfully.');
+            return redirect('/teacherclassload')->with('success', 'Student Grades submitted successfully.');
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return redirect()->back()->withInput()->withErrors(['Failed to submit grade: ' . $e->getMessage()]);
@@ -1816,15 +1816,21 @@ public function teacherAttendancePost(Request $request)
     {
         $request->validate([
             'grade_id' => 'required|array',
-            'grade_id.*' => 'exists:grade,grade_id', 
+            'grade_id.*' => 'exists:grade,grade_id', // Ensure the correct table name is used
+            'subject' => 'required|string', // Validate subject input
         ]);
-
+    
         $gradeIds = $request->input('grade_id');
-
-        $updatedRows = grade::whereIn('grade_id', $gradeIds)->where('status', 'pending')->update(['status' => 'approved']);
-
+        $subject = $request->input('subject');
+    
+        // Update grades based on both subject and grade_id
+        $updatedRows = Grade::whereIn('grade_id', $gradeIds)
+            ->where('subject', $subject)
+            ->where('status', 'pending')
+            ->update(['status' => 'approved']);
+    
         Log::info('Number of rows updated:', [$updatedRows]);
-
+    
         return redirect('/submittedgrades')->with('success', 'Grades have been published successfully.');
     }
 }
