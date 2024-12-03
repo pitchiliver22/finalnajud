@@ -15,7 +15,7 @@
         background-color: white;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         border-radius: 8px;
-        position: relative; /* Ensure positioning context for event handling */
+        position: relative; 
     }
 
     .header-container {

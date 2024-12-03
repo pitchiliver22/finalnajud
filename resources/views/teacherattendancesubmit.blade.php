@@ -4,7 +4,7 @@
     <div class="w3-teal">
         <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
         <div class="w3-container">
-            <h1>Teacher Attendance - Section: {{ $section }}</h1>
+            <h1>Teacher Attendance - EDPCODE: {{ $edpcode }}</h1>
         </div>
     </div>
 
@@ -15,8 +15,8 @@
                 <input type="hidden" name="grade_level[]" value="{{ old('grade_level.' . $index, $studentDetail['grade_level']) }}">
                 <input type="hidden" name="fullname[]" value="{{ old('fullname.' . $index, "{$studentDetail['student']->firstname} {$studentDetail['student']->middlename} {$studentDetail['student']->lastname}") }}">
                 <input type="hidden" name="section[]" value="{{ old('section.' . $index, $studentDetail['section']) }}">
-                <input type="hidden" class="form-control" value="{{ old('subject.' . $studentDetail['student']->id, $studentDetail['subject'] ?? '') }}" name="subject[{{ $studentDetail['student']->id }}]">
-                <input type="hidden" class="form-control" value="{{ old('edp_code.' . $studentDetail['student']->id, $studentDetail['edpcode'] ?? '') }}" name="edp_code[{{ $studentDetail['student']->id }}]">
+                <input type="hidden" name="subject[]" value="{{ old('subject.' . $index, $studentDetail['subject'] ?? '') }}">
+                <input type="hidden" name="edp_code[]" value="{{ old('edp_code.' . $index, $studentDetail['edpcode'] ?? '') }}">
                 <input type="hidden" name="attendance_id[]" value="{{ old('attendance_id.' . $index, $studentClassIds[$studentDetail['student']->id] ?? 'N/A') }}">
             @endforeach
             
@@ -58,19 +58,37 @@
                                     <td>{{ $studentDetail['edpcode'] }}</td>
                                     <td>{{ $studentDetail['subject'] }}</td>
                                     <td>
-                                        <input type="number" class="form-control" value="{{ old('1st_quarter.' . $studentDetail['student']->id, $studentClassIds[$studentDetail['student']->id]['1st_quarter'] ?? '') }}" name="1st_quarter[{{ $studentDetail['student']->id }}]" oninput="calculateOverallAttendance(this)">
+                                        <input type="number" class="form-control" 
+                                               value="{{ old('1st_quarter.' . $studentDetail['student']->id, $studentClassIds[$studentDetail['student']->id]['1st_quarter'] ?? 0) }}" 
+                                               name="1st_quarter[{{ $studentDetail['student']->id }}]" 
+                                               oninput="calculateOverallAttendance(this)" 
+                                               required>
                                     </td>
                                     <td>
-                                        <input type="number" class="form-control" value="{{ old('2nd_quarter.' . $studentDetail['student']->id, $studentClassIds[$studentDetail['student']->id]['2nd_quarter'] ?? '') }}" name="2nd_quarter[{{ $studentDetail['student']->id }}]" oninput="calculateOverallAttendance(this)">
+                                        <input type="number" class="form-control" 
+                                               value="{{ old('2nd_quarter.' . $studentDetail['student']->id, $studentClassIds[$studentDetail['student']->id]['2nd_quarter'] ?? 0) }}" 
+                                               name="2nd_quarter[{{ $studentDetail['student']->id }}]" 
+                                               oninput="calculateOverallAttendance(this)" 
+                                               required>
                                     </td>
                                     <td>
-                                        <input type="number" class="form-control" value="{{ old('3rd_quarter.' . $studentDetail['student']->id, $studentClassIds[$studentDetail['student']->id]['3rd_quarter'] ?? '') }}" name="3rd_quarter[{{ $studentDetail['student']->id }}]" oninput="calculateOverallAttendance(this)">
+                                        <input type="number" class="form-control" 
+                                               value="{{ old('3rd_quarter.' . $studentDetail['student']->id, $studentClassIds[$studentDetail['student']->id]['3rd_quarter'] ?? 0) }}" 
+                                               name="3rd_quarter[{{ $studentDetail['student']->id }}]" 
+                                               oninput="calculateOverallAttendance(this)" 
+                                               required>
                                     </td>
                                     <td>
-                                        <input type="number" class="form-control" value="{{ old('4th_quarter.' . $studentDetail['student']->id, $studentClassIds[$studentDetail['student']->id]['4th_quarter'] ?? '') }}" name="4th_quarter[{{ $studentDetail['student']->id }}]" oninput="calculateOverallAttendance(this)">
+                                        <input type="number" class="form-control" 
+                                               value="{{ old('4th_quarter.' . $studentDetail['student']->id, $studentClassIds[$studentDetail['student']->id]['4th_quarter'] ?? 0) }}" 
+                                               name="4th_quarter[{{ $studentDetail['student']->id }}]" 
+                                               oninput="calculateOverallAttendance(this)" 
+                                               required>
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control" value="{{ old('overall_attendance.' . $studentDetail['student']->id, $studentClassIds[$studentDetail['student']->id]['overall_attendance'] ?? '') }}" name="overall_attendance[{{ $studentDetail['student']->id }}]" readonly>
+                                        <input type="text" class="form-control" 
+                                               value="{{ old('overall_attendance.' . $studentDetail['student']->id, $studentClassIds[$studentDetail['student']->id]['overall_attendance'] ?? 0) }}" 
+                                               name="overall_attendance[{{ $studentDetail['student']->id }}]" readonly>
                                     </td>
                                 </tr>
                             @endforeach

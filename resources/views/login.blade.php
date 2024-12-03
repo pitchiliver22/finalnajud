@@ -17,7 +17,6 @@
             margin: 0;
             padding: 0;
             height: 100vh;
-           
             overflow: hidden;
             background-color: #0c76e0;
             position: relative;
@@ -65,21 +64,23 @@
         .container {
             position: absolute;
             top: 50%;
-            left: 51.8%;
+            left: 45%;
             transform: translate(-50%, -50%);
             z-index: 1;
-            width: 400%; 
-            max-width: 58%;
+            width: 100%;
+            max-width: 450px; /* Maximum width for larger screens */
+            padding: 0 20px; /* Padding for small screens */
         }
 
         .card {
             background-color: white;
             border-radius: 10px;
-            padding: 2rem;
+            padding: 1.5rem; /* Adjusted padding for better fit */
+            width: 200%; /* Full width of the container */
+            height: auto; /* Set to auto for dynamic height based on content */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             text-align: center;
             position: relative;
-            
         }
 
         .logo {
@@ -90,7 +91,23 @@
         }
 
         .logo img {
-            width: 150px;
+            width: 120px;
+        }
+
+        .education-text {
+            color: grey; /* Set the text color to grey */
+            margin-top: 0.5rem; /* Add some space above the text */
+            font-weight: bold; /* Optional: Make the text bold */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .line {
+            flex-grow: 1;
+            height: 1px; /* Thickness of the line */
+            background-color: #001f3f; /* Color of the line */
+            margin: 0 10px; /* Space around the line */
         }
 
         .form-check {
@@ -124,10 +141,10 @@
 
         .hat {
             position: absolute;
-            top: -110px;
-            right: -21%;
-            width: 300px;
-            transform: rotate(12deg);
+            top: -80px;
+            right: -22%;
+            width: 240px;
+            transform: rotate(14deg);
         }
 
         .santa-gif {
@@ -158,12 +175,144 @@
                 transform: translateX(0vw) scaleX(-1);
             }
         }
+
+        #popoutImage {
+            position: absolute;
+            bottom: -4%; 
+            left: 0%;
+            width: 150px; 
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        
+        #popoutText {
+            position: absolute;
+            bottom: 22%; 
+            left: 8.5%; 
+            background-color: white;
+            border: 2px solid #1A5794;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 20px;
+            color: #1A5794; 
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        #musicControls {
+            position: absolute;
+            top: 20px; 
+            right: 20px; 
+            z-index: 2; 
+        }
+
+        .form-outline input {
+            width: 100%; 
+        }
+
+        .btn-block {
+            width: 100%; 
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 90%; 
+                padding: 0; 
+            }
+
+            .card {
+                padding: 1rem; 
+            }
+
+            .logo img {
+                width: 100px; 
+            }
+
+            
+            #musicControls,
+            #popoutImage,
+            #popoutText {
+                display: none; 
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hat {
+                width: 150px; 
+            }
+
+            .santa-gif {
+                width: 300px; 
+            }
+
+            #popoutImage {
+                width: 100px; 
+            }
+
+            #popoutText {
+                font-size: 16px; 
+            }
+        }
+
+        #beat-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .beat {
+        position: absolute;
+        top: -50px;
+        width: 30px;
+        height: 30px;
+        color: white;
+        font-size: 1rem;
+        opacity: 1;
+        animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(110vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
+
+    .beat:nth-child(odd) {
+        animation-duration: 5s;
+    }
+
+    .beat:nth-child(even) {
+        animation-duration: 7s;
+    }
     </style>
 </head>
 
 <body>
-    <!-- Snowflake container -->
-    <div id="snow-container"></div>
+    
+    <audio id="backgroundMusic" autoplay loop muted>
+        <source src="image/remix.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div id="musicControls">
+        <button id="playMusic" class="btn btn-primary">Play Music</button>
+        <button id="pauseMusic" class="btn btn-secondary">Pause Music</button>
+    </div>
+
+    {{-- <div id="snow-container"></div> --}}
+    <div id="beat-container"></div>
+
+    <img id="popoutImage" src="image/jose1.png" alt="Pop-out Image">
+    <div id="popoutText">Magpapasko na!</div>
 
     <div class="container">
         <div class="row justify-content-center">
@@ -176,20 +325,25 @@
                     <div class="logo">
                         <img src="image/UCLOGO.png" alt="logo">
                     </div>
+                    <div class="education-text" style="margin-top: 5px; margin-bottom:20px; font-size:13px; color:#001f3f;">
+                        <div class="line"></div>
+                        Basic Education
+                        <div class="line"></div>
+                    </div>
 
                     <form action="/login" method="POST">
                         @csrf
                         <div class="form-outline mb-3">
-                            <input type="email" id="email" name="email" class="form-control" placeholder="Email">
+                            <input type="email" id="email" name="email" class="form-control" placeholder="Email" required>
                         </div>
                         <div class="form-outline mb-3">
-                            <input type="password" id="password" name="password" class="form-control" placeholder="Password">
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
                         </div>
                         <div class="form-check mb-3">
                             <input type="checkbox" class="form-check-input" id="showPassword">
                             <label class="form-check-label" for="showPassword">Show Password</label>
                         </div>
-                        <button class="btn btn-primary btn-block w-100 mb-3">Login</button>
+                        <button class="btn btn-primary btn-block mb-3">Login</button>
                         <a href="#" class="text-muted">Forgot Password?</a>
                     </form>
 
@@ -202,7 +356,6 @@
     </div>
 
     <script>
-        // Generate snowflakes
         const snowContainer = document.getElementById('snow-container');
 
         function createSnowflake() {
@@ -222,7 +375,7 @@
         }
 
         setInterval(createSnowflake, 200);
-        // Show/hide password functionality
+
         const passwordInput = document.getElementById('password');
         const showPasswordCheckbox = document.getElementById('showPassword');
 
@@ -233,6 +386,52 @@
                 passwordInput.type = 'password';
             }
         });
+
+        const audio = document.getElementById('backgroundMusic');
+
+        document.getElementById('playMusic').addEventListener('click', () => {
+            audio.muted = false; 
+            audio.play(); 
+            toggleImageAndText(); 
+        });
+
+        document.getElementById('pauseMusic').addEventListener('click', () => {
+            audio.pause(); 
+        });
+
+        const popoutImage = document.getElementById('popoutImage');
+        const popoutText = document.getElementById('popoutText');
+
+        function toggleImageAndText() {
+            popoutImage.style.opacity = 1; 
+            popoutText.style.opacity = 1; 
+            setTimeout(() => {
+                popoutImage.style.opacity = 0; 
+                popoutText.style.opacity = 0; 
+            }, 3000); 
+        }
+
+        setInterval(toggleImageAndText, 6000); 
+
+
+
+        const beatContainer = document.getElementById('beat-container');
+
+        function createBeat() {
+            const beat = document.createElement('div');
+            beat.classList.add('beat');
+            beat.style.left = Math.random() * 100 + 'vw';
+            beat.style.animationDuration = Math.random() * 2 + 3 + 's';
+            beat.innerHTML = '&#9835;'; 
+
+            beatContainer.appendChild(beat);
+
+            setTimeout(() => {
+                beat.remove();
+            }, 10000);
+        }
+
+        setInterval(createBeat, 200); 
     </script>
 </body>
 

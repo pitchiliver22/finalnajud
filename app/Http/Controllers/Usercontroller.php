@@ -262,9 +262,9 @@ class Usercontroller extends Controller
     {
         $userId = Auth::id();
 
-        $profile = register_form::where('id', $userId)->firstOrFail();
+        $profile = register_form::where('user_id', $userId)->firstOrFail();
 
-        $level = payment_form::where('payment_id', $userId)->firstOrFail();
+        $level = payment_form::where('payment_id', $profile->id)->firstOrFail();
 
         $data = [
             'title' => 'Student Profile',
@@ -274,8 +274,6 @@ class Usercontroller extends Controller
 
         return view('studentprofile', $data);
     }
-
-
 
 
     public function delete_class($id)
@@ -290,66 +288,88 @@ class Usercontroller extends Controller
         return view('update_class', compact('classes'));
     }
 
-    public function teachercorevaluesubmit($teacher_id, $section)
-{
-    $assignments = assign::where('teacher_id', $teacher_id)->get();
-
-    $paymentForm = payment_form::where('payment_id', $teacher_id)->first();
-
-    if ($assignments->isEmpty()) {
-        return redirect()->back()->with('error', 'No assignments found for this teacher.');
+    public function teachercorevaluesubmit($teacher_id, $edp_code)
+    {
+        $assignments = assign::where('edpcode', $edp_code)
+                            ->where('teacher_id', $teacher_id)
+                            ->get();
+    
+        $paymentForm = payment_form::where('payment_id', $teacher_id)->first();
+    
+        if ($assignments->isEmpty()) {
+            return redirect()->back()->with('error', 'No assignments found for this teacher and EDP code.');
+        }
+    
+        $classIds = $assignments->pluck('class_id')->unique();
+    
+        $students = register_form::whereIn('id', $classIds)->get();
+    
+        $studentsInSection = $students->filter(function($student) use ($assignments) {
+            return $assignments->contains(function($assignment) use ($student) {
+                return $assignment->class_id == $student->id;
+            });
+        });
+    
+        $studentClassIds = $studentsInSection->keyBy('id')->map(function($student) use ($assignments) {
+            $assignment = $assignments->firstWhere('class_id', $student->id);
+            return $assignment ? $assignment->class_id : null;
+        });
+    
+        $studentsWithDetails = $studentsInSection->map(function($student) use ($assignments) {
+            $assignment = $assignments->firstWhere('class_id', $student->id);
+            $student->edpcode = $assignment ? $assignment->edpcode : null;
+            $student->subject = $assignment ? $assignment->subject : null;
+            $student->section = $assignment ? $assignment->section : null;
+            $student->grade_level = $assignment ? $assignment->grade : null;
+            return $student;
+        });
+    
+        $section = $assignments->first()->section ?? 'N/A'; // Assuming you want the section from the first assignment
+    
+        return view('teachercorevaluesubmit', [
+            'students' => $studentsWithDetails,
+            'paymentForm' => $paymentForm,
+            'studentClassIds' => $studentClassIds,
+            'edpcode' => $edp_code,
+            'section' => $section,
+        ]);
     }
 
-    $classIds = $assignments->pluck('class_id')->unique();
-
-    // Retrieve students based on the class IDs
-    $students = register_form::whereIn('id', $classIds)->get();
-
-    // Filter students by the specified section
-    $studentsInSection = $students->filter(function($student) use ($assignments, $section) {
-        return $assignments->contains(function($assignment) use ($student, $section) {
-            return $assignment->class_id == $student->id && $assignment->section == $section;
-        });
-    });
-
-    // Prepare student class IDs for mapping
-    $studentClassIds = $studentsInSection->keyBy('id')->map(function($student) use ($assignments) {
-        $assignment = $assignments->firstWhere('class_id', $student->id);
-        return $assignment ? $assignment->class_id : null;
-    });
-
-    return view('teachercorevaluesubmit', [
-        'students' => $studentsInSection,
-        'paymentForm' => $paymentForm,
-        'studentClassIds' => $studentClassIds,
-        'section' => $section,
-    ]);
-}
-
-public function teacherAttendanceSubmit($teacher_id, $section)
+public function teacherAttendanceSubmit($teacher_id, $edp_code)
 {
-    $attendanceRecords = assign::where('teacher_id', $teacher_id)->get();
+    // Fetch attendance records based on the provided edp_code and teacher_id
+    $attendanceRecords = Assign::where('edpcode', $edp_code)
+                               ->where('teacher_id', $teacher_id)
+                               ->get();
+
+    // Fetch the payment form for the teacher
     $paymentForm = payment_form::where('payment_id', $teacher_id)->first();
 
+    // Check if attendance records exist
     if ($attendanceRecords->isEmpty()) {
         return redirect()->back()->with('error', 'No attendance records found for this teacher.');
     }
 
+    // Get unique class IDs from attendance records
     $classIds = $attendanceRecords->pluck('class_id')->unique();
 
+    // Fetch students registered in those classes
     $students = register_form::whereIn('id', $classIds)->get();
 
-    $studentsInSection = $students->filter(function($student) use ($attendanceRecords, $section) {
-        return $attendanceRecords->contains(function($attendance) use ($student, $section) {
-            return $attendance->class_id == $student->id && $attendance->section == $section;
+    // Filter students based on attendance records and edp_code
+    $studentsInSection = $students->filter(function($student) use ($attendanceRecords, $edp_code) {
+        return $attendanceRecords->contains(function($attendance) use ($student, $edp_code) {
+            return $attendance->class_id == $student->id && $attendance->edpcode == $edp_code;
         });
     });
 
+    // Create a mapping of student IDs to attendance records
     $studentClassIds = $studentsInSection->keyBy('id')->map(function($student) use ($attendanceRecords) {
         $attendance = $attendanceRecords->firstWhere('class_id', $student->id);
         return $attendance ? $attendance->class_id : null;
     });
 
+    // Create a detailed list of students with their attendance information
     $studentsWithDetails = $studentsInSection->map(function($student) use ($attendanceRecords) {
         $attendance = $attendanceRecords->firstWhere('class_id', $student->id);
         return [
@@ -361,11 +381,12 @@ public function teacherAttendanceSubmit($teacher_id, $section)
         ];
     });
 
+    // Return the view with the attendance details
     return view('teacherattendancesubmit', [
         'students' => $studentsWithDetails,
         'paymentForm' => $paymentForm,
         'studentClassIds' => $studentClassIds,
-        'section' => $section, 
+        'edpcode' => $edp_code, 
     ]);
 }
 
@@ -566,6 +587,23 @@ public function deleteAssessment($id)
 
     return redirect()->back()->with('success', 'Assessment deleted successfully.');
 }
+
+    public function oldstudentprofile()
+    {
+        $userId = Auth::id();
+
+        $profile = register_form::where('user_id', $userId)->firstOrFail();
+
+        $level = payment_form::where('payment_id', $profile->id)->firstOrFail();
+
+        $data = [
+            'title' => 'Student Profile',
+            'profile' => $profile,
+            'level' => $level,
+        ];
+
+        return view('oldstudentprofile', $data);
+    }
 
 
     public function oldstudentaddress($registerFormId)

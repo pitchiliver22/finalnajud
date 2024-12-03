@@ -47,12 +47,12 @@
                             @foreach ($students as $student)
                                 <tr>
                                     <td>{{ $student->firstname }} {{ $student->middlename }} {{ $student->lastname }}</td>
-                                    <td>{{ $section }}</td> 
+                                    <td>{{ $student->section }}</td> 
                                     <td>{{ $paymentForm->level ?? 'N/A' }}</td>
                                     @foreach (['respect', 'excellence', 'teamwork', 'innovation', 'sustainability'] as $coreValue)
                                         <td>
                                             <input type="text" class="form-control" name="core_values[{{ $student->id }}][{{ $coreValue }}]" 
-                                                   value="{{ old('core_values.' . $student->id . '.' . $coreValue, /* Default value from DB if exists */ '') }}" 
+                                                   value="{{ old('core_values.' . $student->id . '.' . $coreValue, '') }}" 
                                                    required {{ $errors->any() ? 'readonly' : '' }}>
                                         </td>
                                     @endforeach

@@ -1144,105 +1144,129 @@ public function updateQuarters(Request $request)
     }
 
     public function teachercorevaluepost(Request $request)
-{
-    $request->validate([
-        'grade_level.*' => 'required|string',
-        'fullname.*' => 'required|string',
-        'section.*' => 'required|string',
-        'core_id.*' => 'required|integer',  
-        'core_values.*.respect' => 'required|string',
-        'core_values.*.excellence' => 'required|string',
-        'core_values.*.teamwork' => 'required|string',
-        'core_values.*.innovation' => 'required|string',
-        'core_values.*.sustainability' => 'required|string',
-    ]);
-
-    DB::beginTransaction();
-    try {
-        foreach ($request->core_id as $index => $coreId) {
-            corevalues::updateOrCreate(
-                ['core_id' => $coreId], // Use core_id to find the existing record
-                [
-                    'respect' => $request->core_values[$coreId]['respect'],
-                    'excellence' => $request->core_values[$coreId]['excellence'],
-                    'teamwork' => $request->core_values[$coreId]['teamwork'],
-                    'innovation' => $request->core_values[$coreId]['innovation'],
-                    'sustainability' => $request->core_values[$coreId]['sustainability'],
-                    'fullname' => $request->fullname[$index], // Assuming these are arrays
-                    'section' => $request->section[$index],
-                    'grade_level' => $request->grade_level[$index], // If you need to include grade level
-                ]
-            );
+    {
+        Log::info('Incoming request data:', $request->all());
+    
+        $validatedData = $request->validate([
+            'grade_level.*' => 'required|string',
+            'fullname.*' => 'required|string',
+            'section.*' => 'required|string',
+            'core_id.*' => 'required|integer',  
+            'core_values.*.respect' => 'required|string',
+            'core_values.*.excellence' => 'required|string',
+            'core_values.*.teamwork' => 'required|string',
+            'core_values.*.innovation' => 'required|string',
+            'core_values.*.sustainability' => 'required|string',
+        ]);
+    
+        Log::info('Validated data:', $validatedData);
+    
+        DB::beginTransaction();
+        try {
+            foreach ($validatedData['core_id'] as $index => $coreId) {
+                $coreValueData = [
+                    'respect' => $validatedData['core_values'][$coreId]['respect'] ?? null,
+                    'excellence' => $validatedData['core_values'][$coreId]['excellence'] ?? null,
+                    'teamwork' => $validatedData['core_values'][$coreId]['teamwork'] ?? null,
+                    'innovation' => $validatedData['core_values'][$coreId]['innovation'] ?? null,
+                    'sustainability' => $validatedData['core_values'][$coreId]['sustainability'] ?? null,
+                    'fullname' => $validatedData['fullname'][$index] ?? null,
+                    'section' => $validatedData['section'][$index] ?? null,
+                    'grade_level' => $validatedData['grade_level'][$index] ?? null,
+                ];
+    
+                if (is_null($coreValueData['respect']) || 
+                    is_null($coreValueData['excellence']) || 
+                    is_null($coreValueData['teamwork']) || 
+                    is_null($coreValueData['innovation']) || 
+                    is_null($coreValueData['sustainability'])) {
+                    Log::error("Missing core value data for core ID: {$coreId}");
+                    continue;
+                }
+    
+                Log::info("Core Value Data for ID {$coreId}: ", $coreValueData);
+    
+                corevalues::updateOrCreate(
+                    ['core_id' => $coreId],
+                    $coreValueData
+                );
+            }
+    
+            DB::commit();
+            return redirect('/teachercorevalue')->with('success', 'Core values saved successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error saving core values: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while saving core values: ' . $e->getMessage());
         }
-
-        DB::commit();
-
-        return redirect()->back()->with('success', 'Core values saved successfully!');
-    } catch (\Exception $e) {
-        DB::rollBack();
-
-        Log::error('Error saving core values: ' . $e->getMessage());
-
-        return redirect()->back()->with('error', 'An error occurred while saving core values.');
     }
-}
-
 public function teacherAttendancePost(Request $request)
 {
-    // Log the incoming request data for debugging
-    Log::info($request->all());
+    Log::info('Incoming request data:', $request->all());
 
     // Validate the incoming request data
-    $request->validate([
+    $validatedData = $request->validate([
         'grade_level.*' => 'required|string',
         'fullname.*' => 'required|string',
         'section.*' => 'required|string',
-        'attendance_id.*' => 'required|integer', // Ensure attendance_id exists in your reference table
-        'edp_code.*' => 'required|string', // Ensure this is included
-        'subject.*' => 'required|string', // Ensure this is included
-        '1st_quarter.*' => 'required|string', 
-        '2nd_quarter.*' => 'required|string',
-        '3rd_quarter.*' => 'required|string',
-        '4th_quarter.*' => 'required|string',
-        'overall_attendance.*' => 'required|string', 
+        'attendance_id.*' => 'required|integer',
+        'edp_code.*' => 'required|string',
+        'subject.*' => 'required|string',
+        '1st_quarter.*' => 'required|numeric', 
+        '2nd_quarter.*' => 'required|numeric',
+        '3rd_quarter.*' => 'required|numeric',
+        '4th_quarter.*' => 'required|numeric',
+        'overall_attendance.*' => 'required|numeric', 
     ]);
+
+    Log::info('Validated data:', $validatedData);
 
     DB::beginTransaction();
     try {
-        foreach ($request->attendance_id as $attendanceId) {
-            // Find the index of the current attendanceId
-            $index = array_search($attendanceId, $request->attendance_id);
-            
-            // Ensure we guard against undefined indexes
-            // if ($index === false) {
-            //     throw new Exception("Attendance ID not found in the array.");
-            // }
+        foreach ($validatedData['attendance_id'] as $index => $attendanceId) {
+            // Prepare the data for updating or creating
+            $attendanceData = [
+                'fullname' => $validatedData['fullname'][$index] ?? null,
+                'section' => $validatedData['section'][$index] ?? null,
+                'grade_level' => $validatedData['grade_level'][$index] ?? null,
+                'edp_code' => $validatedData['edp_code'][$index] ?? null,
+                'subject' => $validatedData['subject'][$index] ?? null,
+                '1st_quarter' => $validatedData['1st_quarter'][$attendanceId] ?? null,
+                '2nd_quarter' => $validatedData['2nd_quarter'][$attendanceId] ?? null,
+                '3rd_quarter' => $validatedData['3rd_quarter'][$attendanceId] ?? null,
+                '4th_quarter' => $validatedData['4th_quarter'][$attendanceId] ?? null,
+                'overall_attendance' => $validatedData['overall_attendance'][$attendanceId] ?? null,
+                'attendance_id' => $attendanceId,
+            ];
 
+            // Check if any required data is missing
+            if (is_null($attendanceData['1st_quarter']) || 
+                is_null($attendanceData['2nd_quarter']) || 
+                is_null($attendanceData['3rd_quarter']) || 
+                is_null($attendanceData['4th_quarter'])) {
+                Log::error("Missing data for attendance ID: {$attendanceId}");
+                continue; // Skip this iteration if data is missing
+            }
+
+            // Log attendance data before saving
+            Log::info("Attendance Data for ID {$attendanceId}: ", $attendanceData);
+
+            // Update or create the attendance record
             Attendance::updateOrCreate(
-                ['attendance_id' => $attendanceId], // Use attendance_id to find the existing record
                 [
-                    'fullname' => $request->fullname[$index],
-                    'section' => $request->section[$index],
-                    'grade_level' => $request->grade_level[$index],
-                    'edp_code' => $request->edp_code[$attendanceId] ?? null, // Access by attendance ID
-                    'subject' => $request->subject[$attendanceId] ?? null, // Access by attendance ID
-                    '1st_quarter' => $request->input('1st_quarter.' . $attendanceId) ?? null,
-                    '2nd_quarter' => $request->input('2nd_quarter.' . $attendanceId) ?? null,
-                    '3rd_quarter' => $request->input('3rd_quarter.' . $attendanceId) ?? null,
-                    '4th_quarter' => $request->input('4th_quarter.' . $attendanceId) ?? null,
-                    'overall_attendance' => $request->input('overall_attendance.' . $attendanceId) ?? null,
-                ]
+                    'edp_code' => $attendanceData['edp_code'],
+                    'subject' => $attendanceData['subject'],
+                    'attendance_id' => $attendanceId,
+                ],
+                $attendanceData
             );
         }
 
         DB::commit();
-
-        return redirect()->back()->with('success', 'Attendance saved successfully!');
+        return redirect('/teacherattendance')->with('success', 'Attendance saved successfully!');
     } catch (\Exception $e) {
         DB::rollBack();
-
         Log::error('Error saving attendance: ' . $e->getMessage());
-
         return redirect()->back()->with('error', 'An error occurred while saving attendance: ' . $e->getMessage());
     }
 }

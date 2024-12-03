@@ -1,39 +1,24 @@
 @include('templates.studentheader')
 
-<!-- Include Bootstrap CSS -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-<!-- Load jQuery (full version) before Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <div id="main">
-    <div class="w3-teal">
-        <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <div class="w3-container">
-            <h1 class="text-center text-light">Student Profile</h1>
-        </div>
+    <div class="header-container">
+        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
+        <h1 class="text-light">Student Profile</h1>
     </div>
+</div>
 
-    <style>
-        .card {
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-        }
+<style>
+    .header-container {
+        display: flex; 
+        align-items: center; 
+        background-color: #0c3b6d; 
+        color: white;
+        padding: 10px; 
+    }
 
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .modal-header {
-            border-bottom: none;
-        }
-
-        .profile-image {
+    .profile-image {
             width: 180px;
             height: 180px;
             border-radius: 50%;
@@ -41,25 +26,22 @@
             border: 4px solid #007bff;
         }
 
-        .bg-custom {
-            background-color: #e3f2fd;
-        }
+    .nav-button {
+        margin-right: 15px; 
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+    }
 
-        .uppercase {
-            text-transform: uppercase;
-        }
+    h1 {
+        margin: 0; 
+        font-size: 24px;
+    }
+</style>
 
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-    </style>
-
-    <section class="container-fluid py-5 bg-custom">
+<section class="container-fluid py-5 bg-custom">
         <div class="row justify-content-center">
             <div class="col-md-9 col-lg-7 col-xl-6">
                 <div class="card">
@@ -93,7 +75,6 @@
         </div>
     </section>
 
-    <!-- Edit Profile Modal -->
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -137,6 +118,10 @@
 </div>
 
 <script>
+    function w3_open() {
+        document.getElementById("mySidebar").style.display = "block";
+    }
+
     document.getElementById('saveChanges').addEventListener('click', function() {
         const formData = {
             firstname: document.getElementById('firstname').value,
@@ -178,4 +163,5 @@
         });
     });
 </script>
+
 @include('templates.studentfooter')

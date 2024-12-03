@@ -126,15 +126,14 @@ public function oldstudentclassload()
     ]);
 }
 
-
-
-
-
-
-
     public function studentprofile()
     {
         return view('studentprofile');
+    }
+
+    public function oldstudentprofile()
+    {
+        return view('oldstudentprofile');
     }
 
     public function enrollmentStep()
@@ -162,21 +161,24 @@ public function oldstudentclassload()
 
 public function studentgrades()
 {
-    
     $userId = Auth::id();
-
-
-    $grades = grade::where('grade_id', $userId) 
-        ->get(['subject', 'edp_code', 'section', '1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter', 'overall_grade']); 
-
     
-    $gradesApproved = $grades->where('status', 'approved')->isNotEmpty();
-
+    // Get the authenticated user
+    $user = Auth::user();
     
-    $approvedGrades = $grades->where('status', 'approved');
+    // Construct the full name
+    $userName = trim("{$user->firstname} {$user->middlename} {$user->lastname}");
+
+    // Retrieve grades for the authenticated student based on their fullname and status
+    $grades = Grade::where('fullname', $userName)
+                   ->where('status', 'approved')
+                   ->get(['subject', 'edp_code', 'section', '1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter', 'overall_grade']);
+
+    // Check if there are any approved grades
+    $gradesApproved = $grades->isNotEmpty();
 
     return view('studentgrades', [
-        'grades' => $approvedGrades, 
+        'grades' => $grades,
         'gradesApproved' => $gradesApproved,
     ]);
 }
@@ -227,29 +229,21 @@ public function studentassessment(Request $request)
 
     public function teacherclassload()
     {
-        // Fetch all teachers to identify the current teacher
-        $teachers = Teacher::all(); // Assuming you have a Teacher model
-    
-        // Log the available teacher IDs for debugging
+        $teachers = Teacher::all(); 
         Log::info('Available Teachers: ', $teachers->toArray());
     
-        // Initialize an array to hold valid teacher IDs
-        $validTeacherIds = $teachers->pluck('id')->toArray();
+       $validTeacherIds = $teachers->pluck('id')->toArray();
     
-        // Fetch classes for valid teacher IDs
         $classes = classes::whereIn('teacher_id', $validTeacherIds)
             ->select('section', 'edpcode', 'subject', 'grade', 'teacher_id')
             ->get();
     
-        // Log the retrieved classes for debugging
         Log::info('Assigned Classes for Teachers: ', $classes->toArray());
     
-        // Check if classes were found
         if ($classes->isEmpty()) {
             Log::warning('No classes found for valid teacher IDs.');
         }
     
-        // Fetch payment forms
         $proofs = payment_form::whereNotNull('level')->get(); 
     
         return view('teacherclassload', [
@@ -264,40 +258,55 @@ public function studentassessment(Request $request)
     public function teacherattendance()
     {
         $teachers = Teacher::all(); 
-    $classes = collect();
-
-    foreach ($teachers as $teacher) {
-        $assignedClasses = assign::where('teacher_id', $teacher->id)
-            ->select('class_id', 'section', 'edpcode', 'subject', 'grade', 'teacher_id')
-            ->get(); 
-        $classes = $classes->merge($assignedClasses);
-    }
-
-    // Pass the $classes variable to the view
-    return view('teacherattendance', [
-        'classes' => $classes,
-        'teachers' => $teachers,
-    ]);
+        Log::info('Available Teachers: ', $teachers->toArray());
+    
+       $validTeacherIds = $teachers->pluck('id')->toArray();
+    
+        $classes = classes::whereIn('teacher_id', $validTeacherIds)
+            ->select('section', 'edpcode', 'subject', 'grade', 'teacher_id')
+            ->get();
+    
+        Log::info('Assigned Classes for Teachers: ', $classes->toArray());
+    
+        if ($classes->isEmpty()) {
+            Log::warning('No classes found for valid teacher IDs.');
+        }
+    
+        $proofs = payment_form::whereNotNull('level')->get(); 
+    
+        return view('teacherattendance', [
+            'title' => 'Teacher Attendance',
+            'classes' => $classes,
+            'proofs' => $proofs 
+        ]);
     }
 
     public function teachercorevalue()
-{
-    $teachers = Teacher::all(); 
-    $classes = collect();
-
-    foreach ($teachers as $teacher) {
-        $assignedClasses = assign::where('teacher_id', $teacher->id)
-            ->select('class_id', 'section', 'edpcode', 'subject', 'grade', 'teacher_id')
-            ->get(); 
-        $classes = $classes->merge($assignedClasses);
+    {
+        $teachers = Teacher::all(); 
+        Log::info('Available Teachers: ', $teachers->toArray());
+    
+       $validTeacherIds = $teachers->pluck('id')->toArray();
+    
+        $classes = classes::whereIn('teacher_id', $validTeacherIds)
+            ->select('section', 'edpcode', 'subject', 'grade', 'teacher_id')
+            ->get();
+    
+        Log::info('Assigned Classes for Teachers: ', $classes->toArray());
+    
+        if ($classes->isEmpty()) {
+            Log::warning('No classes found for valid teacher IDs.');
+        }
+    
+        $proofs = payment_form::whereNotNull('level')->get(); 
+    
+        return view('teachercorevalue', [
+            'title' => 'Teacher Core Value',
+            'classes' => $classes,
+            'proofs' => $proofs 
+        ]);
     }
 
-    // Pass the $classes variable to the view
-    return view('teachercorevalue', [
-        'classes' => $classes,
-        'teachers' => $teachers,
-    ]);
-}
 
     //principal
     public function principal()

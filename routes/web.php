@@ -53,6 +53,7 @@ Route::get('payment_process/{registerFormId}', [UserController::class, 'payment_
 
 //student
 Route::get('studentdashboard', [Pagecontroller::class, 'studentdashboard'])->middleware('auth');
+
 Route::get('studentprofile', [Pagecontroller::class, 'studentprofile']);
 Route::get('studentprofile', [Usercontroller::class, 'studentprofile'])->middleware('auth');
 
@@ -73,22 +74,18 @@ Route::get('teacherprofile', [Pagecontroller::class, 'teacherprofile'])->middlew
 
 Route::get('teacherclassload', [Pagecontroller::class, 'teacherclassload'])->middleware('auth');
 
-
 Route::get('/gradesubmit/{edp_code}/{teacher_id}', [Usercontroller::class, 'gradesubmit'])->name('gradesubmit');
 Route::post('/gradesubmit', [Datacontroller::class, 'gradesubmitpost'])->name('gradesubmitpost');
 
-
 Route::get('teacherattendance', [Pagecontroller::class, 'teacherattendance'])->middleware('auth');
-Route::get('/teacherattendance/{teacher_id}/{section}', [Usercontroller::class, 'teacherAttendanceSubmit'])->name('teacherattendance');
+Route::get('/teacherattendance/{teacher_id}/{edp_code}', [Usercontroller::class, 'teacherAttendanceSubmit'])->name('teacherattendance');
 Route::post('/teacherattendance', [Datacontroller::class, 'teacherattendancepost']);
 
 Route::get('teachercorevalue', [Pagecontroller::class, 'teachercorevalue'])->middleware('auth');
 Route::post('/teachercorevalue', [Datacontroller::class, 'teachercorevaluepost'])->name('teachercorevaluesubmit');
-Route::get('/teachercorevaluesubmit/{teacher_id}/{section}', [UserController::class, 'teachercorevaluesubmit'])
+Route::get('/teachercorevaluesubmit/{teacher_id}/{edp_code}', [UserController::class, 'teachercorevaluesubmit'])
     ->name('teachercorevaluesubmit');
     
-    
-   
 Route::get('principal', [Pagecontroller::class, 'principal']);
 Route::get('sectioning', [Pagecontroller::class, 'sectioning']);
 Route::get('sectioning/{id}', [Usercontroller::class, 'sectioning']);
@@ -97,10 +94,8 @@ Route::get('principalteacher', [Pagecontroller::class, 'principalteacher']);
 Route::get('/principalteacher', [DataController::class, 'showTeachers'])->name('principalteacher');
 Route::post('/principalteacher', [DataController::class, 'teachersubjectpost']);
 
-
 Route::post('/update-quarters', [Datacontroller::class, 'updateQuarters'])->name('update.quarters');
 Route::get('/submittedgrades', [Pagecontroller::class, 'showEvaluateGrades'])->name('evaluate.grades');
-
 
 Route::get('assigning', [Pagecontroller::class, 'assigning']);
 Route::get('assigning/{id}', [Usercontroller::class, 'assigning']);
@@ -108,17 +103,12 @@ Route::post('assigning', [Datacontroller::class, 'assigning']);
 
 Route::post('/assigning/{id}', [Datacontroller::class, 'approveAssigning']);
 
-// GET route to show the section page
 Route::get('section', [PageController::class, 'section'])->name('section.index');
 
-// GET route to show section details with parameters
 Route::get('section/{id}/{sectionName}', [UserController::class, 'section'])->name('section.show');
 
-// POST route for assigning classes
 Route::post('section', [DataController::class, 'sectionpost']);
 Route::get('section/{section}', [Usercontroller::class, 'getSectionDetails']);
-
-
 
 Route::get('principalclassload', [Pagecontroller::class, 'principalclassload']);
 Route::post('principalclassload', [Datacontroller::class, 'classloadpost']);
@@ -126,11 +116,9 @@ Route::get('/get-teachers/{grade}', [UserController::class, 'getTeachersByGrade'
 Route::get('/principalclassload', [Datacontroller::class, 'principalclassload'])->name('principalclassload');
 Route::get('/get-teachers', [Usercontroller::class, 'getTeachersBySubjectAndGrade']);
 
-
 Route::get('createsection', [Pagecontroller::class, 'createsection']);
 Route::post('createsection', [Datacontroller::class, 'createsectionpost']);
 Route::delete('section/{id}', [Usercontroller::class, 'deleteSection'])->name('section.delete');
-
 
 Route::get('/get-subject/{teacherId}', [UserController::class, 'getSubject']);
 Route::get('/get-assigned-teacher/{subject}', [UserController::class, 'getAssignedTeacher']);
@@ -141,7 +129,6 @@ Route::get('/delete_class/{id}', [UserController::class, 'delete_class']);
 Route::get('publishgrade', [Pagecontroller::class, 'publishgrade']);
 Route::get('/publishgrade', [Usercontroller::class, 'publishgrade'])->name('publishgrade');
 Route::post('/publishgrades', [Datacontroller::class, 'publishGrades'])->name('publishgrade.post');
-
 
 Route::get('principalassessment', [Pagecontroller::class, 'principalassessment'])->name('/principalassessment');;
 Route::post('/assessment/publish/{id}', [Usercontroller::class, 'publishAssessment'])->name('assessment.publish');
@@ -200,6 +187,9 @@ Route::get('adminprofile', [Pagecontroller::class, 'adminprofile']);
 
 Route::get('oldstudent', [Pagecontroller::class, 'oldstudent']);
 Route::post('oldstudent', [Datacontroller::class, 'oldstudentpost']);
+
+Route::get('oldstudentprofile', [Pagecontroller::class, 'oldstudentprofile']);
+Route::get('oldstudentprofile', [Usercontroller::class, 'oldstudentprofile'])->middleware('auth');
 
 Route::get('oldstudentdashboard', [Pagecontroller::class, 'oldstudentdashboard'])->middleware('auth');
 

@@ -14,12 +14,12 @@
 
     <style>
         .w3-sidebar {
-            background-color: #0c3b6d; /* Sidebar background color */
-            color: white; /* Default text color */
-            width: 250px; /* Fixed width */
-            transition: width 0.3s; /* Smooth transition for width */
-            overflow-y: auto; /* Enable scrolling if content exceeds height */
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5); /* Shadow effect for the sidebar */
+            background-color: #0c3b6d; 
+            color: white; 
+            width: 250px;
+            transition: width 0.3s; 
+            overflow-y: auto; 
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5); 
         }
 
         .profile-section {
@@ -30,53 +30,52 @@
         }
 
         .profile-picture {
-            width: 40px; /* Adjust size as needed */
-            height: 40px; /* Adjust size as needed */
-            border-radius: 50%; /* Circular profile picture */
-            margin-right: 10px; /* Space between image and name */
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; 
+            margin-right: 10px; 
         }
 
         .profile-name {
-            color: white; /* Name text color */
+            color: white; 
         }
 
         .w3-bar-item {
             display: flex;
             align-items: center;
-            padding: 2px 10px; /* Reduced padding for closer items */
+            padding: 2px 10px; 
             text-decoration: none;
-            color: white; /* White text */
-            transition: background-color 0.3s, color 0.3s; /* Smooth transition */
-            border-radius: 5px; /* Rounded corners */
-            margin: 0; /* Remove default margin */
+            color: white; 
+            transition: background-color 0.3s, color 0.3s;
+            border-radius: 5px; 
+            margin: 0; 
         }
 
         .w3-bar-item svg {
-            width: 20px; /* Set a smaller width */
-            height: 20px; /* Set a smaller height */
-            margin-right: 5px; /* Space between icon and text */
-            transition: fill 0.3s; /* Smooth transition for color changes */
+            width: 20px; 
+            height: 20px; 
+            margin-right: 5px; 
+            transition: fill 0.3s; 
         }
 
         .w3-bar-item:hover {
-            background-color: white; /* Background color on hover */
-            color: #007bff; /* Text color on hover */
+            background-color: white; 
+            color: #007bff; 
         }
 
         .w3-bar-item:hover svg {
-            fill: #0800e4; /* Change icon color on hover */
+            fill: #0800e4; 
         }
 
-        /* Close Button Style */
         .w3-bar-item.w3-button {
-            color: rgb(255, 255, 255); /* Text color for close button */
-            border: none; /* No border */
-            border-radius: 5px; /* Rounded corners */
-            margin-bottom: 10px; /* Reduced space below the close button */
+            color: rgb(255, 255, 255); 
+            border: none; 
+            border-radius: 5px; 
+            margin-bottom: 10px; 
         }
 
         .w3-bar-item.w3-button:hover {
-            background-color: #0004d6; /* Darker close button on hover */
+            background-color: #0004d6; 
         }
     </style>
 </head>
@@ -99,7 +98,7 @@
                         d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.707l.547.547 1.17-1.951a.5.5 0 1 1 .858.514" />
                 </svg> Home
             </a>
-            <a href="/#" class="w3-bar-item w3-button">
+            <a href="/oldstudentprofile" class="w3-bar-item w3-button">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-person-video"
                     viewBox="0 0 16 16">
                     <path d="M8 9.05a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />

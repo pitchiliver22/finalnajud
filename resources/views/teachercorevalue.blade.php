@@ -23,38 +23,36 @@
                     </div>
                 </div>
                 <div class="table-responsive">
-                    
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Section</th>
-                                    <th>Edp Code</th>
-                                    <th>Subject</th>
-                                    <th>Year Level</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($classes->groupBy('section') as $section => $group)
-                                <tr>
-                                    <td>{{ $section }}</td>
-                                    <td>{{ $group->first()->edpcode }}</td> <!-- Display the correct edpcode -->
-                                    <td>{{ $group->first()->subject }}</td>
-                                    <td>{{ $group->first()->grade ?? 'N/A' }}</td>
-                                    <td>
-                                        <a href="{{ route('teachercorevaluesubmit', ['teacher_id' => $group->first()->teacher_id, 'section' => $section]) }}" 
-                                            class="btn btn-info btn-sm view-studententry" 
-                                            title="View Core Value Submission for {{ $section }}">
-                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
-                                                 <path d="M7.998 2c-2.757 0-5.287 1.417-6.758 3.75a.748.748 0 0 0 0 .5c1.471 2.333 4.001 3.75 6.758 3.75s5.287-1.417 6.758-3.75a.748.748 0 0 0 0-.5c-1.471-2.333-4.001-3.75-6.758-3.75zm0 1.5a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5zm0 2a1.75 1.75 0 1 0 0 3.5 1.75 1.75 0 0 0 0-3.5z" />
-                                             </svg>
-                                         </a>
-                                    </td>
-                                </tr>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Section</th>
+                                <th>Edp Code</th>
+                                  <th>Year Level</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($classes->groupBy('section') as $section => $group)
+                                @foreach ($group as $class) <!-- Iterate over each class in the group -->
+                                    <tr>
+                                        <td>{{ $section }}</td>
+                                        <td>{{ $class->edpcode }}</td> <!-- Access edpcode from the individual class -->
+                                         <td>{{ $class->grade ?? 'N/A' }}</td> <!-- Access grade from the individual class -->
+                                        <td>
+                                            <a href="{{ route('teachercorevaluesubmit', ['teacher_id' => $class->teacher_id, 'edp_code' => $class->edpcode]) }}" 
+                                               class="btn btn-info btn-sm view-studententry" 
+                                               title="View Core Value Submission for {{ $section }}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                                    <path d="M7.998 2c-2.757 0-5.287 1.417-6.758 3.75a.748.748 0 0 0 0 .5c1.471 2.333 4.001 3.75 6.758 3.75s5.287-1.417 6.758-3.75a.748.748 0 0 0 0-.5c-1.471-2.333-4.001-3.75-6.758-3.75zm0 1.5a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5zm0 2a1.75 1.75 0 1 0 0 3.5 1.75 1.75 0 0 0 0-3.5z" />
+                                                </svg>
+                                            </a>
+                                        </td>
+                                    </tr>
                                 @endforeach
-                            </tbody>
-                        </table>
-                    
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </form>
