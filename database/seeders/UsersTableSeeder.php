@@ -16,6 +16,9 @@ class UsersTableSeeder extends Seeder
     /**
      * Run the database seeds.
      */
+
+
+     //php artisan db:seed --class=UsersTableSeeder
     public function run(): void
     {
         $defaultUsers = [
@@ -68,6 +71,7 @@ class UsersTableSeeder extends Seeder
                     'primary_school_type' => 'Private',
                 ]
             ],
+
             [
                 'firstname' => 'Jane',
                 'middlename' => 'Doe',
@@ -118,6 +122,264 @@ class UsersTableSeeder extends Seeder
                     'primary_school_type' => 'Private',
                 ]
             ],
+
+
+            [
+                'firstname' => 'Mimi',
+                'middlename' => 'Grant',
+                'lastname' => 'Bond',
+                'suffix' => 'Sr',
+                'role' => 'OldStudent',
+                'email' => 'mimi@gmail.com',
+                'password' => 'mimi12345',
+
+                'studentdetails' => [
+                    'firstname' => 'Mimi',
+                    'middlename' => 'Grant',
+                    'lastname' => 'Bond',
+                    'suffix' => 'Sr',
+                    'nationality' => 'Filipino',
+                    'gender' => 'Male',
+                    'civilstatus' => 'Married',
+                    'birthdate' => '1999-05-15',
+                    'birthplace' => 'Cebu City',
+                    'religion' => 'Catholic',
+                    'mother_name' => 'Mary Smith',
+                    'mother_occupation' => 'Nurse',
+                    'mother_contact' => '09951122334',
+                    'father_name' => 'Robert Smith',
+                    'father_occupation' => 'Engineer',
+                    'father_contact' => '09952233445',
+                    'guardian_name' => 'Mary Smith',
+                    'guardian_occupation' => 'Nurse',
+                    'guardian_contact' => '09951122334',
+                ],
+                'address' => [
+                    'zipcode' => '6015',
+                    'province' => 'Cambinocot Langog',
+                    'city' => 'Lapu Lapu City',
+                    'barangay' => 'Poblacion',
+                    'streetaddress' => 'Babag Dos Skina Naga'
+                ],
+                'previous_school' => [
+                    'second_school_name' => 'University of Cebu Lapu Lapu and Mandaue',
+                    'second_last_year_level' => '7',
+                    'second_school_year_from' => '2021',
+                    'second_school_year_to' => '2022',
+                    'second_school_type' => 'Private',
+                    'primary_school_name' => 'University of Cebu Lapu Lapu and Mandaue',
+                    'primary_last_year_level' => '6',
+                    'primary_school_year_from' => '2021',
+                    'primary_school_year_to' => '2022',
+                    'primary_school_type' => 'Private',
+                ]
+            ],
+
+            [
+                'firstname' => 'Carl',
+                'middlename' => 'Mandal',
+                'lastname' => 'Silva',
+                'suffix' => 'Sr',
+                'role' => 'OldStudent',
+                'email' => 'carl@gmail.com',
+                'password' => 'carl12345',
+
+                'studentdetails' => [
+                    'firstname' => 'Carl',
+                    'middlename' => 'Mandal',
+                    'lastname' => 'Silva',
+                    'suffix' => 'Sr',
+                    'nationality' => 'Filipino',
+                    'gender' => 'Female',
+                    'civilstatus' => 'Married',
+                    'birthdate' => '1999-05-15',
+                    'birthplace' => 'Cebu City',
+                    'religion' => 'Catholic',
+                    'mother_name' => 'Mary Smith',
+                    'mother_occupation' => 'Nurse',
+                    'mother_contact' => '09951122334',
+                    'father_name' => 'Robert Smith',
+                    'father_occupation' => 'Engineer',
+                    'father_contact' => '09952233445',
+                    'guardian_name' => 'Mary Smith',
+                    'guardian_occupation' => 'Nurse',
+                    'guardian_contact' => '09951122334',
+                ],
+                'address' => [
+                    'zipcode' => '6015',
+                    'province' => 'Cambinocot Langog',
+                    'city' => 'Lapu Lapu City',
+                    'barangay' => 'Poblacion',
+                    'streetaddress' => 'Babag Dos Skina Naga'
+                ],
+                'previous_school' => [
+                    'second_school_name' => 'University of Cebu Lapu Lapu and Mandaue',
+                    'second_last_year_level' => '7',
+                    'second_school_year_from' => '2021',
+                    'second_school_year_to' => '2022',
+                    'second_school_type' => 'Private',
+                    'primary_school_name' => 'University of Cebu Lapu Lapu and Mandaue',
+                    'primary_last_year_level' => '6',
+                    'primary_school_year_from' => '2021',
+                    'primary_school_year_to' => '2022',
+                    'primary_school_type' => 'Private',
+                ]
+            ],
+
+            [
+                'firstname' => 'Moises',
+                'middlename' => 'Belo',
+                'lastname' => 'Belocura',
+                'suffix' => 'Sr',
+                'role' => 'OldStudent',
+                'email' => 'moises@gmail.com',
+                'password' => 'moises12345',
+
+                'studentdetails' => [
+                    'firstname' => 'Moises',
+                    'middlename' => 'Belo',
+                    'lastname' => 'Belocura',
+                    'suffix' => 'Sr',
+                    'nationality' => 'Filipino',
+                    'gender' => 'Female',
+                    'civilstatus' => 'Married',
+                    'birthdate' => '1999-05-15',
+                    'birthplace' => 'Cebu City',
+                    'religion' => 'Catholic',
+                    'mother_name' => 'Mary Smith',
+                    'mother_occupation' => 'Nurse',
+                    'mother_contact' => '09951122334',
+                    'father_name' => 'Robert Smith',
+                    'father_occupation' => 'Engineer',
+                    'father_contact' => '09952233445',
+                    'guardian_name' => 'Mary Smith',
+                    'guardian_occupation' => 'Nurse',
+                    'guardian_contact' => '09951122334',
+                ],
+                'address' => [
+                    'zipcode' => '6015',
+                    'province' => 'Cambinocot Langog',
+                    'city' => 'Lapu Lapu City',
+                    'barangay' => 'Poblacion',
+                    'streetaddress' => 'Babag Dos Skina Naga'
+                ],
+                'previous_school' => [
+                    'second_school_name' => 'University of Cebu Lapu Lapu and Mandaue',
+                    'second_last_year_level' => '7',
+                    'second_school_year_from' => '2021',
+                    'second_school_year_to' => '2022',
+                    'second_school_type' => 'Private',
+                    'primary_school_name' => 'University of Cebu Lapu Lapu and Mandaue',
+                    'primary_last_year_level' => '6',
+                    'primary_school_year_from' => '2021',
+                    'primary_school_year_to' => '2022',
+                    'primary_school_type' => 'Private',
+                ]
+            ],
+
+            [
+                'firstname' => 'Bernie',
+                'middlename' => 'Anthony',
+                'lastname' => 'Lambo',
+                'suffix' => 'Sr',
+                'role' => 'OldStudent',
+                'email' => 'bernie@gmail.com',
+                'password' => 'bernie12345',
+
+                'studentdetails' => [
+                    'firstname' => 'Bernie',
+                    'middlename' => 'Anthony',
+                    'lastname' => 'Lambo',
+                    'suffix' => 'Sr',
+                    'nationality' => 'Filipino',
+                    'gender' => 'Female',
+                    'civilstatus' => 'Married',
+                    'birthdate' => '1999-05-15',
+                    'birthplace' => 'Cebu City',
+                    'religion' => 'Catholic',
+                    'mother_name' => 'Mary Smith',
+                    'mother_occupation' => 'Nurse',
+                    'mother_contact' => '09951122334',
+                    'father_name' => 'Robert Smith',
+                    'father_occupation' => 'Engineer',
+                    'father_contact' => '09952233445',
+                    'guardian_name' => 'Mary Smith',
+                    'guardian_occupation' => 'Nurse',
+                    'guardian_contact' => '09951122334',
+                ],
+                'address' => [
+                    'zipcode' => '6015',
+                    'province' => 'Cambinocot Langog',
+                    'city' => 'Lapu Lapu City',
+                    'barangay' => 'Poblacion',
+                    'streetaddress' => 'Babag Dos Skina Naga'
+                ],
+                'previous_school' => [
+                    'second_school_name' => 'University of Cebu Lapu Lapu and Mandaue',
+                    'second_last_year_level' => '7',
+                    'second_school_year_from' => '2021',
+                    'second_school_year_to' => '2022',
+                    'second_school_type' => 'Private',
+                    'primary_school_name' => 'University of Cebu Lapu Lapu and Mandaue',
+                    'primary_last_year_level' => '6',
+                    'primary_school_year_from' => '2021',
+                    'primary_school_year_to' => '2022',
+                    'primary_school_type' => 'Private',
+                ]
+            ],
+
+
+            [
+                'firstname' => 'Mary',
+                'middlename' => 'Therese',
+                'lastname' => 'Dungog',
+                'suffix' => 'Sr',
+                'role' => 'OldStudent',
+                'email' => 'claire@gmail.com',
+                'password' => 'claire12345',
+
+                'studentdetails' => [
+                    'firstname' => 'Mary',
+                    'middlename' => 'Therese',
+                    'lastname' => 'Dungog',
+                    'suffix' => 'Sr',
+                    'nationality' => 'Filipino',
+                    'gender' => 'Female',
+                    'civilstatus' => 'Married',
+                    'birthdate' => '1999-05-15',
+                    'birthplace' => 'Cebu City',
+                    'religion' => 'Catholic',
+                    'mother_name' => 'Mary Smith',
+                    'mother_occupation' => 'Nurse',
+                    'mother_contact' => '09951122334',
+                    'father_name' => 'Robert Smith',
+                    'father_occupation' => 'Engineer',
+                    'father_contact' => '09952233445',
+                    'guardian_name' => 'Mary Smith',
+                    'guardian_occupation' => 'Nurse',
+                    'guardian_contact' => '09951122334',
+                ],
+                'address' => [
+                    'zipcode' => '6015',
+                    'province' => 'Cambinocot Langog',
+                    'city' => 'Lapu Lapu City',
+                    'barangay' => 'Poblacion',
+                    'streetaddress' => 'Babag Dos Skina Naga'
+                ],
+                'previous_school' => [
+                    'second_school_name' => 'University of Cebu Lapu Lapu and Mandaue',
+                    'second_last_year_level' => '7',
+                    'second_school_year_from' => '2021',
+                    'second_school_year_to' => '2022',
+                    'second_school_type' => 'Private',
+                    'primary_school_name' => 'University of Cebu Lapu Lapu and Mandaue',
+                    'primary_last_year_level' => '6',
+                    'primary_school_year_from' => '2021',
+                    'primary_school_year_to' => '2022',
+                    'primary_school_type' => 'Private',
+                ]
+            ],
+
             // You can add more users here
         ];
 
