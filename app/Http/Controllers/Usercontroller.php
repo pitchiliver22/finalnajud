@@ -163,6 +163,8 @@ class Usercontroller extends Controller
         return view('studentapplicant', $data);
     }
 
+  
+
     public function sectioning($id)
     {
         $student = register_form::findOrFail($id);
@@ -577,6 +579,13 @@ public function publishAssessment($id)
     FacadesMail::to('accounting@example.com')->send(new PublishAssessment($assessment));
 
     return redirect()->back()->with('success', 'Assessment published successfully.');
+}
+
+public function accountingprofile($id)
+{
+    $user = Auth::user();
+
+    return view('accountingprofile', $user);
 }
 
 public function editAssessment($id)

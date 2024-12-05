@@ -1,11 +1,11 @@
-@include('templates.teacherheader')
+@include('templates.principalheader')
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
 <div id="main">
     <div class="header-container">
         <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
-        <h1 class="text-light">Teacher Profile</h1>
+        <h1 class="text-light">Principal Profile</h1>
     </div>
 </div>
 
@@ -158,4 +158,4 @@
     });
 </script>
 
-@include('templates.teacherfooter')
+@include('templates.principalfooter')

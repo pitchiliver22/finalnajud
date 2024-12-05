@@ -49,6 +49,9 @@ class PDFController extends Controller
 public function downloadReportCard($grade_id, $core_id, $attendance_id)
 {
    
+    $authUserCoreId = Auth::user()->core_id;
+
+
     $coreValues = corevalues::where('core_id', $core_id)->first();
 
     if (!$coreValues) {
@@ -56,7 +59,7 @@ public function downloadReportCard($grade_id, $core_id, $attendance_id)
         return response()->json(['error' => 'Core values not found.'], 404);
     }
 
-   
+  
     $grades = Grade::where('fullname', $coreValues->fullname)
                    ->where('section', $coreValues->section)
                    ->where('status', 'approved')
@@ -67,7 +70,6 @@ public function downloadReportCard($grade_id, $core_id, $attendance_id)
         return response()->json(['error' => 'Grades not found for the student.'], 404);
     }
 
-   
     $attendance = Attendance::where('fullname', $coreValues->fullname)
                             ->where('section', $coreValues->section)
                             ->get();
@@ -76,7 +78,6 @@ public function downloadReportCard($grade_id, $core_id, $attendance_id)
         Log::info("Attendance records not found for fullname: {$coreValues->fullname}");
         return response()->json(['error' => 'Attendance records not found for the student.'], 404);
     }
-
 
     $reportCardData = [
         'fullname' => $coreValues->fullname,
@@ -87,12 +88,11 @@ public function downloadReportCard($grade_id, $core_id, $attendance_id)
         'core_values' => $coreValues,
     ];
 
-   
     $pdf = FacadePdf::loadView('reportCardPDF', compact('reportCardData'));
-    $pdf->setPaper('A4', 'portrait');
-$pdf->set_option('isHtml5ParserEnabled', true);
-$pdf->set_option('isRemoteEnabled', true);
-$pdf->set_option('defaultFont', 'Arial'); 
+    $pdf->setPaper('A4', 'landscape'); 
+    $pdf->set_option('isHtml5ParserEnabled', true);
+    $pdf->set_option('isRemoteEnabled', true);
+    $pdf->set_option('defaultFont', 'Arial'); 
 
     return $pdf->download('report_card_' . str_replace(' ', '_', $coreValues->fullname) . '.pdf');
 }

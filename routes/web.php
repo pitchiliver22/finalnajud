@@ -94,6 +94,8 @@ Route::get('principalteacher', [Pagecontroller::class, 'principalteacher']);
 Route::get('/principalteacher', [DataController::class, 'showTeachers'])->name('principalteacher');
 Route::post('/principalteacher', [DataController::class, 'teachersubjectpost']);
 
+Route::get('principalprofile', [Pagecontroller::class, 'principalprofile']);
+
 Route::post('/update-quarters', [Datacontroller::class, 'updateQuarters'])->name('update.quarters');
 Route::get('/submittedgrades', [Pagecontroller::class, 'showEvaluateGrades'])->name('evaluate.grades');
 
@@ -161,6 +163,8 @@ Route::get('recordapproval', [Pagecontroller::class, 'recordapproval']);
 Route::post('recordapproval', [Datacontroller::class, 'recordapprovalpost']);
 Route::get('recordapproval/{id}', [Usercontroller::class, 'recordapproval']);
 
+Route::get('recordprofile', [Pagecontroller::class, 'recordprofile']);
+
 
 //cashier
 Route::get('cashier', [Pagecontroller::class, 'cashier']);
@@ -172,6 +176,9 @@ Route::get('proofofpayment', [Pagecontroller::class, 'proofofpayment']);
 
 Route::get('/proofofpayment/{id}', [Usercontroller::class, 'proofofpayment']);
 Route::post('/proofofpayment/{id}', [Datacontroller::class, 'approvePayment']);
+
+
+Route::get('cashierprofile', [Pagecontroller::class, 'cashierprofile']);
 
 //admin
 Route::get('admin', [Pagecontroller::class, 'admin']);
@@ -228,7 +235,7 @@ Route::post('oldstudentupdatedocuments', [Datacontroller::class, 'oldstudentupda
 Route::get('oldstudentclassload', [Pagecontroller::class, 'oldstudentclassload'])->middleware('auth');
 
 Route::get('oldstudentgrades', [PageController::class, 'oldstudentgrades'])->middleware('auth');
-Route::get('/report-card/{grade_id}/{core_id}/{attendance_id}', [PDFController::class, 'downloadReportCard'])
+Route::get('/report-card/{core_id}/{grade_id}/{attendance_id}', [PDFController::class, 'downloadReportCard'])
     ->name('report.card.download');
 
 Route::get('oldstudentassessment', [Pagecontroller::class, 'oldstudentassessment']);

@@ -252,7 +252,7 @@
         <div class="profile-section">
             <img src="image/cler.jpg" alt="Profile Picture" class="profile-picture">
             <span class="profile-name">{{ auth()->user()->firstname }} {{ auth()->user()->lastname }}</span>
-            <a href="/#">View Profile</a>
+            <a href="oldstudentprofile">View Profile</a>
         </div>
 
         <h5>
@@ -296,6 +296,9 @@
             <button class="w3-bar-item w3-button w3-large" onclick="w3_close()"> &times;</button>
         </h5>
     </div>
+
+
+    
 <div id="main" onclick="w3_close()">
     <div class="header-container">
         <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open(event)">&#9776;</button>

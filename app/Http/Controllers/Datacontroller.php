@@ -46,7 +46,6 @@ class Datacontroller extends Controller
 
     public function partialaccountpost(Request $request)
     {
-
         $validateData = $request->validate([
             'firstname' => 'required',
             'lastname' => 'required',
@@ -55,12 +54,17 @@ class Datacontroller extends Controller
             'email' => 'required|email',
             'password' => 'required|min:8|confirmed',
         ]);
-
+    
+        // Check if the email already exists
+        if (register_form::where('email', $validateData['email'])->exists()) {
+            return redirect()->back()->withErrors(['email' => 'The email has already been taken.'])->withInput();
+        }
+    
         FacadesMail::to($validateData['email'])->send(new PendingStudent($validateData));
-
+    
         $validateData['status'] = 'pending';
         register_form::create($validateData);
-        return redirect('/login');
+        return redirect('/login')->with('success', 'Registration successful! Please log in.');
     }
 
 

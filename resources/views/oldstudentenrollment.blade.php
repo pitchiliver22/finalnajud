@@ -6,6 +6,14 @@
             font-family: Arial, sans-serif;
         }
 
+        .header-container {
+        display: flex; 
+        align-items: center; 
+        background-color: #0c3b6d; 
+        color: white;
+        padding: 10px; 
+    }
+
         #main {
             padding: 20px;
         }
@@ -93,10 +101,10 @@
     </style>
 
     <div id="main">
-        <div class="w3-teal ">
-            <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-            <h1 style="text-align: center; margin: 20px 0;">Student Enrollment</h1>
-        </div>
+        <div class="header-container">
+        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
+        <h1 class="text-light">Student Enrollment</h1>
+    </div>
         
         <section class="container my-5">
     

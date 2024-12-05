@@ -1,12 +1,10 @@
 @include('templates.cashierheader')
 
 <div id="main">
-    <div class="w3-teal">
-        <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <div class="w3-container">
-            <h1 class="text-center">CASHIER DASHBOARD</h1>
-        </div>
-    </div>
+    <div class="header-container">
+    <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
+    <h1 class="text-light">Cashier Dashboard</h1>
+</div>
 
     <div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="mySidebar">
         <button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Close &times;</button>
@@ -66,8 +64,16 @@
         padding: 0;
     }
 
+    .header-container {
+        display: flex; 
+        align-items: center; 
+        background-color: #0c3b6d; 
+        color: white;
+        padding: 10px; 
+    }
+
     .w3-teal {
-        background-color: #007bff;
+        background-color: #0c3b6d;
     }
 
     .card {

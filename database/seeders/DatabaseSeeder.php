@@ -9,6 +9,7 @@ use App\Models\corevalues;
 use App\Models\grade;
 use App\Models\payment_form;
 use App\Models\previous_primary;
+use App\Models\previous_school;
 use App\Models\previous_secondary;
 use App\Models\register_form;
 use App\Models\required_docs;
@@ -32,8 +33,8 @@ class DatabaseSeeder extends Seeder
         corevalues::factory()->create();
         grade::factory()->create();
         payment_form::factory()->create();
-        previous_primary::factory()->create();
-        previous_secondary::factory()->create();
+        previous_school::factory()->create();
+        previous_school::factory()->create();
         register_form::factory()->create();
         required_docs::factory()->create();
         school_year::factory()->create();

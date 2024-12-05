@@ -5,21 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #fff;
+            background-color: #f4f4f4;
+            color: #333;
         }
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
         }
         h1 {
-            font-size: 24px;
+            font-size: 28px;
             margin: 0;
         }
         h2 {
-            font-size: 20px;
+            font-size: 24px;
             margin: 5px 0;
             font-weight: normal;
         }
@@ -27,6 +32,10 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 20px;
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         .info div {
             width: 48%;
@@ -34,24 +43,28 @@
         .table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-        }
-        .table, .table th, .table td {
-            border: 1px solid #000;
+            margin-top: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         .table th, .table td {
-            padding: 8px;
+            padding: 12px;
             text-align: center;
+            border: 1px solid #ddd;
         }
         .table th {
-            background-color: #f2f2f2;
+            background-color: #007bff;
+            color: white;
         }
         .section {
-            margin-top: 20px;
+            margin-top: 30px;
         }
         .footer {
-            margin-top: 30px;
+            margin-top: 40px;
             text-align: right;
+            font-weight: bold;
         }
     </style>
     <title>Student Report Card</title>
@@ -59,8 +72,7 @@
 <body>
 
     <div class="header">
-    
-        <h2>Student Report Card</h2>
+        <h1>Student Report Card</h1>
     </div>
 
     <div class="info">
@@ -69,11 +81,11 @@
             <strong>Section:</strong> {{ $reportCardData['section'] }}<br>
             <strong>Grade Level:</strong> {{ $reportCardData['grade_level'] }}
         </div>
-      
+     
     </div>
 
     <div class="section">
-        <h3>Grades</h3>
+        <h2>Grades</h2>
         <table class="table">
             <thead>
                 <tr>
@@ -101,7 +113,7 @@
     </div>
 
     <div class="section">
-        <h3>Attendance</h3>
+        <h2>Attendance</h2>
         <table class="table">
             <thead>
                 <tr>
@@ -129,7 +141,7 @@
     </div>
 
     <div class="section">
-        <h3>Core Values</h3>
+        <h2>Core Values</h2>
         <table class="table">
             <thead>
                 <tr>
@@ -162,7 +174,9 @@
         </table>
     </div>
 
-  
+    <div class="footer">
+        <p>Generated on: {{ date('Y-m-d') }}</p>
+    </div>
 
 </body>
 </html>

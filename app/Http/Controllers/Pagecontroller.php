@@ -226,7 +226,8 @@ public function studentassessment(Request $request)
     }
     public function teacherprofile()
     {
-        return view('teacherprofile');
+        $user = Auth::user();
+        return view('teacherprofile', ['user' => $user]);
     }
 
     public function teacherclassload()
@@ -389,7 +390,8 @@ public function studentassessment(Request $request)
     }
     public function accountingprofile()
     {
-        return view('accountingprofile');
+        $user = Auth::user();
+        return view('accountingprofile', ['user' => $user]);
     }
 
     //record
@@ -403,6 +405,12 @@ public function studentassessment(Request $request)
         $students = studentdetails::all(); // You can adjust this to filter or paginate if needed
 
         return view('record', compact('students', 'pendingCount', 'approvedCount'));
+    }
+
+    public function recordprofile()
+    {
+        $user = Auth::user();
+        return view('recordprofile', ['user' => $user]);
     }
 
     public function studententries()
@@ -466,6 +474,12 @@ public function studentassessment(Request $request)
     ]);
 }
 
+public function cashierprofile()
+{
+    $user = Auth::user();
+    return view('cashierprofile', ['user' => $user]);
+}
+
 public function principalassessment()
 {
     $assessments = Assessment::all(); 
@@ -475,6 +489,12 @@ public function principalassessment()
 public function principaleditassessment()
 {
     return view('principaleditassessment');
+}
+
+public function principalprofile()
+{
+    $user = Auth::user();
+    return view('principalprofile', ['user' => $user]);
 }
 
 

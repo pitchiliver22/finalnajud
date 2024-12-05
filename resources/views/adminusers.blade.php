@@ -27,7 +27,11 @@
                 <div class="col">
                     <label for="password" class="form-label">Password<span class="required">*</span></label>
                     <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                    <br>
+                    <input type="checkbox" class="form-check-input" id="showPassword">
+                    <label class="form-check-label" for="showPassword">Show Password</label>
                 </div>
+
                 <div class="col">
                     <label for="email" class="form-label">Email<span class="required">*</span></label>
                     <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
@@ -156,4 +160,16 @@
             row.style.display = match ? '' : 'none';
         });
     });
+
+
+    const passwordInput = document.getElementById('password');
+        const showPasswordCheckbox = document.getElementById('showPassword');
+
+        showPasswordCheckbox.addEventListener('change', () => {
+            if (showPasswordCheckbox.checked) {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        });
 </script>

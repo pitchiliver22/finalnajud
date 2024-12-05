@@ -41,8 +41,7 @@
                                 <form id="registrationForm" action="/partialaccount" method="POST">
                                     @csrf
                                     <div class="card-body p-md-5 text-black">
-                                        <h3 class="mb-5 text-uppercase">Student registration form</h3>
-                                        <br>
+                                        <h3 class="mb-5 text-uppercase">Student Registration Form</h3>
 
                                         @if ($errors->any())
                                             <div class="alert alert-danger">
@@ -61,144 +60,99 @@
                                                     viewBox="0 0 16 16">
                                                     <path
                                                         d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
-                                                </svg> if possible. </p>
+                                                </svg> if possible.</p>
                                         </h5>
 
                                         <div class="row">
                                             <div class="col-md-6 mb-4">
-                                                <div data-mdb-input-init class="form-outline">
+                                                <div class="form-outline">
                                                     <input type="text" id="firstname" name="firstname"
                                                         class="form-control form-control-lg"
                                                         value="{{ old('firstname') }}" pattern="[A-Za-z\s]*"
                                                         title="Only letters and spaces are allowed"
                                                         placeholder="e.g. John, etc." required />
-                                                    <label class="form-label" for="firstname">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                            height="24" fill="#e74c3c"
-                                                            class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
-                                                            <path
-                                                                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
-                                                        </svg>
-                                                        First name
-                                                    </label>
+                                                    <label class="form-label" for="firstname">First Name <span
+                                                            class="text-danger">*</span></label>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 mb-4">
-                                                <div data-mdb-input-init class="form-outline">
+                                                <div class="form-outline">
                                                     <input type="text" id="middlename" name="middlename"
                                                         class="form-control form-control-lg"
                                                         value="{{ old('middlename') }}" pattern="[A-Za-z\s]*"
                                                         title="Only letters and spaces are allowed"
                                                         placeholder="e.g. Chacha, etc." required />
-                                                    <label class="form-label" for="middlename">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                            height="24" fill="#e74c3c"
-                                                            class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
-                                                            <path
-                                                                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
-                                                        </svg>
-                                                        Middle name
-                                                    </label>
+                                                    <label class="form-label" for="middlename">Middle Name <span
+                                                            class="text-danger">*</span></label>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="row">
                                             <div class="col-md-6 mb-4">
-                                                <div data-mdb-input-init class="form-outline">
+                                                <div class="form-outline">
                                                     <input type="text" id="lastname" name="lastname"
                                                         class="form-control form-control-lg"
                                                         value="{{ old('lastname') }}" pattern="[A-Za-z\s]*"
                                                         title="Only letters and spaces are allowed"
                                                         placeholder="e.g. Deloslos, etc." required />
-                                                    <label class="form-label" for="lastname">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                            height="24" fill="#e74c3c"
-                                                            class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
-                                                            <path
-                                                                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
-                                                        </svg>
-                                                        Last Name
-                                                    </label>
+                                                    <label class="form-label" for="lastname">Last Name <span
+                                                            class="text-danger">*</span></label>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 mb-4">
-                                                <div data-mdb-input-init class="form-outline">
+                                                <div class="form-outline">
                                                     <input type="text" id="suffix" name="suffix"
-                                                        class="form-control form-control-lg" value="{{ old('suffix') }}"
-                                                        pattern="[A-Za-z\s]*"
+                                                        class="form-control form-control-lg"
+                                                        value="{{ old('suffix') }}" pattern="[A-Za-z\s]*"
                                                         title="Only letters and spaces are allowed"
                                                         placeholder="e.g. Jr, II, etc." required />
-                                                    <label class="form-label" for="suffix">Name Suffix // NA if you
-                                                        don't have any suffix.</label>
+                                                    <label class="form-label" for="suffix">Name Suffix (NA if none) <span
+                                                            class="text-danger">*</span></label>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <br>
-                                        <h5>
-                                            <p>Please Enter your valid Email and Password</p>
-                                        </h5>
+                                        <h5 class="mt-4">Please Enter Your Valid Email and Password</h5>
 
                                         <div class="row">
                                             <div class="col-md-6 mb-4">
-                                                <div data-mdb-input-init class="form-outline">
+                                                <div class="form-outline">
                                                     <input type="email" id="email" name="email"
                                                         class="form-control form-control-lg"
                                                         value="{{ old('email') }}" required />
-                                                    <label class="form-label" for="email">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                            height="24" fill="#e74c3c"
-                                                            class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
-                                                            <path
-                                                                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
-                                                        </svg>
-                                                        Email
-                                                    </label>
+                                                    <label class="form-label" for="email">Email <span class="text-danger">*</span></label>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 mb-4">
-                                                <div data-mdb-input-init class="form-outline">
+                                                <div class="form-outline">
                                                     <input type="password" id="password" name="password"
                                                         class="form-control form-control-lg" required />
-                                                    <label class="form-label" for="password">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                            height="24" fill="#e74c3c"
-                                                            class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
-                                                            <path
-                                                                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
-                                                        </svg>
-                                                        Password
-                                                    </label>
+                                                    <label class="form-label" for="password">Password <span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="form-check mb-3">
                                                     <input type="checkbox" class="form-check-input" id="showPassword">
                                                     <label class="form-check-label" for="showPassword">Show Password</label>
-                                                </div>                        
+                                                </div>
                                             </div>
-                                            
+
                                             <div class="col-md-6 mb-4">
-                                                <div data-mdb-input-init class="form-outline">
+                                                <div class="form-outline">
                                                     <input type="password" id="password_confirmation" name="password_confirmation" class="form-control form-control-lg" required />
-                                                    <label class="form-label" for="password_confirmation">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#e74c3c" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
-                                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
-                                                        </svg>
-                                                        Confirm Password
-                                                    </label>
+                                                    <label class="form-label" for="password_confirmation">Confirm Password <span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="form-check mb-3">
                                                     <input type="checkbox" class="form-check-input" id="showPasswordConfirm">
-                                                    <label class="form-check-label" for="showPasswordConfirm">Show Password</label> <!-- Update the 'for' attribute -->
-                                                </div>                        
+                                                    <label class="form-check-label" for="showPasswordConfirm">Show Password</label>
+                                                </div>
                                             </div>
+                                        </div>
 
                                         <div class="d-flex justify-content-end pt-3">
                                             <button type="button" class="btn btn-light btn-lg"
-                                                onclick="resetForm()">Reset all</button>
+                                                onclick="resetForm()">Reset All</button>
                                             <button type="submit" name="submit"
-                                                class="btn btn-primary btn-lg ms-2">Submit
-                                                form</button>
+                                                class="btn btn-primary btn-lg ms-2">Submit Form</button>
                                         </div>
                                     </div>
                                 </form>
@@ -208,9 +162,7 @@
                 </div>
             </div>
         </div>
-        </div>
     </section>
-
 
     <script>
         function resetForm() {
@@ -236,7 +188,6 @@
             passwordInputConfirm.type = showPasswordCheckboxConfirm.checked ? 'text' : 'password';
         });
     </script>
-
 </body>
 
 </html>
