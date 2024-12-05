@@ -65,7 +65,7 @@
                                         @if ($quartersEnabled['1st_quarter'])
                                             <td>
                                                 <input type="number" class="form-control" 
-                                                       name="grades[{{ $index }}][1st_quarter]" 
+                                                       name="graddes[{{ $index }}][1st_quarter]" 
                                                        min="0" max="100" 
                                                        step="0.01" 
                                                        oninput="calculateOverall(this)" 

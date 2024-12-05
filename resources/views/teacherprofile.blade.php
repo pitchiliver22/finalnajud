@@ -59,7 +59,9 @@
                                     <p class="mb-0">{{ $user->email }}</p>
                                 </div>
                                 <div class="d-flex justify-content-end pt-1">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">Edit Profile</button>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                        Edit Profile
+                                    </button>                                 
                                 </div>
                             </div>
                         </div>
@@ -70,92 +72,106 @@
     </div>
 </section>
 
+
+<!-- Edit Profile Modal -->
 <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="editProfileForm">
-                    <div class="form-group">
-                        <label for="firstname">First Name</label>
-                        <input type="text" class="form-control" id="firstname" name="firstname" value="{{ $user->firstname }}">
+                    <div class="mb-3">
+                        <label for="firstname" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstname" name="firstname" required>
                     </div>
-                    <div class="form-group">
-                        <label for="middlename">Middle Name</label>
-                        <input type="text" class="form-control" id="middlename" name="middlename" value="{{ $user->middlename }}">
+                    <div class="mb-3">
+                        <label for="middlename" class="form-label">Middle Name</label>
+                        <input type="text" class="form-control" id="middlename" name="middlename">
                     </div>
-                    <div class="form-group">
-                        <label for="lastname">Last Name</label>
-                        <input type="text" class="form-control" id="lastname" name="lastname" value="{{ $user->lastname }}">
+                    <div class="mb-3">
+                        <label for="lastname" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastname" name="lastname" required>
                     </div>
-                    <div class="form-group">
-                        <label for="suffix">Suffix</label>
-                        <input type="text" class="form-control" id="suffix" name="suffix" value="{{ $user->suffix }}">
+                    <div class="mb-3">
+                        <label for="suffix" class="form-label">Suffix</label>
+                        <input type="text" class="form-control" id="suffix" name="suffix">
                     </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ $user->email }}" readonly>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" readonly>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="saveChanges">Save changes</button>
             </div>
         </div>
     </div>
 </div>
+</div>
+
+
 
 <script>
     function w3_open() {
         document.getElementById("mySidebar").style.display = "block";
     }
 
-    document.getElementById('saveChanges').addEventListener('click', function() {
-        const formData = {
-            firstname: document.getElementById('firstname').value,
-            middlename: document.getElementById('middlename').value,
-            lastname: document.getElementById('lastname').value,
-            suffix: document.getElementById('suffix').value,
-        };
+    const modal = new bootstrap.Modal(document.getElementById('editProfileModal'));
 
-        $.ajax({
-            url: '{{ route('update.profile') }}',
-            method: 'POST',
-            data: formData,
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            success: function(response) {
-                $('#editProfileModal').modal('hide');
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: response.success,
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    location.reload();
-                });
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON && xhr.responseJSON.error ?
-                    xhr.responseJSON.error :
-                    'There was an error saving your changes. Please try again.';
-
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: errorMessage,
-                    confirmButtonText: 'OK'
-                });
-            }
+        document.querySelector('[data-bs-toggle="modal"]').addEventListener('click', () => {
+            // Populate the modal with the existing profile data
+            document.getElementById('firstname').value = "{{ $user->firstname }}";
+            document.getElementById('middlename').value = "{{ $user->middlename }}";
+            document.getElementById('lastname').value = "{{ $user->lastname }}";
+            document.getElementById('suffix').value = "{{ $user->suffix }}";
+            document.getElementById('email').value = "{{ $user->email }}"; // Read-only
+            modal.show();
         });
-    });
+
+        document.getElementById('saveChanges').addEventListener('click', function() {
+            const formData = {
+                firstname: document.getElementById('firstname').value,
+                middlename: document.getElementById('middlename').value,
+                lastname: document.getElementById('lastname').value,
+                suffix: document.getElementById('suffix').value,
+            };
+
+            // AJAX request to save changes
+            $.ajax({
+                url: '{{ route('update.profile') }}',
+                method: 'POST',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    modal.hide();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Profile Updated',
+                        text: response.success,
+                    }).then(() => {
+                        location.reload();
+                    });
+                },
+                error: function(xhr) {
+                    const errorMessage = xhr.responseJSON && xhr.responseJSON.error ?
+                        xhr.responseJSON.error :
+                        'There was an error saving your changes. Please try again.';
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: errorMessage,
+                    });
+                }
+            });
+        });
 </script>
 
 @include('templates.teacherfooter')

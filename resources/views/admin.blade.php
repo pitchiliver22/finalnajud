@@ -7,62 +7,22 @@
     </div>
 
     <div class="row">
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow border-0">
-                <div class="card-body">
+        <div class="col-lg-6 col-md-12 mb-4">
+            <div class="card shadow border-0 h-100">
+                <div class="card-body d-flex flex-column">
                     <h5 class="card-title">User Management</h5>
                     <p class="card-text">Manage user accounts, roles, and permissions efficiently.</p>
-                    <a href="/adminusers" class="btn btn-primary">Go to Users</a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow border-0">
-                <div class="card-body">
-                    <h5 class="card-title">Class Management</h5>
-                    <p class="card-text">Create and oversee classes and subjects seamlessly.</p>
-                    <a href="/adminclasses" class="btn btn-primary">Go to Classes</a>
+                    <a href="/adminusers" class="btn btn-primary mt-auto">Go to Users</a>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow border-0">
-                <div class="card-body">
+        <div class="col-lg-6 col-md-12 mb-4">
+            <div class="card shadow border-0 h-100">
+                <div class="card-body d-flex flex-column">
                     <h5 class="card-title">Reports</h5>
                     <p class="card-text">Generate and view reports for users and classes.</p>
-                    <a href="/adminreports" class="btn btn-primary">View Reports</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow border-0">
-                <div class="card-body">
-                    <h5 class="card-title">Settings</h5>
-                    <p class="card-text">Adjust application settings and preferences.</p>
-                    <a href="/adminsettings" class="btn btn-primary">Go to Settings</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow border-0">
-                <div class="card-body">
-                    <h5 class="card-title">Notifications</h5>
-                    <p class="card-text">Stay updated with system notifications and alerts.</p>
-                    <a href="/adminnotifications" class="btn btn-primary">View Notifications</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow border-0">
-                <div class="card-body">
-                    <h5 class="card-title">Analytics</h5>
-                    <p class="card-text">Analyze performance metrics and insights.</p>
-                    <a href="/adminanalytics" class="btn btn-primary">View Analytics</a>
+                    <a href="/adminreport" class="btn btn-primary mt-auto">View Reports</a>
                 </div>
             </div>
         </div>
@@ -74,6 +34,11 @@
 <style>
     body {
         background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        max-width: 1200px;
     }
 
     .card {
@@ -86,23 +51,22 @@
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
 
-    .container {
-        max-width: 1200px;
-    }
-
     .card-title {
-        font-size: 1.25rem;
+        font-size: 1.5rem;
         font-weight: bold;
         color: #343a40;
     }
 
     .card-text {
         color: #6c757d;
+        margin-bottom: 15px;
     }
 
     .btn-primary {
         background-color: #007bff;
         border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
         transition: background-color 0.3s;
     }
 

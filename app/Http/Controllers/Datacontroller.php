@@ -1126,11 +1126,6 @@ public function updateQuarters(Request $request)
     }
     
     
-    
-    
-    
-    
-    
     public function publish($id)
     {
         $grades = grade::findOrFail($id);

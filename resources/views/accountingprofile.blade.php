@@ -59,8 +59,9 @@
                                     <p class="mb-0">{{ $user->email }}</p>
                                 </div>
                                 <div class="d-flex justify-content-end pt-1">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">Edit Profile</button>
-                                </div>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                        Edit Profile
+                                    </button>                                    </div>
                             </div>
                         </div>
                     </div>

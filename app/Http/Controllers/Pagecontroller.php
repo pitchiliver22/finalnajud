@@ -21,6 +21,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\DB;
 
 class Pagecontroller extends Controller
 {
@@ -112,13 +113,10 @@ public function oldstudentclassload()
         return redirect()->route('login')->withErrors('No registration form found.');
     }
 
-    // Use the registerForm ID to get assigned classes
     $assignedClasses = assign::where('class_id', $registerForm->id)->get();
 
-    // The student variable now refers to the register form record
     $student = $registerForm;
 
-    // Get payment proof associated with the register form
     $proof = payment_form::where('payment_id', $registerForm->id)->first();
 
     return view('oldstudentclassload', [
@@ -397,12 +395,10 @@ public function studentassessment(Request $request)
     //record
     public function record()
     {
-        // Count pending and approved accounts
         $pendingCount = register_form::where('status', 'pending')->count();
         $approvedCount = register_form::where('status', 'approved')->count();
 
-        // Fetch student information
-        $students = studentdetails::all(); // You can adjust this to filter or paginate if needed
+        $students = studentdetails::all(); 
 
         return view('record', compact('students', 'pendingCount', 'approvedCount'));
     }
@@ -574,10 +570,21 @@ public function principalprofile()
     {
         return view('adminstudent');
     }
-    public function adminreport()
+
+        public function adminreport()
     {
-        return view('adminreport');
+        $totalStudents = register_form::count();
+
+        $totalAccounting = User::where('role', 'accountant')->count();
+        $totalPrincipal = User::where('role', 'principal')->count();
+        $totalTeachers = User::where('role', 'teacher')->count();
+        $totalCashiers = User::where('role', 'cashier')->count();
+
+        $students = register_form::all(); 
+
+        return view('adminreport', compact('totalStudents', 'totalAccounting', 'totalPrincipal', 'totalTeachers', 'totalCashiers', 'students'));
     }
+
     public function adminusers()
     {
         $account = User::all();

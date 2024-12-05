@@ -13,7 +13,7 @@
 <div id="main">
     <div class="header-container">
         <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
-        <h1 class="text-light">Principal Profile</h1>
+        <h1 class="text-light">Principal Dashboard</h1>
     </div>
 
 
