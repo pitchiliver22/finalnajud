@@ -34,11 +34,11 @@
                         </thead>
                         <tbody>
                             @foreach ($classes->groupBy('section') as $section => $group)
-                                @foreach ($group as $class) <!-- Iterate over each class in the group -->
+                                @foreach ($group as $class) 
                                     <tr>
                                         <td>{{ $section }}</td>
-                                        <td>{{ $class->edpcode }}</td> <!-- Access edpcode from the individual class -->
-                                         <td>{{ $class->grade ?? 'N/A' }}</td> <!-- Access grade from the individual class -->
+                                        <td>{{ $class->edpcode }}</td> 
+                                         <td>{{ $class->grade ?? 'N/A' }}</td> 
                                         <td>
                                             <a href="{{ route('teachercorevaluesubmit', ['teacher_id' => $class->teacher_id, 'edp_code' => $class->edpcode]) }}" 
                                                class="btn btn-info btn-sm view-studententry" 
