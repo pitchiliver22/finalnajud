@@ -21,12 +21,13 @@
     <div class="container" style="width: 80%; height: auto; border: 1px solid #ccc; padding: 20px;">
         <form action="/teachercorevalue" method="POST"> 
             @csrf
-            @foreach ($students as $index => $student)
-                <input type="hidden" name="grade_level[]" value="{{ old('grade_level.' . $index, $paymentForm->level ?? '') }}">
-                <input type="hidden" name="fullname[]" value="{{ old('fullname.' . $index, "{$student->firstname} {$student->middlename} {$student->lastname}") }}">
-                <input type="hidden" name="section[]" value="{{ old('section.' . $index, $section) }}">
-                <input type="hidden" name="core_id[]" value="{{ old('core_id.' . $index, $studentClassIds[$student->id] ?? 'N/A') }}">
+            @foreach ($students as $index => $studentDetail)
+                <input type="hidden" name="grade_level[]" value="{{ old('grade_level.' . $index, $studentDetail['grade_level']) }}">
+                <input type="hidden" name="fullname[]" value="{{ old('fullname.' . $index, "{$studentDetail['student']->firstname} {$studentDetail['student']->middlename} {$studentDetail['student']->lastname}") }}">
+                <input type="hidden" name="section[]" value="{{ old('section.' . $index, $studentDetail['section']) }}">
+                <input type="hidden" name="core_id[]" value="{{ old('core_id.' . $index, $studentClassIds[$studentDetail['student']->id] ?? 'N/A') }}">
             @endforeach
+
             <div class="fee-list">
                 <h4>STUDENT CORE VALUES</h4>
                 <div class="table-responsive">
@@ -44,15 +45,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($students as $student)
+                            @foreach ($students as $studentDetail)
                                 <tr>
-                                    <td>{{ $student->firstname }} {{ $student->middlename }} {{ $student->lastname }}</td>
-                                    <td>{{ $student->section }}</td> 
-                                    <td>{{ $paymentForm->level ?? 'N/A' }}</td>
+                                    <td>{{ $studentDetail['student']->firstname }} {{ $studentDetail['student']->middlename }} {{ $studentDetail['student']->lastname }}</td>
+                                    <td>{{ $studentDetail['section'] }}</td> 
+                                    <td>{{ $studentDetail['grade_level'] ?? 'N/A' }}</td>
                                     @foreach (['respect', 'excellence', 'teamwork', 'innovation', 'sustainability'] as $coreValue)
                                         <td>
-                                            <input type="text" class="form-control" name="core_values[{{ $student->id }}][{{ $coreValue }}]" 
-                                                   value="{{ old('core_values.' . $student->id . '.' . $coreValue, '') }}" 
+                                            <input type="text" class="form-control" name="core_values[{{ $studentDetail['student']->id }}][{{ $coreValue }}]" 
+                                                   value="{{ old('core_values.' . $studentDetail['student']->id . '.' . $coreValue, '') }}" 
                                                    required {{ $errors->any() ? 'readonly' : '' }}>
                                         </td>
                                     @endforeach

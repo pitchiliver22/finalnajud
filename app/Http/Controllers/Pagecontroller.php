@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\address;
 use App\Models\assessment;
 use App\Models\assign;
+use App\Models\attendance;
 use App\Models\classes;
+use App\Models\corevalues;
 use App\Models\grade;
 use App\Models\payment_form;
 use App\Models\previous_school;
@@ -797,28 +799,37 @@ public function principaleditassessment()
 
 
     public function oldstudentgrades()
-{
-    $userId = Auth::id();
+    {
+        $userId = Auth::id();
+        $user = Auth::user();
+        $userName = trim("{$user->firstname} {$user->middlename} {$user->lastname}");
     
-    // Get the authenticated user
-    $user = Auth::user();
+        $grades = Grade::where('fullname', $userName)
+                       ->where('status', 'approved')
+                       ->get(['subject', 'edp_code', 'section', '1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter', 'overall_grade', 'grade_id']);
     
-    // Construct the full name
-    $userName = trim("{$user->firstname} {$user->middlename} {$user->lastname}");
-
-    // Retrieve grades for the authenticated student based on their fullname and status
-    $grades = Grade::where('fullname', $userName)
-                   ->where('status', 'approved')
-                   ->get(['subject', 'edp_code', 'section', '1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter', 'overall_grade']);
-
-    // Check if there are any approved grades
-    $gradesApproved = $grades->isNotEmpty();
-
-    return view('oldstudentgrades', [
-        'grades' => $grades,
-        'gradesApproved' => $gradesApproved,
-    ]);
-}
+        $gradesApproved = $grades->isNotEmpty();
+        $gradeId = $grades->first()->grade_id ?? null;
+    
+        $coreId = null;
+        if ($gradeId) {
+            $coreId = corevalues::where('section', $grades->first()->section)->value('core_id'); // Adjust based on your schema
+        }
+    
+        $attendanceId = null;
+        if ($userName) {
+            $attendanceId = Attendance::where('fullname', $userName)->value('attendance_id'); // Using fullname to fetch attendance ID
+        }
+    
+        return view('oldstudentgrades', [
+            'grades' => $grades,
+            'gradesApproved' => $gradesApproved,
+            'studentId' => $userId,
+            'gradeId' => $gradeId,
+            'coreId' => $coreId,
+            'attendanceId' => $attendanceId,
+        ]);
+    }
     public function updatedetails()
     {
         $user = Auth::user();

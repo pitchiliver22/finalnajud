@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel; // Import the Excel facade
-use App\Imports\UsersImport; // Import your UsersImport class
-use App\Models\Grade; // Ensure your Grade model is included
+use App\Imports\UsersImport; 
+use App\Models\Grade; 
+use PHPExcel_IOFactory;
 
 class ImportexcelController extends Controller
 {
@@ -31,7 +32,7 @@ class ImportexcelController extends Controller
         ]);
 
         $filePath = $request->file('file')->store('uploads');
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(storage_path('app/' . $filePath));
+        $spreadsheet = PHPExcel_IOFactory::load(storage_path('app/' . $filePath));
         $data = $spreadsheet->getActiveSheet()->toArray();
 
         // Assuming the first row contains headers

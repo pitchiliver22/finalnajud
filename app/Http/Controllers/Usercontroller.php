@@ -289,51 +289,58 @@ class Usercontroller extends Controller
     }
 
     public function teachercorevaluesubmit($teacher_id, $edp_code)
-    {
-        $assignments = assign::where('edpcode', $edp_code)
-                            ->where('teacher_id', $teacher_id)
-                            ->get();
-    
-        $paymentForm = payment_form::where('payment_id', $teacher_id)->first();
-    
-        if ($assignments->isEmpty()) {
-            return redirect()->back()->with('error', 'No assignments found for this teacher and EDP code.');
-        }
-    
-        $classIds = $assignments->pluck('class_id')->unique();
-    
-        $students = register_form::whereIn('id', $classIds)->get();
-    
-        $studentsInSection = $students->filter(function($student) use ($assignments) {
-            return $assignments->contains(function($assignment) use ($student) {
-                return $assignment->class_id == $student->id;
-            });
-        });
-    
-        $studentClassIds = $studentsInSection->keyBy('id')->map(function($student) use ($assignments) {
-            $assignment = $assignments->firstWhere('class_id', $student->id);
-            return $assignment ? $assignment->class_id : null;
-        });
-    
-        $studentsWithDetails = $studentsInSection->map(function($student) use ($assignments) {
-            $assignment = $assignments->firstWhere('class_id', $student->id);
-            $student->edpcode = $assignment ? $assignment->edpcode : null;
-            $student->subject = $assignment ? $assignment->subject : null;
-            $student->section = $assignment ? $assignment->section : null;
-            $student->grade_level = $assignment ? $assignment->grade : null;
-            return $student;
-        });
-    
-        $section = $assignments->first()->section ?? 'N/A'; // Assuming you want the section from the first assignment
-    
-        return view('teachercorevaluesubmit', [
-            'students' => $studentsWithDetails,
-            'paymentForm' => $paymentForm,
-            'studentClassIds' => $studentClassIds,
-            'edpcode' => $edp_code,
-            'section' => $section,
-        ]);
+{
+    // Fetch assignments based on the provided edp_code and teacher_id
+    $assignments = Assign::where('edpcode', $edp_code)
+                         ->where('teacher_id', $teacher_id)
+                         ->get();
+
+    $paymentForm = payment_form::where('payment_id', $teacher_id)->first();
+
+    if ($assignments->isEmpty()) {
+        return redirect()->back()->with('error', 'No assignments found for this teacher and EDP code.');
     }
+
+    $classIds = $assignments->pluck('class_id')->unique();
+
+    // Fetch students registered in those classes
+    $students = register_form::whereIn('id', $classIds)->get();
+
+    // Filter students based on assignments
+    $studentsInSection = $students->filter(function($student) use ($assignments) {
+        return $assignments->contains(function($assignment) use ($student) {
+            return $assignment->class_id == $student->id;
+        });
+    });
+
+    // Create a mapping of student IDs to class IDs
+    $studentClassIds = $studentsInSection->keyBy('id')->map(function($student) use ($assignments) {
+        $assignment = $assignments->firstWhere('class_id', $student->id);
+        return $assignment ? $assignment->class_id : null;
+    });
+
+    // Create a detailed list of students with their core values information
+    $studentsWithDetails = $studentsInSection->map(function($student) use ($assignments) {
+        $assignment = $assignments->firstWhere('class_id', $student->id);
+        return [
+            'student' => $student, // Keep it as an object
+            'edpcode' => $assignment ? $assignment->edpcode : null,
+            'subject' => $assignment ? $assignment->subject : null,
+            'section' => $assignment ? $assignment->section : null,
+            'grade_level' => $assignment ? $assignment->grade : null,
+        ];
+    });
+
+    $section = $assignments->first()->section ?? 'N/A';
+
+    return view('teachercorevaluesubmit', [
+        'students' => $studentsWithDetails,
+        'paymentForm' => $paymentForm,
+        'studentClassIds' => $studentClassIds,
+        'edpcode' => $edp_code,
+        'section' => $section,
+    ]);
+}
 
 public function teacherAttendanceSubmit($teacher_id, $edp_code)
 {

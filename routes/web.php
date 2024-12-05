@@ -228,6 +228,8 @@ Route::post('oldstudentupdatedocuments', [Datacontroller::class, 'oldstudentupda
 Route::get('oldstudentclassload', [Pagecontroller::class, 'oldstudentclassload'])->middleware('auth');
 
 Route::get('oldstudentgrades', [PageController::class, 'oldstudentgrades'])->middleware('auth');
+Route::get('/report-card/{grade_id}/{core_id}/{attendance_id}', [PDFController::class, 'downloadReportCard'])
+    ->name('report.card.download');
 
 Route::get('oldstudentassessment', [Pagecontroller::class, 'oldstudentassessment']);
 

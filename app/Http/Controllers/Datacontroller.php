@@ -236,7 +236,7 @@ public function address_contactpost(Request $request)
         'password' => bcrypt($validateData['password']), 
     ]);
 
-    FacadesMail::to($user->email)->send(new ApproveStudent($user));
+    // FacadesMail::to($user->email)->send(new ApproveStudent($user));
 
     $user->role = 'NewstudentFill';
 
@@ -363,7 +363,7 @@ public function address_contactpost(Request $request)
                 $user->role = 'NewStudent';
                 $user->save();
 
-                FacadesMail::to($user->email)->send(new PendingPayment($user->toArray(), $amount, $feeType));
+                // FacadesMail::to($user->email)->send(new PendingPayment($user->toArray(), $amount, $feeType));
             }
             
         }
@@ -689,7 +689,7 @@ public function approvePayment($id)
     $user = Auth::user();
     if ($user instanceof User) {
         $user->save();
-        FacadesMail::to($user->email)->send(new ApprovePayment($user->toArray()));
+        // FacadesMail::to($user->email)->send(new ApprovePayment($user->toArray()));
     }
 
     return redirect('/cashierstudentfee')->with('success', 'Payment approved successfully.');
@@ -840,7 +840,7 @@ public function principaleditassessmentpost(Request $request)
         'status' => 'published', 
     ]);
 
-    FacadesMail::to('accounting@example.com')->send(new EditAssessment($assessment));
+    // FacadesMail::to('accounting@example.com')->send(new EditAssessment($assessment));
 
     return redirect()->route('/principalassessment', $assessment->id) 
                      ->with('success', 'Assessment updated and email sent successfully!');
@@ -1298,7 +1298,7 @@ public function teacherAttendancePost(Request $request)
             $student->save();
 
 
-            FacadesMail::to($user->email)->send(new ApproveStudent($user));
+            // FacadesMail::to($user->email)->send(new ApproveStudent($user));
         }
 
         return redirect()->back()->with('success', 'Selected students have been approved and notified.');
@@ -1330,7 +1330,7 @@ public function teacherAttendancePost(Request $request)
             if ($user instanceof User) {
                 $user->save();
     
-                FacadesMail::to($user->email)->send(new ApprovePayment($user->toArray()));
+                // FacadesMail::to($user->email)->send(new ApprovePayment($user->toArray()));
             }
         }
     
@@ -1452,7 +1452,7 @@ public function teacherAttendancePost(Request $request)
     
         $assessment->save();
     
-        FacadesMail::to('principal@example.com')->send(new AssessmentCreated($assessment));
+        // FacadesMail::to('principal@example.com')->send(new AssessmentCreated($assessment));
 
         return redirect()->back()->with('success', 'Assessment created successfully!');
     }

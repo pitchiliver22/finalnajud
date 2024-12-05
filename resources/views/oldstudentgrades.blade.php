@@ -154,10 +154,9 @@
         </table>
 
         <!-- Button to generate report card -->
-        <form action="" method="POST">
-            @csrf
-            <button type="submit" class="btn-report">Generate Report Card</button>
-        </form>
+        <a href="{{ route('report.card.download', ['grade_id' => $gradeId, 'core_id' => $coreId, 'attendance_id' => $attendanceId]) }}">
+            Download Report Card
+        </a>
         
     @else
         <div class="alert">
