@@ -97,7 +97,7 @@
                 </div>
             </div>
             <div class="text-center">
-                <button type="submit" class="btn btn-danger btn-lg">Save Attendance</button>
+                <button type="submit" name="submit" class="btn btn-danger btn-lg">Save Attendance</button>
             </div>
         </form>
     </div>

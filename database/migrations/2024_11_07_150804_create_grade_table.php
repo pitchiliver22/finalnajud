@@ -24,7 +24,7 @@ return new class extends Migration
             $table->decimal('overall_grade', 5, 2);
             $table->string('status');
             $table->unsignedBigInteger('grade_id');
-            $table->foreign('grade_id')->references('id')->on('payment_form');
+            $table->foreign('grade_id')->references('payment_id')->on('payment_form');
             $table->timestamps();
         });
     }

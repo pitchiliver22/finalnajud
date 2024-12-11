@@ -5,6 +5,7 @@ use App\Constants\QuarterStatus;
 use App\Mail\ApprovePayment;
 use App\Mail\ApproveSectioning;
 use App\Mail\AssessmentCreated;
+use App\Mail\EvaluateGrade;
 use App\Mail\EditAssessment;
 use App\Models\address;
 use App\Models\assign;
@@ -30,6 +31,7 @@ use PhpParser\Node\NullableType;
 use App\Mail\ApproveStudent;
 use App\Mail\PendingPayment;
 use App\Mail\PendingStudent;
+use App\Mail\GradeSubmit;
 use App\Models\assessment;
 use App\Models\attendance;
 use App\Models\section;
@@ -107,16 +109,16 @@ class Datacontroller extends Controller
                 case 'OldStudent':
                     return redirect('/oldstudentdashboard')->with('success', 'Welcome, Old Student!');
                 case 'Record':
-                    sweetalert()->success('Welcome Records!');
+                   // sweetalert()->success('Welcome Records!');
                     return redirect('/record')->with('success', 'Welcome, Record!');
                 case 'Cashier':
-                    sweetalert()->success('Welcome Cashier!');
+                   // sweetalert()->success('Welcome Cashier!');
                     return redirect('/cashier')->with('success', 'Welcome, Cashier!');
                 case 'Principal':
-                    sweetalert()->success('Welcome Principal!');
+                   // sweetalert()->success('Welcome Principal!');
                     return redirect('/principal')->with('success', 'Welcome, Principal!');
                 case 'Accounting':
-                    sweetalert()->success('Welcome Accounting!');
+                   // sweetalert()->success('Welcome Accounting!');
                     return redirect('/accounting')->with('success', 'Welcome, Accounting!');
                 default:
                     return back()->with('error', 'Invalid user role.');
@@ -1073,13 +1075,13 @@ public function updateQuarters(Request $request)
 
     public function gradesubmitpost(Request $request)
     {
-        // Log::info($request->all());
+        //  Log::info($request->all());
     
         try {
             $validatedData = $request->validate([
                 'edp_code.*' => 'required',
                 'subject.*' => 'required',
-                'grade_id.*' => 'required|integer',
+                'grade_id.*' => 'required|integer|exists:payment_form,payment_id',
                 'fullname.*' => 'required|string',
                 'section.*' => 'required',
                 'grades.*.1st_quarter' => 'nullable|numeric|min:0|max:100',
@@ -1108,7 +1110,7 @@ public function updateQuarters(Request $request)
                     'status' => 'pending',
                 ];
     
-                Grade::updateOrCreate(
+                grade::updateOrCreate(
                     [
                         'edp_code' => $gradesData['edp_code'],
                         'subject' => $gradesData['subject'],
@@ -1117,6 +1119,10 @@ public function updateQuarters(Request $request)
                     $gradesData
                 );
             }
+
+            $assignments = Assign::where('teacher_id', Auth::id())->get();
+
+            // FacadesMail::to('principal@example.com')->send(new GradeSubmit($assignments));
     
             return redirect('/teacherclassload')->with('success', 'Student Grades submitted successfully.');
         } catch (\Exception $e) {
@@ -1451,7 +1457,7 @@ public function teacherAttendancePost(Request $request)
     
         $assessment->save();
     
-        // FacadesMail::to('principal@example.com')->send(new AssessmentCreated($assessment));
+        FacadesMail::to('principal@example.com')->send(new AssessmentCreated($assessment));
 
         return redirect()->back()->with('success', 'Assessment created successfully!');
     }
@@ -1839,21 +1845,30 @@ public function teacherAttendancePost(Request $request)
     {
         $request->validate([
             'grade_id' => 'required|array',
-            'grade_id.*' => 'exists:grade,grade_id', // Ensure the correct table name is used
-            'subject' => 'required|string', // Validate subject input
+            'grade_id.*' => 'exists:grade,grade_id', 
+            'subject' => 'required|string',
         ]);
     
         $gradeIds = $request->input('grade_id');
         $subject = $request->input('subject');
     
-        // Update grades based on both subject and grade_id
-        $updatedRows = Grade::whereIn('grade_id', $gradeIds)
+        $updatedRows = grade::whereIn('grade_id', $gradeIds)
             ->where('subject', $subject)
             ->where('status', 'pending')
             ->update(['status' => 'approved']);
     
         Log::info('Number of rows updated:', [$updatedRows]);
     
-        return redirect('/submittedgrades')->with('success', 'Grades have been published successfully.');
+        $assignments = assign::whereIn('class_id', $gradeIds)->get();
+    
+        foreach ($assignments as $assignment) {
+            $teacher = user::find($assignment->teacher_id); 
+    
+            if ($teacher) {
+                // FacadesMail::to($teacher->email)->send(new EvaluateGrade($teacher));
+            }
+        }
+    
+        return redirect('/submittedgrades')->with('success', 'Grades have been published successfully and notifications sent to the teachers.');
     }
 }

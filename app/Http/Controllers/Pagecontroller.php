@@ -37,12 +37,12 @@ class Pagecontroller extends Controller
     }
     public function partialaccount()
     {
-        sweetalert()->warning('This is your partial account so please fill up all the details asked.');
+        //sweetalert()->warning('This is your partial account so please fill up all the details asked.');
         return view('partialaccount');
     }
     public function register_consent()
     {
-        sweetalert()->info('This is optional only but we need the consent of your parents first.');
+       // sweetalert()->info('This is optional only but we need the consent of your parents first.');
         return view('register_consent');
     }
 

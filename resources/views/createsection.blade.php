@@ -8,6 +8,10 @@
         </div>
     </div>
     <br><br>
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
 
     <div class="container">
         <style>
@@ -149,7 +153,6 @@
             </ul>
         </div>
         <script>
-            // Set a timeout to hide the error alert after 2 seconds
             setTimeout(() => {
                 const alert = document.getElementById('error-alert');
                 if (alert) {
@@ -255,20 +258,38 @@
         const sectionSelect = document.getElementById('section');
         if (sectionSelect.value === 'add') {
             const grade = document.getElementById('grade').value;
-            const newSection = prompt("Enter new section name:");
 
-            if (newSection && grade) {
-                if (!sectionsByGrade[grade].includes(newSection)) {
-                    sectionsByGrade[grade].push(newSection);
-                    updateSections();
-                    sectionSelect.value = newSection; // Select the newly added section
-                    alert("Section added successfully!");
-                } else {
-                    alert("Section already exists for this grade.");
+            // Use SweetAlert2 for a custom input dialog
+            Swal.fire({
+                title: 'Enter New Section Name',
+                input: 'text',
+                inputPlaceholder: 'New Section Name',
+                showCancelButton: true,
+                confirmButtonText: 'Add Section',
+                cancelButtonText: 'Cancel',
+                preConfirm: (newSection) => {
+                    return new Promise((resolve) => {
+                        if (!newSection) {
+                            Swal.showValidationMessage('Please enter a section name');
+                        } else {
+                            resolve();
+                        }
+                    });
                 }
-            } else {
-                alert("Please select a grade first.");
-            }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const newSection = result.value;
+
+                    if (!sectionsByGrade[grade].includes(newSection)) {
+                        sectionsByGrade[grade].push(newSection);
+                        updateSections();
+                        sectionSelect.value = newSection; // Select the newly added section
+                        Swal.fire('Success!', 'Section added successfully!', 'success');
+                    } else {
+                        Swal.fire('Error!', 'Section already exists for this grade.', 'error');
+                    }
+                }
+            });
         }
     }
 </script>
