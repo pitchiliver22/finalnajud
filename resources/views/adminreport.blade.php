@@ -65,7 +65,7 @@
                 <th>Email</th>
                 <th>Enrollment Date</th>
             </tr>
-        </thead>d
+        </thead>
         <tbody>
             @foreach($students as $student)
                 <tr>

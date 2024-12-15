@@ -53,6 +53,9 @@
                     <button type="submit" name="submit" class="btn btn-primary">Create Account</button>
                 </div>
             </div>
+
+
+            <a href="adminimportuser" class="btn btn-success">Import Users</a>
         </form>
 
         <div class="users-list mt-5">

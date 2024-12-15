@@ -187,8 +187,15 @@ Route::get('adminmanageclassload', [Pagecontroller::class, 'adminmanageclassload
 Route::get('adminusers', [Pagecontroller::class, 'adminusers']);
 Route::post('adminusers', [Datacontroller::class, 'adminuserspost']);
 
+Route::get('adminimportuser', [Pagecontroller::class, 'adminimportuser']);
+Route::post('adminimportuser', [Datacontroller::class, 'CoreUsersImport']);
+
+
 Route::get('adminnotification', [Pagecontroller::class, 'adminnotification']);
+
 Route::get('adminstudent', [Pagecontroller::class, 'adminstudent']);
+Route::post('adminstudent', [Datacontroller::class, 'UsersImportExcel']);
+
 Route::get('adminreport', [Pagecontroller::class, 'adminreport']);
 Route::get('adminprofile', [Pagecontroller::class, 'adminprofile']);
 

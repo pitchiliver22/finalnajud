@@ -35,12 +35,20 @@
         padding: 0.5rem;
         box-sizing: border-box;
     }
+
+    .header-container {
+        display: flex; 
+        align-items: center; 
+        background-color: #0c3b6d; 
+        color: white;
+        padding: 10px; 
+    }
 </style>
 
 <div id="main">
     <div class="w3-teal">
+        <div class="header-container">
         <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <div class="w3-container">
             <h1>Classload for {{ $selectedSection }} Grade: {{ $selectedGrade }}</h1>
         </div>
     </div>
@@ -101,7 +109,7 @@
                             </option>
                         @endforeach
                     </select>
-                </div>                
+                </div>            
             </div>
 
             <div class="row">

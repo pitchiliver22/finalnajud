@@ -230,23 +230,25 @@ public function studentassessment(Request $request)
 
     public function teacherclassload()
     {
-        $teachers = Teacher::all(); 
-        Log::info('Available Teachers: ', $teachers->toArray());
+        // Get the authenticated user's ID
+        $authUserId = Auth::id();
     
-       $validTeacherIds = $teachers->pluck('id')->toArray();
-    
-        $classes = classes::whereIn('teacher_id', $validTeacherIds)
+        // Fetch classes where teacher_id matches the authenticated user's ID
+        $classes = Classes::where('teacher_id', $authUserId)
             ->select('section', 'edpcode', 'subject', 'grade', 'teacher_id')
             ->get();
     
-        Log::info('Assigned Classes for Teachers: ', $classes->toArray());
+        // Log the assigned classes for the authenticated teacher
+        Log::info('Assigned Classes for Authenticated Teacher: ', $classes->toArray());
     
         if ($classes->isEmpty()) {
-            Log::warning('No classes found for valid teacher IDs.');
+            Log::warning('No classes found for the authenticated teacher ID.');
         }
     
+        // Fetch proofs where level is not null
         $proofs = payment_form::whereNotNull('level')->get(); 
     
+        // Return the view with the classes and proofs
         return view('teacherclassload', [
             'title' => 'Teacher Class Load',
             'classes' => $classes,
@@ -258,25 +260,27 @@ public function studentassessment(Request $request)
     
     public function teacherattendance()
     {
-        $teachers = Teacher::all(); 
-        Log::info('Available Teachers: ', $teachers->toArray());
+        // Get the authenticated user's ID
+        $authUserId = Auth::id();
     
-       $validTeacherIds = $teachers->pluck('id')->toArray();
-    
-        $classes = classes::whereIn('teacher_id', $validTeacherIds)
+        // Fetch classes where teacher_id matches the authenticated user's ID
+        $classes = Classes::where('teacher_id', $authUserId)
             ->select('section', 'edpcode', 'subject', 'grade', 'teacher_id')
             ->get();
     
-        Log::info('Assigned Classes for Teachers: ', $classes->toArray());
+        // Log the assigned classes for the authenticated teacher
+        Log::info('Assigned Classes for Authenticated Teacher: ', $classes->toArray());
     
         if ($classes->isEmpty()) {
-            Log::warning('No classes found for valid teacher IDs.');
+            Log::warning('No classes found for the authenticated teacher ID.');
         }
     
+        // Fetch proofs where level is not null
         $proofs = payment_form::whereNotNull('level')->get(); 
     
+        // Return the view with the classes and proofs
         return view('teacherattendance', [
-            'title' => 'Teacher Attendance',
+            'title' => 'Teacher Class Load',
             'classes' => $classes,
             'proofs' => $proofs 
         ]);
@@ -284,25 +288,27 @@ public function studentassessment(Request $request)
 
     public function teachercorevalue()
     {
-        $teachers = Teacher::all(); 
-        Log::info('Available Teachers: ', $teachers->toArray());
+        // Get the authenticated user's ID
+        $authUserId = Auth::id();
     
-       $validTeacherIds = $teachers->pluck('id')->toArray();
-    
-        $classes = classes::whereIn('teacher_id', $validTeacherIds)
+        // Fetch classes where teacher_id matches the authenticated user's ID
+        $classes = Classes::where('teacher_id', $authUserId)
             ->select('section', 'edpcode', 'subject', 'grade', 'teacher_id')
             ->get();
     
-        Log::info('Assigned Classes for Teachers: ', $classes->toArray());
+        // Log the assigned classes for the authenticated teacher
+        Log::info('Assigned Classes for Authenticated Teacher: ', $classes->toArray());
     
         if ($classes->isEmpty()) {
-            Log::warning('No classes found for valid teacher IDs.');
+            Log::warning('No classes found for the authenticated teacher ID.');
         }
     
+        // Fetch proofs where level is not null
         $proofs = payment_form::whereNotNull('level')->get(); 
     
+        // Return the view with the classes and proofs
         return view('teachercorevalue', [
-            'title' => 'Teacher Core Value',
+            'title' => 'Teacher Class Load',
             'classes' => $classes,
             'proofs' => $proofs 
         ]);
@@ -569,6 +575,11 @@ public function principalprofile()
     public function adminstudent()
     {
         return view('adminstudent');
+    }
+
+    public function adminimportuser()
+    {
+        return view('adminimportuser');
     }
 
         public function adminreport()

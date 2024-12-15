@@ -12,12 +12,12 @@
         <form action="/teacherattendance" method="POST">
             @csrf
             @foreach ($students as $index => $studentDetail)
-                <input type="hidden" name="grade_level[]" value="{{ old('grade_level.' . $index, $studentDetail['grade_level']) }}">
-                <input type="hidden" name="fullname[]" value="{{ old('fullname.' . $index, "{$studentDetail['student']->firstname} {$studentDetail['student']->middlename} {$studentDetail['student']->lastname}") }}">
-                <input type="hidden" name="section[]" value="{{ old('section.' . $index, $studentDetail['section']) }}">
-                <input type="hidden" name="subject[]" value="{{ old('subject.' . $index, $studentDetail['subject'] ?? '') }}">
-                <input type="hidden" name="edp_code[]" value="{{ old('edp_code.' . $index, $studentDetail['edpcode'] ?? '') }}">
-                <input type="hidden" name="attendance_id[]" value="{{ old('attendance_id.' . $index, $studentClassIds[$studentDetail['student']->id] ?? 'N/A') }}">
+                <input type="text" name="grade_level[]" value="{{ old('grade_level.' . $index, $studentDetail['grade_level']) }}">
+                <input type="text" name="fullname[]" value="{{ old('fullname.' . $index, "{$studentDetail['student']->firstname} {$studentDetail['student']->middlename} {$studentDetail['student']->lastname}") }}">
+                <input type="text" name="section[]" value="{{ old('section.' . $index, $studentDetail['section']) }}">
+                <input type="text" name="subject[]" value="{{ old('subject.' . $index, $studentDetail['subject'] ?? '') }}">
+                <input type="text" name="edp_code[]" value="{{ old('edp_code.' . $index, $studentDetail['edpcode'] ?? '') }}">
+                <input type="text" name="attendance_id[]" value="{{ old('attendance_id.' . $index, $studentClassIds[$studentDetail['student']->id] ?? 'N/A') }}">
             @endforeach
             
             <div class="fee-list">

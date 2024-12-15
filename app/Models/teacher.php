@@ -10,5 +10,6 @@ class teacher extends Model
         'name',
         'grade',
         'subject',
+        'user_id'
     ];
 }

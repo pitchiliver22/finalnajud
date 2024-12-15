@@ -2,8 +2,8 @@
 
 <div id="main">
     <div class="w3-teal">
-        <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <div class="w3-container">
+        <div class="header-container">
+        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
             <h1>Section Information</h1>
         </div>
     </div>
@@ -140,6 +140,14 @@
 
             .icon-button:hover {
                 color: #0056b3;
+            }
+
+            .header-container {
+                display: flex; 
+                align-items: center; 
+                background-color: #0c3b6d; 
+                color: white;
+                padding: 10px; 
             }
         </style>
 

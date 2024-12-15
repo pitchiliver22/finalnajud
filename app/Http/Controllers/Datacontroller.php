@@ -41,6 +41,9 @@ use App\Models\teacher;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 use Illuminate\Support\Carbon;
+use Maatwebsite\Excel\Facades\Excel;;
+use App\Imports\UsersImport;
+use App\Imports\CoreUsersImport;
 
 
 class Datacontroller extends Controller
@@ -77,17 +80,12 @@ class Datacontroller extends Controller
             'password' => 'required|min:8'
         ]);
     
-        $adminEmail = 'admin@gmail.com';
-        $adminPassword = 'adminpassword'; 
-    
-        if ($credentials['email'] === $adminEmail && $credentials['password'] === $adminPassword) {
-            return redirect('/admin')->with('success', 'Welcome, Admin!');
-        }
-    
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             
             switch ($user->role) {
+                case 'Admin':
+                    return redirect('/admin')->with('success', 'Welcome, Admin!');
                 case 'Teacher':
                     return redirect('/teacher')->with('success', 'Welcome, Teacher!');
                 case 'NewstudentFill':
@@ -704,89 +702,94 @@ public function approvePayment($id)
     //principal
 
     public function classloadpost(Request $request)
-    {
-        $validatedData = $request->validate([
-            'grade' => 'required',
-            'adviser' => 'required|exists:teachers,id', 
-            'section' => 'required',
-            'edpcode' => 'required',
-            'subject' => 'required',
-            'room' => 'required',
-            'description' => 'required',
-            'type' => 'nullable|string',
-            'unit' => 'required|integer|max:3',
-            'startTime' => 'required|date_format:H:i',
-            'endTime' => 'required|date_format:H:i',
-            'days' => 'required',
-        ]);
+{
+    $validatedData = $request->validate([
+        'grade' => 'required',
+        'adviser' => 'required|exists:teachers,id', 
+        'section' => 'required',
+        'edpcode' => 'required',
+        'subject' => 'required',
+        'room' => 'required',
+        'description' => 'required',
+        'type' => 'nullable|string',
+        'unit' => 'required|integer|max:3',
+        'startTime' => 'required|date_format:H:i',
+        'endTime' => 'required|date_format:H:i',
+        'days' => 'required',
+    ]);
+
+    // Get the teacher's ID from the validated data
+    $teacherId = $validatedData['adviser'];
+
+    // Retrieve the user_id of the teacher using the teacher's ID
+    $userId = Teacher::where('id', $teacherId)->value('user_id');
     
-        $teacherId = $validatedData['adviser'];
-    
-        $teacherName = teacher::find($teacherId)->name; 
-    
-        $existingSchedules = classes::where('grade', $validatedData['grade'])
-            ->where('section', strtoupper($validatedData['section'])) 
-            ->count();
-    
-        if ($existingSchedules >= 10) {
-            return redirect('/principalclassload')->withErrors(['error' => 'Maximum of 10 schedules reached for this section.'])->withInput()->with([
-                'sections' => section::all(),
-                'teachers' => teacher::all(),
-                'selectedGrade' => $validatedData['grade'],
-                'selectedSection' => strtoupper($validatedData['section']),
-                'selectedSubject' => strtoupper($validatedData['subject']),
-                'selectedAdviser' => $teacherId,
-            ]);
-        }
-    
-        $classData = [
-            'grade' => $validatedData['grade'],
-            'teacher_id' => $teacherId,   
-            'adviser' => $teacherName,    
-            'section' => strtoupper($validatedData['section']),
-            'edpcode' => strtoupper($validatedData['edpcode']),
-            'subject' => strtoupper($validatedData['subject']),
-            'room' => strtoupper($validatedData['room']),
-            'description' => strtoupper($validatedData['description']),
-            'type' => $validatedData['type'],
-            'unit' => strtoupper($validatedData['unit']),
-            'startTime' => $validatedData['startTime'], 
-            'endTime' => $validatedData['endTime'],    
-            'days' => strtoupper($validatedData['days']),
-            'status' => 'not assigned',
-        ];
-    
-        $timeConflict = classes::where('grade', $classData['grade'])
-            ->where('section', $classData['section'])
-            ->where('days', $classData['days'])
-            ->where(function ($query) use ($validatedData) {
-                $query->where('startTime', '<', $validatedData['endTime'])
-                      ->where('endTime', '>', $validatedData['startTime']);
-            })
-            ->exists();
-    
-        if ($timeConflict) {
-            return redirect('/principalclassload')->withErrors(['error' => 'Conflict detected: Another class is scheduled at this time on the same day.'])->withInput()->with([
-                'sections' => section::all(),
-                'teachers' => teacher::all(),
-                'selectedGrade' => $validatedData['grade'],
-                'selectedSection' => strtoupper($validatedData['section']),
-                'selectedSubject' => strtoupper($validatedData['subject']),
-                'selectedAdviser' => $teacherId,
-            ]);
-        }
-    
-        classes::create($classData);
-    
-        return redirect('/principalclassload')->with([
-            'sections' => section::all(),
-            'teachers' => teacher::all(),
+    // Retrieve the teacher's name
+    $teacherName = Teacher::where('id', $teacherId)->value('name'); 
+
+    $existingSchedules = Classes::where('grade', $validatedData['grade'])
+        ->where('section', strtoupper($validatedData['section'])) 
+        ->count();
+
+    if ($existingSchedules >= 10) {
+        return redirect('/principalclassload')->withErrors(['error' => 'Maximum of 10 schedules reached for this section.'])->withInput()->with([
+            'sections' => Section::all(),
+            'teachers' => Teacher::all(),
             'selectedGrade' => $validatedData['grade'],
             'selectedSection' => strtoupper($validatedData['section']),
             'selectedSubject' => strtoupper($validatedData['subject']),
             'selectedAdviser' => $teacherId,
-        ])->with('success', 'Classload added successfully.');
+        ]);
     }
+
+    $classData = [
+        'grade' => $validatedData['grade'],
+        'teacher_id' => $userId,   // Use the user_id from the teacher
+        'adviser' => $teacherName,    
+        'section' => strtoupper($validatedData['section']),
+        'edpcode' => strtoupper($validatedData['edpcode']),
+        'subject' => strtoupper($validatedData['subject']),
+        'room' => strtoupper($validatedData['room']),
+        'description' => strtoupper($validatedData['description']),
+        'type' => $validatedData['type'],
+        'unit' => strtoupper($validatedData['unit']),
+        'startTime' => $validatedData['startTime'], 
+        'endTime' => $validatedData['endTime'],    
+        'days' => strtoupper($validatedData['days']),
+        'status' => 'not assigned',
+    ];
+
+    $timeConflict = Classes::where('grade', $classData['grade'])
+        ->where('section', $classData['section'])
+        ->where('days', $classData['days'])
+        ->where(function ($query) use ($validatedData) {
+            $query->where('startTime', '<', $validatedData['endTime'])
+                  ->where('endTime', '>', $validatedData['startTime']);
+        })
+        ->exists();
+
+    if ($timeConflict) {
+        return redirect('/principalclassload')->withErrors(['error' => 'Conflict detected: Another class is scheduled at this time on the same day.'])->withInput()->with([
+            'sections' => Section::all(),
+            'teachers' => Teacher::all(),
+            'selectedGrade' => $validatedData['grade'],
+            'selectedSection' => strtoupper($validatedData['section']),
+            'selectedSubject' => strtoupper($validatedData['subject']),
+            'selectedAdviser' => $teacherId,
+        ]);
+    }
+
+    Classes::create($classData);
+
+    return redirect('/principalclassload')->with([
+        'sections' => Section::all(),
+        'teachers' => Teacher::all(),
+        'selectedGrade' => $validatedData['grade'],
+        'selectedSection' => strtoupper($validatedData['section']),
+        'selectedSubject' => strtoupper($validatedData['subject']),
+        'selectedAdviser' => $teacherId,
+    ])->with('success', 'Classload added successfully.');
+}
 
         public function principalclassload(Request $request)
     {
@@ -1205,7 +1208,7 @@ public function updateQuarters(Request $request)
             return redirect()->back()->with('error', 'An error occurred while saving core values: ' . $e->getMessage());
         }
     }
-public function teacherAttendancePost(Request $request)
+    public function teacherAttendancePost(Request $request)
 {
     Log::info('Incoming request data:', $request->all());
 
@@ -1276,6 +1279,7 @@ public function teacherAttendancePost(Request $request)
     }
 }
 
+
     public function studentapplicant(Request $request)
     {
 
@@ -1343,17 +1347,21 @@ public function teacherAttendancePost(Request $request)
     }
 
     public function showTeachers()
-    {
-        $teachers = User::where('role', 'teacher')->get()->map(function ($user) {
-            return [
-                'id' => $user->id,
-                'name' => trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname),
-                'assigned' => Teacher::where('name', trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname))->exists(),
-            ];
-        });
+{
+    $teachers = User::where('role', 'teacher')->get()->map(function ($user) {
+        $fullName = trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname);
+        $teacherRecord = Teacher::where('name', $fullName)->first();
 
-        return view('principalteacher', compact('teachers'));
-    }
+        return [
+            'id' => $user->id,
+            'name' => $fullName,
+            'assigned' => $teacherRecord ? true : false,
+            'user_id' => $user->id, // Include the user_id
+        ];
+    });
+
+    return view('principalteacher', compact('teachers'));
+}
     
     public function teachersubjectpost(Request $request)
 {
@@ -1364,15 +1372,14 @@ public function teacherAttendancePost(Request $request)
         'subject.*' => 'string', 
     ]);
 
-
     $user = User::find($validatedData['name']);
+    $fullName = trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname);
 
-    $teacherRecord = Teacher::where('name', trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname))
+    $teacherRecord = Teacher::where('name', $fullName)
                             ->where('grade', $validatedData['grade'])
                             ->first();
 
     if ($teacherRecord) {
-
         $existingSubjects = explode(', ', $teacherRecord->subject);
         $newSubjects = $validatedData['subject'];
         $allSubjects = array_unique(array_merge($existingSubjects, $newSubjects)); 
@@ -1381,10 +1388,11 @@ public function teacherAttendancePost(Request $request)
         $teacherRecord->updated_at = now();
         $teacherRecord->save();
     } else {
-        teacher::create([
-            'name' => trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname),
+        Teacher::create([
+            'name' => $fullName,
             'subject' => implode(', ', $validatedData['subject']), 
             'grade' => $validatedData['grade'],
+            'user_id' => $user->id,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -1394,7 +1402,7 @@ public function teacherAttendancePost(Request $request)
         return [
             'id' => $user->id,
             'name' => trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname),
-            'assigned' => teacher::where('name', trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname))->exists(),
+            'assigned' => Teacher::where('name', trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname))->exists(),
         ];
     });
 
@@ -1403,7 +1411,6 @@ public function teacherAttendancePost(Request $request)
         'success' => 'Teacher assigned successfully.',
     ]);
 }
-
     public function createsectionpost(Request $request)
     {
         $validatedData = $request->validate([
@@ -1870,5 +1877,30 @@ public function teacherAttendancePost(Request $request)
         }
     
         return redirect('/submittedgrades')->with('success', 'Grades have been published successfully and notifications sent to the teachers.');
+    }
+
+
+
+
+    public function UsersImportExcel(Request $request)
+    {
+        $request->validate([
+            'excel_file' => 'required|file|mimes:xlsx,xls',
+        ]);
+    
+        Excel::import(new UsersImport, $request->file('excel_file'));
+        
+        return redirect()->back()->with('success', 'Old Students imported successfully!');
+    }
+
+    public function CoreUsersImport(Request $request)
+    {
+        $request->validate([
+            'excel_file' => 'required|file|mimes:xlsx,xls',
+        ]);
+    
+        Excel::import(new CoreUsersImport, $request->file('excel_file'));
+        
+        return redirect()->back()->with('success', 'Users imported successfully!');
     }
 }

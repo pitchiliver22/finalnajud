@@ -542,7 +542,7 @@ public function getAssignedTeacher($subject)
 }
 
 public function getTeachersByGrade($grade) {
-    $teachers = teacher::where('grade', $grade)->get(['id', 'name', 'subject']);
+    $teachers = teacher::where('grade', $grade)->get(['user_id', 'name', 'subject']);
 
     return response()->json([
         'teachers' => $teachers
