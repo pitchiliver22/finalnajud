@@ -2,15 +2,17 @@
 <html lang="en">
 
 <head>
+<link rel="icon" type="image/png" sizes="32x32" href="image/uclogo.png" class="titlelogo">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Login</title>
+    <title>UCLM Basic Education</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
-    </script>
+  
+   </script>
     <style>
         body {
             background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(0, 0, 0, 0.3) 70%, #001f3f 100%);
@@ -21,45 +23,7 @@
             background-color: #0c76e0;
             position: relative;
         }
-
-        #snow-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .snowflake {
-            position: absolute;
-            top: -10px;
-            font-size: 1rem;
-            color: white;
-            opacity: 0.10;
-            animation: fall linear infinite;
-        }
-
-        @keyframes fall {
-            0% {
-                transform: translateY(-100px) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(110vh) rotate(360deg);
-                opacity: 0.5;
-            }
-        }
-
-        .snowflake:nth-child(odd) {
-            animation-duration: 40s;
-            font-size: 1.2rem;
-        }
-
-        .snowflake:nth-child(even) {
-            animation-duration: 30s;
-            font-size: 0.8rem;
-        }
+       
 
         .container {
             position: absolute;
@@ -92,6 +56,7 @@
 
         .logo img {
             width: 120px;
+      
         }
 
         .education-text {
@@ -183,6 +148,7 @@
             width: 150px; 
             opacity: 0;
             transition: opacity 0.5s ease;
+            
         }
 
         
@@ -198,6 +164,7 @@
             color: #1A5794; 
             opacity: 0;
             transition: opacity 0.5s ease;
+            box-shadow:0 4px 6px rgba(0, 0, 0, 0.5)
         }
 
         #musicControls {
@@ -293,6 +260,32 @@
     .beat:nth-child(even) {
         animation-duration: 7s;
     }
+    .btn.btn-secondary
+    {
+        background-color:rgba(186, 30, 24);
+        color:white;
+        border-radius:10px;
+        border:none;
+        font-size:15px;
+        box-shadow:0 4px 6px rgba(0, 0, 0, 0.2)
+    }
+    .btn.btn-secondary:hover
+    {
+        background-color:rgba(110, 15, 15);
+        color:white;
+      
+    }
+    .button-prim{
+        background-color:rgba(8, 16, 66, 1);
+        color:white;
+        border-radius:10px;
+        border:none;
+        box-shadow:0 4px 6px rgba(0, 0, 0, 0.2)
+    }
+    .button-prim:hover{
+        background-color:rgba(33, 15, 115);
+        color:white;
+    }
     </style>
 </head>
 
@@ -304,7 +297,7 @@
     </audio>
 
     <div id="musicControls">
-        <button id="playMusic" class="btn btn-primary">Play Music</button>
+        <button id="playMusic" class="btn button-prim">Play Music</button>
         <button id="pauseMusic" class="btn btn-secondary">Pause Music</button>
     </div>
 
@@ -312,7 +305,7 @@
     <div id="beat-container"></div>
 
     <img id="popoutImage" src="image/jose1.png" alt="Pop-out Image">
-    <div id="popoutText">Magpapasko na!</div>
+    <div id="popoutText">Merry Christmas!</div>
 
     <div class="container">
         <div class="row justify-content-center">
@@ -403,15 +396,31 @@
         const popoutText = document.getElementById('popoutText');
 
         function toggleImageAndText() {
-            popoutImage.style.opacity = 1; 
-            popoutText.style.opacity = 1; 
+            popoutImage.style.opacity = 1; // Show image
+            popoutText.style.opacity = 1; // Show text
             setTimeout(() => {
-                popoutImage.style.opacity = 0; 
-                popoutText.style.opacity = 0; 
-            }, 3000); 
+                popoutImage.style.opacity = 0; // Hide image
+                popoutText.style.opacity = 0; // Hide text
+            }, 3000); // Both shown for 3 seconds
+            
+            if (!toggleInterval) {
+                toggleInterval = setInterval(() => {
+                    popoutImage.style.opacity = 1;
+                    popoutText.style.opacity = 1;
+                    setTimeout(() => {
+                        popoutImage.style.opacity = 0; 
+                        popoutText.style.opacity = 0; 
+                    }, 3000);
+                }, 6000); // Repeat every 6 seconds
+            }
         }
 
-        setInterval(toggleImageAndText, 6000); 
+        function stopImageAndText() {
+            clearInterval(toggleInterval); // Stop the interval
+            toggleInterval = null; // Reset the interval variable
+            popoutImage.style.opacity = 0; // Hide image
+            popoutText.style.opacity = 0; // Hide text
+        }
 
 
 
