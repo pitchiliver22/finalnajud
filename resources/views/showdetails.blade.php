@@ -1,21 +1,176 @@
 @include('templates.recordheader')
 
-<div id="main">
-    <div class="w3-teal">
-        <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <div class="w3-container text-center">
-            <h1 class="text-white">Student Information</h1>
-        </div>
-    </div>
-    <br>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: white;
+        margin: 0;
+        padding: 0;
+    }
 
+    .header-container {
+        display: flex; 
+        align-items: center; 
+        background-color: rgba(8, 16, 66, 1); 
+        color: white;
+        padding: 10px; 
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);  
+    }
+
+    .w3-teal {
+        background-color: #0c3b6d; 
+    }
+
+    h1 {
+        margin: 0; 
+        font-size: 14px;
+        text-transform:uppercase;
+  
+        
+    }
+
+   
+
+    .container {
+        margin: 100px; /* Add margin to container */
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center contents */
+    }
+
+    .card {
+        border-radius: 8px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        width: 100%; /* Full width for smaller screens */
+        max-width: 600px; /* Limit max width */
+        margin: 10px 0; /* Add margin for spacing */
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        background-color: #0c3b6d; /* Match card header color */
+        color: white;
+    }
+
+    .list-group-item {
+        transition: background-color 0.3s;
+    }
+
+    .list-group-item:hover {
+        background-color: #e9ecef; /* Light hover effect */
+    }
+
+
+    .text-center {
+        text-align: center;
+    }
+    .accountsummary{
+        background-color: rgba(8, 16, 66, 1); 
+        color:white;
+        padding:10px;
+        text-align:center;
+    }
+    .studinfo{
+        background-color: rgba(8, 16, 66, 1); 
+        color:white;
+        padding:10px;
+        margin-top:-5%;
+    }
+    .personaldet{
+        background-color:rgba(8, 16, 66, 1);
+        color:white;
+        padding:10px;
+        width:60%;
+        margin-top:-0.3%;
+        border-radius:8px;
+        margin-left:-5%;
+        font-size:17px;
+        font-family:'Arial',sans-serif;
+       
+    }
+    .contactdet{
+        background-color:rgba(8, 16, 66, 1);
+        color:white;
+        padding:10px;
+        width:60%;
+        margin-top:-0.3%;
+        border-radius:8px;
+        margin-left:-5%;
+        font-size:17px;
+        font-family:'Arial',sans-serif;
+    }
+    .prevschool{
+        background-color:rgba(8, 16, 66, 1);
+        color:white;
+        padding:10px;
+        width:50%;
+        margin-top:-0.3%;
+        border-radius:8px;
+        margin-left:-5%;
+        font-size:17px;
+        font-family:'Arial',sans-serif;
+    }
+    .address{
+        background-color:rgba(8, 16, 66, 1);
+        color:white;
+        padding:10px;
+        width:50%;
+        margin-top:-0.3%;
+        border-radius:8px;
+        margin-left:-7%;
+        font-size:17px;
+        font-family:'Arial',sans-serif;
+    }
+    .req{
+        background-color:rgba(8, 16, 66, 1);
+        color:white;
+        padding:10px;
+        width:50%;
+        margin-top:-0.3%;
+        border-radius:8px;
+        margin-left:-7%;
+        font-size:17px;
+        font-family:'Arial',sans-serif;
+    }
+    .personnn{
+        margin-left:-70%
+    }
+    .back{
+        background-color:rgba(26, 161, 21);
+        color:white;
+        margin-left:80%;
+        text-decoration:none;
+        padding:10px;
+        border-radius:10px;
+    }
+    .back:hover{
+        background-color:#2ebf28;
+        color:white;
+    }
+ 
+</style>
+
+    <div class="header-container">
+        <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open()">&#9776;</button>
+        <h1>Student Information</h1>
+    </div>
+
+    <div id="main" onclick="w3_close()">
+
+    <div class="text-center mt-4">
+            <a href="/studententries" class="back">Back to Student List</a>
+        </div>
     <div class="container mt-4 mb-5">
-        <div class="row">
+        <div class="personnn">
             <!-- Student Information Card -->
             <div class="col-md-12 mb-4">
-                <div class="card student-info-card">
-                    <div class="card-body">
-                        <h5 class="card-subtitle mb-2 text-muted">Personal Details</h5>
+                <div class="card student-info-card" style="width:80%;">
+                    <div class="card-body" >
+                        <h5 class="personaldet">Personal Details</h5>
                         <p><strong>Name:</strong> {{ $student->firstname }} {{ $student->middlename }}
                             {{ $student->lastname }} {{ $student->suffix }}</p>
                         <p><strong>Nationality:</strong> {{ $student->nationality }}</p>
@@ -25,7 +180,7 @@
                         <p><strong>Birthplace:</strong> {{ $student->birthplace }}</p>
                         <p><strong>Religion:</strong> {{ $student->religion }}</p>
                         <br>
-                        <h5 class="card-subtitle mb-2 text-muted">Contact Information</h5>
+                        <h5 class="contactdet">Contact Information</h5>
                         <p><strong>Mother's Name:</strong> {{ $student->mother_name }}</p>
                         <p><strong>Mother's Occupation:</strong> {{ $student->mother_occupation }}</p>
                         <p><strong>Mother's Contact:</strong> {{ $student->mother_contact }}</p>
@@ -40,10 +195,10 @@
             </div>
 
             <!-- Previous School Card -->
-            <div class="col-md-6 mb-4">
-                <div class="card school-info-card">
+             
+                <div class="card school-info-card" style="margin-top:-151%; margin-left:90%;">
                     <div class="card-body">
-                        <h2 class="card-title">Previous School</h2>
+                        <h5 class="prevschool">Previous School</h5>
                         @if ($previous)
                             <p><strong>Secondary School Name:</strong> {{ $previous->second_school_name }}</p>
                             <p><strong>Last Year Level:</strong> {{ $previous->second_last_year_level }}</p>
@@ -64,10 +219,10 @@
             </div>
 
             <!-- Address Card -->
-            <div class="col-md-6 mb-4">
-                <div class="card address-card">
+          
+                <div class="card school-info-card" style="width:46%; padding:10px; margin-left:12%;">
                     <div class="card-body">
-                        <h2 class="card-title">Address</h2>
+                        <h5 class="address">Address</h5>
                         @if ($address)
                             <p><strong>Street Address:</strong> {{ $address->streetaddress }}</p>
                             <p><strong>Barangay:</strong> {{ $address->barangay }}</p>
@@ -78,14 +233,14 @@
                             <p>No address information available.</p>
                         @endif
                     </div>
-                </div>
+         
             </div>
 
             <!-- Required Documents Card -->
-            <div class="col-md-12 mb-4">
-                <div class="card documents-card">
+           
+                <div class="card documents-card" style="padding:10px; margin-left:-62%;">
                     <div class="card-body">
-                        <h2 class="card-title">Required Documents</h2>
+                        <h2 class="req">Required Documents</h2>
                         @if ($require && count($require) > 0)
                             <div class="row">
                                 @foreach ($require as $doc)
@@ -109,9 +264,7 @@
             </div>
         </div>
 
-        <div class="text-center mt-4">
-            <a href="/studententries" class="btn btn-primary">Back to Student List</a>
-        </div>
+     
     </div>
 </div>
 

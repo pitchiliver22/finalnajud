@@ -1,12 +1,55 @@
 @include('templates.principalheader')
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: white; /* Consistent background */
+        margin: 0;
+        padding: 0;
+    }
+    #main{
+        padding:10px;
+    }
+    .header-container {
+    display: flex;
+    align-items: center;
+    background-color: rgba(8, 16, 66, 1);
+    color: white;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
 
-<div id="main">
-    <div class="w3-teal">
-        <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <div class="w3-container">
-            <h1>Sectioning</h1>
-        </div>
+    .w3-teal {
+        background-color: #0c3b6d; /* Match header color */
+    }
+
+    h1 {
+        margin: 0; 
+        font-size: 15px;
+        text-transform:uppercase;
+    }
+    .container{
+        padding:50px;
+        
+    }
+    .Refresh{
+        background-color:#1c156e;
+        color:white;
+        padding:6px;
+        border-width:0;
+        text-transform:uppercase;
+        font-size:14.5px;
+    }   
+    .Refresh:hover{
+        background-color:#31289e;
+    }
+
+</style>
+
+<div class="header-container">
+        <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open(event)">&#9776;</button>
+        <h1>Sectioning</h1>
     </div>
+    <div id="main" onclick="w3_close()">
 
     <div class="container" style="width: 80%; height: auto; border: 1px solid #ccc; padding: 20px;">
         <form action="/sectioning" method="GET">
@@ -17,7 +60,7 @@
                         <div class="input-group mr-3">
                             <input type="text" class="form-control" placeholder="Search..." aria-label="Search" name="search">
                             <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="submit">Refresh Search</button>
+                                <button class="Refresh" type="submit">Refresh Search</button>
                             </div>
                         </div>
                     </div>

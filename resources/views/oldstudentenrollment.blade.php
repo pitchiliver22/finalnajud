@@ -1,110 +1,122 @@
-    @include('templates.oldstudentheader')
+@include('templates.oldstudentheader')
 
-    <style>
-        body {
-            background-color: #f7f9fc;
-            font-family: Arial, sans-serif;
-        }
-
-        .header-container {
-        display: flex; 
-        align-items: center; 
-        background-color: #0c3b6d; 
-        color: white;
-        padding: 10px; 
+<style>
+    body {
+        background-color: #f7f9fc;
+        font-family: Arial, sans-serif;
     }
 
-        #main {
-            padding: 20px;
-        }
 
-        .w3-teal {
-            background-color: #007bff;
-        }
 
-        h1 {
-            font-size: 2.5rem;
-            margin: 0;
-            color: white;
-        }
+    #main {
+        padding: 0px;
+    }
 
+
+ 
+
+    h2 {
+        margin-bottom: 20px;
+        font-size: 1.75rem;
+        color: #343a40;
+    }
+
+    .list-group {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    }
+
+    .list-group-item {
+        padding: 1.5rem;
+        background-color: #ffffff;
+        border: none;
+        border-bottom: 1px solid #e9ecef;
+        transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    }
+
+    .list-group-item:last-child {
+        border-bottom: none; 
+    }
+
+    .list-group-item:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        background-color: #f8f9fa;
+    }
+
+    .fw-bold {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: #343a40;
+    }
+
+    .list-group-item p {
+        font-size: 0.95rem;
+        color: #6c757d;
+    }
+
+    .badge {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .btn-secondary {
+        font-size: 0.9rem;
+        padding: 0.4rem 1rem;
+    }
+
+    /* Button styling */
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 576px) {
         h2 {
-            margin-bottom: 20px;
-            font-size: 1.75rem;
-            color: #343a40;
-        }
-
-        .list-group {
-            border-radius: 0.5rem;
-            overflow: hidden;
-            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+            font-size: 1.5rem;
         }
 
         .list-group-item {
-            padding: 1.5rem;
-            background-color: #ffffff;
-            border: none;
-            border-bottom: 1px solid #e9ecef;
-            transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
-        }
-
-        .list-group-item:last-child {
-            border-bottom: none; 
-        }
-
-        .list-group-item:hover {
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            background-color: #f8f9fa;
+            padding: 1rem;
         }
 
         .fw-bold {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            color: #343a40;
+            font-size: 1rem;
         }
+    }
+    .header-container {
+        display: flex; 
+        align-items: center; 
+        background-color: rgba(8, 16, 66, 1); 
+        color: white;
+        padding: 10px; 
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); 
+    
+    
+    }
+    h1{
+        text-align: center; 
+        margin: 20px 0; 
+        font-size:17px;
+      
+    }
+    h2{
+        text-align: left; 
+        padding:15px;
+        margin: 0px 0; 
+        font-size:20px;
+        color:white;
+        background: rgba(8, 16, 66, 1);
+    }
+</style>
 
-        .list-group-item p {
-            font-size: 0.95rem;
-            color: #6c757d;
-        }
 
-        .badge {
-            font-size: 0.9rem;
-            padding: 0.5rem 1rem;
-        }
-
-        .btn-secondary {
-            font-size: 0.9rem;
-            padding: 0.4rem 1rem;
-        }
-
-        /* Button styling */
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 576px) {
-            h2 {
-                font-size: 1.5rem;
-            }
-
-            .list-group-item {
-                padding: 1rem;
-            }
-
-            .fw-bold {
-                font-size: 1rem;
-            }
-        }
-    </style>
-
-    <div id="main">
-        <div class="header-container">
-        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
-        <h1 class="text-light">Student Enrollment</h1>
+<div class="header-container ">
+        <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open()">&#9776;</button>
+        <h1>Student Enrollment</h1>
     </div>
+    <div id="main" onclick="w3_close()">
         
         <section class="container my-5">
     

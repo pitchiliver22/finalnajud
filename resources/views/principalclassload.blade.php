@@ -1,6 +1,29 @@
 @include('templates.principalheader')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <style>
+   
+
+
+    .header-container {
+    display: flex;
+    align-items: center;
+    background-color: rgba(8, 16, 66, 1);
+    color: white;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+    h1 {
+        margin: 0; 
+        font-size: 17px;
+        text-transform:uppercase;
+    }
+    .header-container h1{
+        margin: 0; 
+        font-size: 15px;
+        text-transform:uppercase;
+    }
+
     .center {
         text-align: center;
         margin-top: 1rem;
@@ -35,23 +58,39 @@
         padding: 0.5rem;
         box-sizing: border-box;
     }
-
-    .header-container {
-        display: flex; 
-        align-items: center; 
-        background-color: #0c3b6d; 
-        color: white;
-        padding: 10px; 
+    .container{
+        padding:20px;
+    }
+    .container h2{
+        font-size:22px;
+        margin-bottom:3%;
+    }
+    .container h1{
+        margin-bottom:2%;
+ 
+        color:black;
+    
+    }
+    .savee{
+        background-color:#148718;
+        padding:10px;
+        color:white;
+        border-width:0;
+        border-radius:10px;
+        margin-left:86%;
+        
+    }
+    .savee:hover{
+        background-color:#24ab28;
     }
 </style>
 
-<div id="main">
-    <div class="w3-teal">
-        <div class="header-container">
-        <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
+<div class="header-container">
+        <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open(event)">&#9776;</button>
             <h1>Classload for {{ $selectedSection }} Grade: {{ $selectedGrade }}</h1>
         </div>
-    </div>
+        <div id="main" onclick="w3_close()">
+ 
 
     <div class="container">
         <h1>Classload</h1>
@@ -158,7 +197,7 @@
             <br>
 
             <div class="center">
-                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="submit" class="savee">Save Classload</button>
             </div>
         </form>
     </div>
@@ -168,7 +207,7 @@
     <br>
 
     <div class="container">
-        <h2>Class List</h2>
+        <h1>Class List</h1>
         <input type="text" id="searchInput" class="form-control" placeholder="Search..." onkeyup="filterTable()">
         <br>
 

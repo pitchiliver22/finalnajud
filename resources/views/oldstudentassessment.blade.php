@@ -1,9 +1,9 @@
 @include('templates.oldstudentheader')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
 <style>
     body {
         background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
     }
 
     .form-container {
@@ -16,9 +16,38 @@
     }
 
     .w3-container h1 {
-        margin-bottom: 1.5rem;
-        text-align: center;
-        margin-left:-80%;
+    color: black; /* Change to black */
+    text-align: center; /* Center align */
+}
+    .header-container {
+        display: flex; 
+        align-items: center; 
+        background-color: rgba(8, 16, 66, 1); 
+        color:white;
+        padding: 10px; 
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); 
+}
+.form-container {
+        background: white;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        max-width: 100%; /* Set a max width for the form */
+        margin: 10px auto; /* Center the form with margin */
+    }
+    .text-center{
+        background-color:rgba(8, 16, 66, 1);
+        padding:10px;
+        color:white;
+        font-size: 24px;
+      
+      
+    }
+
+    .header-container h1{
+        margin: 0; 
+        font-size: 15px;
+        text-transform:uppercase;
     }
 
     .form-group {
@@ -92,15 +121,17 @@
             font-size: 18px; /* Adjust heading size */
         }
     }
+    
 </style>
 
-<div id="main">
-    <div class="w3-teal">
-        <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <div class="w3-container">
-            <h1>ASSESSMENTS</h1>
-        </div>
+<body>
+    
+<div class="header-container">
+        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open(event)">&#9776;</button>
+            <h1>Assessment</h1>
+       
     </div>
+    <div id="main" onclick="w3_close()">
 
     <div class="container d-flex justify-content-center align-items-start" style="min-height: 80vh;">
         <div class="form-container">

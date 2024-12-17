@@ -1,27 +1,51 @@
 @include('templates.principalheader')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <style>
-    .center {
-        text-align: center;
-        margin-top: 1rem;
+ body {
+        font-family: Arial, sans-serif;
+        background-color: white;
+        margin: 0;
+        padding: 0;
     }
 
-    #toast-container {
-        z-index: 9999;
+    .header-container {
+        display: flex; 
+        align-items: center; 
+        background-color: rgba(8, 16, 66, 1); 
+        color: white;
+        padding: 10px; 
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);  
     }
-
-    .uppercase {
-        text-transform: uppercase;
+    
+    .header-container h1 {
+        margin: 0; 
+        font-size: 15px;
+        text-transform:uppercase;
     }
-</style>
+    h1{
+        margin-top:2%;
+        font-size:20px;
+    }
+    .savech{
+        background-color:rgba(8, 16, 66, 1); 
+        color:white;
+        padding:5px;
+        margin-top:2%;
+        margin-bottom:2%;
+        border-radius:5px;
+    }
+    .savech:hover{
+        background-color:#142882;
+    }
+        </style>
 
-<div id="main">
-    <div class="w3-teal">
-        <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <div class="w3-container">
-            <h1>UPDATE CLASSLOAD</h1>
-        </div>
+<div class="header-container">
+        <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open()">&#9776;</button>
+        <h1>Update Class load</h1>
     </div>
+
+    <div id="main" onclick="w3_close()">
+
 
     <div class="container">
         <h1>Update Management</h1>
@@ -132,7 +156,7 @@
 
                 <div class="center">
                     <button type="submit"
-                        class="btn btn-primary">{{ isset($classes) ? 'Save Changes' : 'Add Class' }}</button>
+                        class="savech">{{ isset($classes) ? 'Save Changes' : 'Add Class' }}</button>
                 </div>
         </form>
 

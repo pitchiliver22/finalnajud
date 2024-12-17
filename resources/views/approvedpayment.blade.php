@@ -1,12 +1,92 @@
     @include('templates.cashierheader')
 
-<div id="main">
-    <div class="w3-teal">
-        <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <div class="w3-container">
-            <h1>APPROVED PAYMENTS</h1>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+    }
+
+    .header-container {
+        display: flex; 
+        align-items: center; 
+        background-color: rgba(8, 16, 66, 1); 
+        color:white;
+        padding: 10px; 
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); 
+            }
+
+    #mySidebar {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        height: 100%;
+        width: 250px;
+        top: 0;
+        left: 0;
+        background-color: #0c3b6d;
+        color: white;
+        padding-top: 20px;
+        padding-left: 15px;
+        transition: 0.3s;
+        overflow-y: auto;
+    }
+
+    #main {
+        transition: margin-left .3s;
+        padding:10px;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f9f9f9;
+    }
+
+    .btn-info {
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+    }
+
+    .btn-info:hover {
+        background-color: #138496;
+        border-color: #117a8b;
+    }
+    h1{
+        margin-left:-1px;
+        margin-top:12px;
+        font-size: 14px;
+        text-transform:uppercase;
+    }
+    .viewpayment{
+        background-color:rgba(79, 194, 25);
+        color:white;
+        padding:7px;
+        text-decoration:none;
+        border-width:0;
+        border-radius:7px;
+    }
+    .viewpayment:hover{
+        background-color:rgba(63, 145, 25);
+        color:white;
+    }
+    .refresh{
+        background-color:rgba(35, 17, 112);
+        color:white;
+        padding:5px;
+    }
+    .refresh:hover{
+        background-color:rgba(57, 33, 163);
+    }
+</style>
+
+
+<div class="header-container">
+        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
+        <div class="w3-container" >
+            <h1>Approved Payments</h1>
         </div>
     </div>
+    <div id="main" onclick="w3_close()">
 
     <div class="container" style="width: 80%; height: auto; border: 1px solid #ccc; padding: 20px;">
         <form action="/approvedpayment" method="GET">
@@ -18,7 +98,7 @@
                             <input type="text" class="form-control" placeholder="Search..." aria-label="Search"
                                 name="search" id="searchInput" onkeyup="filterTable()">
                             <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="submit">Refresh Search</button>
+                                <button class="refresh" type="submit">Refresh Search</button>
                             </div>
                         </div>
                     </div>
@@ -53,13 +133,8 @@
                                     </td>
                                     <td>
                                         <a href="/proofofpayment/{{ $payments->first()->id }}"
-                                           class="btn btn-info btn-sm view-studententry" title="View">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                 height="16" fill="currentColor" class="bi bi-eye"
-                                                 viewBox="0 0 16 16">
-                                                <path
-                                                    d="M7.998 2c-2.757 0-5.287 1.417-6.758 3.75a.748.748 0 0 0 0 .5c1.471 2.333 4.001 3.75 6.758 3.75s5.287-1.417 6.758-3.75a.748.748 0 0 0 0-.5c-1.471-2.333-4.001-3.75-6.758-3.75zm0 1.5a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5zm0 2a1.75 1.75 0 1 0 0 3.5 1.75 1.75 0 0 0 0-3.5z" />
-                                            </svg>
+                                           class="viewpayment" title="View Payment">
+                                            View
                                         </a>
                                     </td>
                                 </tr>

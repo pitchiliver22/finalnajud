@@ -1,40 +1,34 @@
 @include('templates.principalheader')
 
-<div id="main">
-    <div class="w3-teal">
-        <div class="header-container">
-        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
-            <h1>Section Information</h1>
-        </div>
-    </div>
-    <br><br>
-    <head>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    </head>
-
-    <div class="container">
-        <style>
+<style>
             body {
-                font-family: 'Arial', sans-serif;
-                background-color: #f0f4f8;
+                font-family: Arial, sans-serif;
+                background-color: #f8f9fa; /* Light background */
                 margin: 0;
-                padding: 20px;
+                padding: 0;
             }
-
-            .container {
-                max-width: 1200px;
-                margin: auto;
-                padding: 20px;
-                background: white;
-                border-radius: 10px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            .header-container {
                 display: flex;
-                flex-wrap: wrap;
-                gap: 20px;
-            }
+                align-items: center;
+                background-color: rgba(8, 16, 66, 1);
+                color: white;
+                padding: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+                }
 
-            h1, h2 {
+       
+            .w3-container h1{
+                margin-left:-60px;
+                margin-top:5px;
+             
+            }
+            .header-container h1 {
+                margin-top: 1.3%; 
+                font-size: 15px;
+                margin-left:-3%;
+                text-transform:uppercase;
+             }
+            h2 {
                 text-align: center;
                 color: #2c3e50;
                 margin-bottom: 20px;
@@ -64,12 +58,14 @@
                 margin: 5px 0; /* Space between error messages */
             }
 
-            .form-section, .table-section {
+            .form-section,
+            .table-section {
+                margin-top:1.5%;
                 flex: 1;
-                min-width: 300px;
+                min-width: 100px;
                 background: #f9f9f9;
                 padding: 20px;
-                border-radius: 8px;
+                border-radius: 50px;
                 box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             }
 
@@ -88,9 +84,9 @@
             }
 
             button {
-                width: 100%;
-                padding: 10px;
-                background-color: #007bff;
+                width: 50%;
+                padding: 5px;
+                background-color: rgba(8, 16, 66, 1);
                 color: white;
                 border: none;
                 border-radius: 4px;
@@ -117,7 +113,7 @@
             }
 
             th {
-                background-color: #007bff;
+                background-color: rgba(8, 16, 66, 1);
                 color: white;
             }
 
@@ -129,7 +125,7 @@
                 background: none;
                 border: none;
                 cursor: pointer;
-                color: #007bff;
+                color: rgba(8, 16, 66, 1);
                 font-size: 24px; /* Increased size for visibility */
                 width: 36px; /* Set width */
                 height: 36px; /* Set height */
@@ -141,16 +137,23 @@
             .icon-button:hover {
                 color: #0056b3;
             }
-
-            .header-container {
-                display: flex; 
-                align-items: center; 
-                background-color: #0c3b6d; 
-                color: white;
-                padding: 10px; 
+            .burgericon{
+                width:8%;
             }
+            .btnsubmit{
+                width:35%;
+                padding:4px;
+            }
+     
         </style>
-
+    <div class="header-container">
+    <div class="burgericon">
+        <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open(event)">&#9776;</button>
+        </div>
+        <h1 style="text-align: center;">Section Information</h1>
+        
+    </div>
+    <div id="main" onclick="w3_close()">
         @if ($errors->any())
         <div class="alert" id="error-alert">
             <span>Error(s) occurred:</span>
@@ -169,6 +172,8 @@
             }, 2000);
         </script>
         @endif
+
+    
 
         <div class="form-section">
             <h2>Create Section & Schedule</h2>
@@ -190,7 +195,9 @@
                     </select>
                 </div>
 
+                <div class="btnsubmit">
                 <button type="submit">Proceed to add schedules</button>
+        </div>            
             </form>
         </div>
 

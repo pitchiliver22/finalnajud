@@ -1,12 +1,33 @@
 @include('templates.teacherheader')
+<style>
+ body {
+        font-family: Arial, sans-serif;
+        background-color: white;
+        margin: 0;
+        padding: 0;
+    }
 
-<div id="main">
-    <div class="w3-teal">
-        <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <div class="w3-container">
+    .header-container {
+        display: flex; 
+        align-items: center; 
+        background-color: rgba(8, 16, 66, 1); 
+        color: white;
+        padding: 10px; 
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);  
+    }
+    
+    .header-container h1 {
+        margin: 0; 
+        font-size: 15px;
+        text-transform:uppercase;
+    }
+    
+        </style>
+<div class="header-container">
+<button id="openNav" class="w3-button w3-xlarge" onclick="w3_open()">&#9776;</button>
             <h1>Teacher Attendance - EDPCODE: {{ $edpcode }}</h1>
         </div>
-    </div>
+        <div id="main" onclick="w3_close()">
 
     <div class="container" style="width: 80%; height: auto; border: 1px solid #ccc; padding: 20px;">
         <form action="/teacherattendance" method="POST">
@@ -97,7 +118,7 @@
                 </div>
             </div>
             <div class="text-center">
-                <button type="submit" name="submit" class="btn btn-danger btn-lg">Save Attendance</button>
+                <button type="submit" name="submit" class="btn btn-success btn-lg">Save Attendance</button>
             </div>
         </form>
     </div>

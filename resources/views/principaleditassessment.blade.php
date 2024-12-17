@@ -1,15 +1,55 @@
 @include('templates.principalheader')
+    <style>
+ body {
+        font-family: Arial, sans-serif;
+        background-color: white;
+        margin: 0;
+        padding: 0;
+    }
 
-<div id="main">
-    <div class="w3-teal">
-        <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <div class="w3-container">
-            <h1 class="text-light">ASSESSMENT DETAILS</h1>
-        </div>
+    .header-container {
+        display: flex; 
+        align-items: center; 
+        background-color: rgba(8, 16, 66, 1); 
+        color: white;
+        padding: 10px; 
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);  
+    }
+    
+    .header-container h1 {
+        margin: 0; 
+        font-size: 15px;
+        text-transform:uppercase;
+    }
+    .headdr{
+        text-transform:uppercase;
+        font-size:17px;
+        background-color:rgba(8, 16, 66, 1); 
+        color:white;
+        padding:12px;
+        width:22%;
+       
+    }
+    .updatee{
+        background-color:#148718;
+        padding:8px;
+        color:white;
+        border-width:0;
+        border-radius:10px;
+        margin-left:85%;
+    }
+    .updatee:hover{
+        background-color:#24ab28;
+    }
+        </style>
+<div class="header-container">
+        <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open()">&#9776;</button>
+        <h1>Assessment Details</h1>
     </div>
 
+    <div id="main" onclick="w3_close()">
     <div class="container my-5">
-        <h1 class="mb-4 text-center">Assessment Information</h1>
+        <h1 class="headdr">Assessment Information</h1>
 
         @if ($errors->any())
             <div class="alert alert-danger">
@@ -67,41 +107,9 @@
                     value="{{ $assessment->assessment_fee }}" min="0" step="0.01" placeholder="Enter the assessment fee">
             </div>
 
-            <button type="submit" class="btn btn-secondary w-100">Update Assessment</button>
+            <button type="submit" class="updatee">Update Assessment</button>
         </form>
     </div>
 </div>
 
 @include('templates.principalfooter')
-
-<style>
-    /* Custom styles for the main container */
-    #main {
-        background-color: #f8f9fa; /* Light background for the main area */
-        padding: 20px;
-        border-radius: 8px;
-    }
-
-    /* Enhance form styles */
-    .form-select, .form-control {
-        transition: border-color 0.2s;
-    }
-
-    /* Button styles */
-    .btn-secondary {
-        background-color: #6c757d;
-        border-color: #6c757d;
-    }
-
-    .btn-secondary:hover {
-        background-color: #5a6268;
-        border-color: #545b62;
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 576px) {
-        .container {
-            padding: 10px; /* Reduced padding for small screens */
-        }
-    }
-</style>

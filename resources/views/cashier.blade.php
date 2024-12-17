@@ -1,10 +1,88 @@
 @include('templates.cashierheader')
 
-<div id="main">
-    <div class="header-container">
-    <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
-    <h1 class="text-light">Cashier Dashboard</h1>
-</div>
+<style>
+  
+
+    .header-container {
+        display: flex; 
+        align-items: center; 
+        background-color: rgba(8, 16, 66, 1); 
+        color:white;
+        padding: 10px; 
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); 
+            }
+
+
+
+    #main {
+        transition: margin-left .3s;
+        padding: 0px;
+    }
+
+    .card {
+        border-radius: 8px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .list-group-item {
+        transition: background-color 0.3s;
+    }
+
+    .list-group-item:hover {
+        background-color: #e9ecef;
+    }
+
+
+
+
+    .btn {
+      
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+        background-color: #093d5e;
+    }
+    h1{
+        font-size:14px;
+        font-family: 'Arial', sans-serif;
+        margin-left:-2%;
+        margin-top:8%;
+        text-transform:uppercase;
+        
+    }
+    .card-header{
+        background-color: rgba(8, 16, 66, 1); 
+    
+    }
+    .studinfo{
+        color:white;
+    }
+  
+ 
+</style>
+
+<div class="header-container">
+        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
+      
+        <div class="w3-container">
+        <h1>Cashier Dashboard</h1>
+          
+            
+        </div>
+    </div>
+    
+    <div id="main" onclick="w3_close()">
 
     <div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="mySidebar">
         <button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Close &times;</button>
@@ -26,7 +104,7 @@
             <!-- Account Summary Card -->
             <div class="col-md-12 mb-4">
                 <div class="card border-primary shadow-sm">
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header text-white" style="text-align:center;">
                         <h5 class="mb-0">Payment Summary</h5>
                     </div>
                     <div class="card-body text-center">
@@ -40,7 +118,7 @@
             <div class="col-md-12 mb-4">
                 <div class="card shadow-sm">
                     <div class="card-header">
-                        <h5 class="mb-0">Student Information</h5>
+                        <h5 class="studinfo">Student Information</h5>
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
@@ -56,52 +134,4 @@
 
 </div>
 
-<style>
-    body {
-        font-family: 'Arial', sans-serif;
-        background-color: #f8f9fa;
-        margin: 0;
-        padding: 0;
-    }
-
-    .header-container {
-        display: flex; 
-        align-items: center; 
-        background-color: #0c3b6d; 
-        color: white;
-        padding: 10px; 
-    }
-
-    .w3-teal {
-        background-color: #0c3b6d;
-    }
-
-    .card {
-        border-radius: 8px;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    .list-group-item {
-        transition: background-color 0.3s;
-    }
-
-    .list-group-item:hover {
-        background-color: #e9ecef;
-    }
-
-    h1,
-    h5 {
-        margin: 0;
-    }
-
-    .text-center {
-        text-align: center;
-    }
-</style>
-</div>
 @include('templates.cashierfooter')
