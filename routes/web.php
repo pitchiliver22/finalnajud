@@ -103,7 +103,7 @@ Route::get('assigning', [Pagecontroller::class, 'assigning']);
 Route::get('assigning/{id}', [Usercontroller::class, 'assigning']);
 Route::post('assigning', [Datacontroller::class, 'assigning']);
 
-Route::post('/assigning/{id}', [Datacontroller::class, 'approveAssigning']);
+// Route::post('/assigning/{id}', [Datacontroller::class, 'approveAssigning']);
 
 Route::get('section', [PageController::class, 'section'])->name('section.index');
 
@@ -181,8 +181,8 @@ Route::post('/proofofpayment/{id}', [Datacontroller::class, 'approvePayment']);
 Route::get('cashierprofile', [Pagecontroller::class, 'cashierprofile']);
 
 //admin
-Route::get('admin', [Pagecontroller::class, 'admin']);
-Route::get('adminmanageclassload', [Pagecontroller::class, 'adminmanageclassload']);
+Route::get('admin', [Pagecontroller::class, 'admin'])->middleware('auth');
+Route::get('adminmanageclassload', [Pagecontroller::class, 'adminmanageclassload'])->middleware('auth');
 
 Route::get('adminusers', [Pagecontroller::class, 'adminusers']);
 Route::post('adminusers', [Datacontroller::class, 'adminuserspost']);
@@ -203,7 +203,6 @@ Route::get('oldstudent', [Pagecontroller::class, 'oldstudent']);
 Route::post('oldstudent', [Datacontroller::class, 'oldstudentpost']);
 
 Route::get('oldstudentprofile', [Pagecontroller::class, 'oldstudentprofile']);
-Route::get('oldstudentprofile', [Usercontroller::class, 'oldstudentprofile'])->middleware('auth');
 
 Route::get('oldstudentdashboard', [Pagecontroller::class, 'oldstudentdashboard'])->middleware('auth');
 
@@ -242,14 +241,11 @@ Route::post('oldstudentupdatedocuments', [Datacontroller::class, 'oldstudentupda
 Route::get('oldstudentclassload', [Pagecontroller::class, 'oldstudentclassload'])->middleware('auth');
 
 Route::get('oldstudentgrades', [PageController::class, 'oldstudentgrades'])->middleware('auth');
+
 Route::get('/report-card/{core_id}/{grade_id}/{attendance_id}', [PDFController::class, 'downloadReportCard'])
     ->name('report.card.download');
 
 Route::get('oldstudentassessment', [Pagecontroller::class, 'oldstudentassessment']);
-
-
-
-
 
 Route::get('oldstudentenrollment', [Pagecontroller::class, 'oldstudentenrollment'])->name('oldstudentenrollment');
 
@@ -278,3 +274,7 @@ Route::delete('/documents/{id}', [Datacontroller::class, 'destroy']);
 Route::get('updateschool', [Pagecontroller::class, 'updateschool'])->middleware('auth')->name('updateschool');
 Route::post('updateschool', [Datacontroller::class, 'updateschoolpost'])->middleware('auth');
 Route::get('updateschool/{id}', [UserController::class, 'updateschool'])->middleware('auth')->name('updateschool.id');
+
+
+Route::get('/grades/template', [Datacontroller::class, 'downloadTemplate'])->name('grades.template');
+Route::post('/grades/import', [Datacontroller::class, 'importGrades'])->name('grades.import');

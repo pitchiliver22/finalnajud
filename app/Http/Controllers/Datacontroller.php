@@ -44,6 +44,8 @@ use Illuminate\Support\Carbon;
 use Maatwebsite\Excel\Facades\Excel;;
 use App\Imports\UsersImport;
 use App\Imports\CoreUsersImport;
+use App\Exports\GradesTemplateExport;
+use App\Imports\TeacherGrades;
 
 
 class Datacontroller extends Controller
@@ -1076,63 +1078,63 @@ public function updateQuarters(Request $request)
         return response()->json(['success' => 'Profile updated successfully.']);
     }
 
-    public function gradesubmitpost(Request $request)
-    {
-        //  Log::info($request->all());
-    
-        try {
-            $validatedData = $request->validate([
-                'edp_code.*' => 'required',
-                'subject.*' => 'required',
-                'grade_id.*' => 'required|integer|exists:payment_form,payment_id',
-                'fullname.*' => 'required|string',
-                'section.*' => 'required',
-                'grades.*.1st_quarter' => 'nullable|numeric|min:0|max:100',
-                'grades.*.2nd_quarter' => 'nullable|numeric|min:0|max:100',
-                'grades.*.3rd_quarter' => 'nullable|numeric|min:0|max:100',
-                'grades.*.4th_quarter' => 'nullable|numeric|min:0|max:100',
-                'grades.*.overall_grade' => 'nullable|numeric|min:0|max:100',
-            ]);
-    
-            if (!$request->has('submit')) {
-                throw new \Exception("Submit button not clicked.");
-            }
-    
-            foreach ($validatedData['edp_code'] as $index => $edp_code) {
-                $gradesData = [
-                    'edp_code' => $edp_code,
-                    'subject' => $validatedData['subject'][$index],
-                    'grade_id' => $validatedData['grade_id'][$index],
-                    'fullname' => $validatedData['fullname'][$index],
-                    'section' => $validatedData['section'][$index],
-                    '1st_quarter' => $validatedData['grades'][$index]['1st_quarter'] ?? null,
-                    '2nd_quarter' => $validatedData['grades'][$index]['2nd_quarter'] ?? null,
-                    '3rd_quarter' => $validatedData['grades'][$index]['3rd_quarter'] ?? null,
-                    '4th_quarter' => $validatedData['grades'][$index]['4th_quarter'] ?? null,
-                    'overall_grade' => $validatedData['grades'][$index]['overall_grade'] ?? null,
-                    'status' => 'pending',
-                ];
-    
-                grade::updateOrCreate(
-                    [
-                        'edp_code' => $gradesData['edp_code'],
-                        'subject' => $gradesData['subject'],
-                        'grade_id' => $gradesData['grade_id'],
-                    ],
-                    $gradesData
-                );
-            }
+        public function gradesubmitpost(Request $request)
+        {
+            //  Log::info($request->all());
+        
+            try {
+                $validatedData = $request->validate([
+                    'edp_code.*' => 'required',
+                    'subject.*' => 'required',
+                    'grade_id.*' => 'required|integer|exists:payment_form,payment_id',
+                    'fullname.*' => 'required|string',
+                    'section.*' => 'required',
+                    'grades.*.1st_quarter' => 'nullable|numeric|min:0|max:100',
+                    'grades.*.2nd_quarter' => 'nullable|numeric|min:0|max:100',
+                    'grades.*.3rd_quarter' => 'nullable|numeric|min:0|max:100',
+                    'grades.*.4th_quarter' => 'nullable|numeric|min:0|max:100',
+                    'grades.*.overall_grade' => 'nullable|numeric|min:0|max:100',
+                ]);
+        
+                if (!$request->has('submit')) {
+                    throw new \Exception("Submit button not clicked.");
+                }
+        
+                foreach ($validatedData['edp_code'] as $index => $edp_code) {
+                    $gradesData = [
+                        'edp_code' => $edp_code,
+                        'subject' => $validatedData['subject'][$index],
+                        'grade_id' => $validatedData['grade_id'][$index],
+                        'fullname' => $validatedData['fullname'][$index],
+                        'section' => $validatedData['section'][$index],
+                        '1st_quarter' => $validatedData['grades'][$index]['1st_quarter'] ?? null,
+                        '2nd_quarter' => $validatedData['grades'][$index]['2nd_quarter'] ?? null,
+                        '3rd_quarter' => $validatedData['grades'][$index]['3rd_quarter'] ?? null,
+                        '4th_quarter' => $validatedData['grades'][$index]['4th_quarter'] ?? null,
+                        'overall_grade' => $validatedData['grades'][$index]['overall_grade'] ?? null,
+                        'status' => 'pending',
+                    ];
+        
+                    grade::updateOrCreate(
+                        [
+                            'edp_code' => $gradesData['edp_code'],
+                            'subject' => $gradesData['subject'],
+                            'grade_id' => $gradesData['grade_id'],
+                        ],
+                        $gradesData
+                    );
+                }
 
-            $assignments = Assign::where('teacher_id', Auth::id())->get();
+                $assignments = Assign::where('teacher_id', Auth::id())->get();
 
-            // FacadesMail::to('principal@example.com')->send(new GradeSubmit($assignments));
-    
-            return redirect('/teacherclassload')->with('success', 'Student Grades submitted successfully.');
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return redirect()->back()->withInput()->withErrors(['Failed to submit grade: ' . $e->getMessage()]);
+                // FacadesMail::to('principal@example.com')->send(new GradeSubmit($assignments));
+        
+                return redirect('/teacherclassload')->with('success', 'Student Grades submitted successfully.');
+            } catch (\Exception $e) {
+                Log::error($e->getMessage());
+                return redirect()->back()->withInput()->withErrors(['Failed to submit grade: ' . $e->getMessage()]);
+            }
         }
-    }
     
     
     public function publish($id)
@@ -1411,6 +1413,7 @@ public function updateQuarters(Request $request)
         'success' => 'Teacher assigned successfully.',
     ]);
 }
+
     public function createsectionpost(Request $request)
     {
         $validatedData = $request->validate([
@@ -1703,7 +1706,7 @@ public function updateQuarters(Request $request)
     public function oldstudentpaymentpost(Request $request)
     {
         $registerFormId = session('register_form_id'); 
-
+    
         if (!$registerFormId) {
             return response()->json(['error' => 'Register form ID not found.'], 404);
         }
@@ -1713,27 +1716,31 @@ public function updateQuarters(Request $request)
         if (!$registerForm) {
             return response()->json(['error' => 'Register form not found.'], 404);
         }
-
+    
         $request->validate([
             'payment-proof' => 'required|image|mimes:jpg,jpeg,png,bmp|max:2048',
             'level' => 'required|string',
             'payment-details' => 'required|string|max:1000',
         ]);
-
+    
         if ($request->hasFile('payment-proof')) {
             $file = $request->file('payment-proof');
-            $filePath = $file->store('payment_proofs', 'public');
-
+            $filePath = $file->store('payment_proofs', 'public'); 
+    
             $payment = new payment_form();
             $payment->fee_type = 'Enrollment Fee'; 
             $payment->amount = 500; 
-            $payment->payment_proof = $filePath;
+            $payment->payment_proof = $filePath; 
             $payment->payment_details = $request->input('payment-details');
             $payment->payment_id = $registerFormId; 
             $payment->level = $request->input('level');
             $payment->status = 'pending'; 
             $payment->save();
+    
+            // Log the upload (optional for debugging)
+            // Log::info("File uploaded to: " . $filePath);
         }
+    
         return redirect('oldstudentenrollment')->with('success', 'Payment submitted successfully. Please wait for cashier approval');
     }
 
@@ -1903,4 +1910,84 @@ public function updateQuarters(Request $request)
         
         return redirect()->back()->with('success', 'Users imported successfully!');
     }
+
+
+    public function downloadTemplate()
+    {
+        $teacherId = Auth::id();
+        $edp_code = request()->input('edp_code');
+    
+        $quarterSettings = QuarterSettings::first();
+    
+        // Check if quarter status is active
+        if (!$quarterSettings || $quarterSettings->quarter_status !== QuarterSettings::ACTIVE) {
+            return redirect()->back()->with('error', 'Quarters are not yet enabled by the principal. Please wait.');
+        }
+    
+        // Get assignments for the teacher
+        $assignments = Assign::where('edpcode', $edp_code)
+                              ->where('teacher_id', $teacherId)
+                              ->get();
+    
+        if ($assignments->isEmpty()) {
+            return redirect()->back()->with('error', 'No assignments found for this EDP code and teacher.');
+        }
+    
+        $classIds = $assignments->pluck('class_id')->unique();
+        $students = register_form::whereIn('id', $classIds)->get();
+    
+        // Prepare student data with grade_id
+        $studentData = $assignments->map(function ($assignment) use ($students) {
+            $student = $students->firstWhere('id', $assignment->class_id);
+            
+            // Find payment_id using class_id
+            $payment = payment_form::where('payment_id', $student->id)->first();
+            $gradeId = $payment ? $payment->payment_id : 'N/A'; // Use payment_id as grade_id
+    
+            return [
+                'edp_code' => $assignment->edpcode,
+                'full_name' => $student ? "{$student->firstname} {$student->middlename} {$student->lastname}" : 'N/A',
+                'section' => $assignment->section ?? 'N/A',
+                'subject' => $assignment->subject ?? 'N/A',
+                'grade_id' => $gradeId, // Add grade_id here
+                '1st Quarter' => '',
+                '2nd Quarter' => '',
+                '3rd Quarter' => '',
+                '4th Quarter' => '',
+            ];
+        });
+    
+        // Define headings for the Excel file
+        $headings = [
+            'EDP Code',
+            'Full Name',
+            'Section',
+            'Subject',
+            'Grade ID', // Include grade_id in headings
+            '1st Quarter',
+            '2nd Quarter',
+            '3rd Quarter',
+            '4th Quarter',
+        ];
+    
+        // Download the Excel file
+        return Excel::download(new GradesTemplateExport(collect($studentData), $quarterSettings, $headings), 'grades_template.xlsx');
+    }
+
+        public function importGrades(Request $request)
+    {
+        try {
+            $request->validate([
+                'excel_file' => 'required|file|mimes:xlsx,csv',
+            ]);
+    
+            Excel::import(new TeacherGrades, $request->file('excel_file'));
+    
+            return redirect()->back()->with('success', 'Grades imported successfully!');
+        } catch (\Exception $e) {
+            Log::error('Import error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to import grades.');
+        }
+    }
+
 }

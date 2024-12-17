@@ -474,7 +474,6 @@ public function publishgrade(Request $request)
         ]);
     }
 
-   
     
     public function submittedgrades()
     {
@@ -603,23 +602,6 @@ public function deleteAssessment($id)
 
     return redirect()->back()->with('success', 'Assessment deleted successfully.');
 }
-
-    public function oldstudentprofile()
-    {
-        $userId = Auth::id();
-
-        $profile = register_form::where('user_id', $userId)->firstOrFail();
-
-        $level = payment_form::where('payment_id', $profile->id)->firstOrFail();
-
-        $data = [
-            'title' => 'Student Profile',
-            'profile' => $profile,
-            'level' => $level,
-        ];
-
-        return view('oldstudentprofile', $data);
-    }
 
 
     public function oldstudentaddress($registerFormId)

@@ -12,7 +12,7 @@ class QuarterSettings extends Model
         'second_quarter_enabled',
         'third_quarter_enabled',
         'fourth_quarter_enabled',
-        'quarter_status', // Add the new field here
+        'quarter_status', 
     ];
     const ACTIVE = 'active';
     const INACTIVE = 'inactive';

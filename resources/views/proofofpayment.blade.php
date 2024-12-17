@@ -90,11 +90,12 @@
             <div class="form-group">
                 <label for="payment-proof">Payment Proof (Image)</label>
                 <br>
-                <img src="{{ asset('storage/' . $proof->payment_proof) }}" alt="Payment Proof" class="img-fluid"
-                    style="max-width: 700px;" id="paymentProofImage" data-toggle="modal" data-target="#imageModal">
+                <img src="{{ asset('storage/payment_proofs/' . $proof->payment_proof) }}" alt="Payment Proof" class="payment-proof-image img-fluid" id="paymentProofImage" data-toggle="modal" data-target="#imageModal">
+                <p>{{ asset('storage/payment_proofs/' . $proof->payment_proof) }}</p> <!-- For debugging -->
             </div>
-            <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel"
-                aria-hidden="true">
+            
+            <!-- Modal -->
+            <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -105,7 +106,7 @@
                         </div>
                         <div class="modal-body">
                             <img src="{{ asset('storage/' . $proof->payment_proof) }}" alt="Payment Proof"
-                                class="img-fluid" id="modalImage" style="width: 100%;">
+                                class="img-fluid" style="width: 100%;">
                         </div>
                     </div>
                 </div>

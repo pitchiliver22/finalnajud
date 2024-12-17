@@ -133,7 +133,26 @@ public function oldstudentclassload()
 
     public function oldstudentprofile()
     {
-        return view('oldstudentprofile');
+        $userId = Auth::id();
+    
+        // Retrieve the user's profile
+        $profile = register_form::where('user_id', $userId)->firstOrFail();
+    
+        // Check if the user has made a payment
+        $level = payment_form::where('payment_id', $profile->id)->first();
+    
+        // If payment record doesn't exist, return an error message
+        if (!$level) {
+            return redirect()->back()->with('error', 'You need to upload your proof of payment first before browsing your profile.');
+        }
+    
+        $data = [
+            'title' => 'Student Profile',
+            'profile' => $profile,
+            'level' => $level,
+        ];
+    
+        return view('oldstudentprofile', $data);
     }
 
     public function enrollmentStep()
@@ -851,12 +870,12 @@ public function principalprofile()
     
         $coreId = null;
         if ($gradeId) {
-            $coreId = corevalues::where('section', $grades->first()->section)->value('core_id'); // Adjust based on your schema
+            $coreId = corevalues::where('section', $grades->first()->section)->value('core_id'); 
         }
     
         $attendanceId = null;
         if ($userName) {
-            $attendanceId = Attendance::where('fullname', $userName)->value('attendance_id'); // Using fullname to fetch attendance ID
+            $attendanceId = Attendance::where('fullname', $userName)->value('attendance_id'); 
         }
     
         return view('oldstudentgrades', [
@@ -868,6 +887,7 @@ public function principalprofile()
             'attendanceId' => $attendanceId,
         ]);
     }
+
     public function updatedetails()
     {
         $user = Auth::user();

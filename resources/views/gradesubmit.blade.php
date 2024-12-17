@@ -19,16 +19,18 @@
     @endif
 
     <div class="container" style="width: 80%; height: auto; border: 1px solid #ccc; padding: 20px;">
-        <form action="" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('grades.import') }}" method="POST" enctype="multipart/form-data">                        
             @csrf
-            <div class="form-group">
-                <label for="file">Import Grades (Excel File)</label>
-                <input type="file" class="form-control" name="file" id="file" required>
+            <div class="mb-3">
+                <label for="excelFile" class="form-label">Import Grades (Excel file)</label>
+                <input type="file" class="form-control" id="excelFile" name="excel_file" accept=".xls,.xlsx" required>
             </div>
-            <br>
-            <button type="submit" class="btn btn-primary">Import Grades</button>
+            
+            <button type="submit" class="btn btn-primary">Import</button>
         </form>
+        <br>
 
+        <a href="{{ route('grades.template', ['edp_code' => $edpcode]) }}" class="btn btn-info">Download Grades Template</a>
      
             <form action="{{ route('gradesubmitpost') }}" method="POST">            
                 @csrf

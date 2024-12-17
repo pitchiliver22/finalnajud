@@ -54,7 +54,7 @@ class UsersImport implements ToCollection, ToModel
                     $registerForm->lastname = $user->lastname;
                     $registerForm->suffix = $user->suffix;
                     $registerForm->email = $user->email;
-                    $registerForm->password = $user->password;
+                       $registerForm->password = $user->password;
                     $registerForm->status = 'approved';
                 
                     $registerForm->save();
