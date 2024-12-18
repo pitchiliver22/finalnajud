@@ -1,9 +1,8 @@
 @include('templates.studentheader')
-
 <style>
     body {
         font-family: Arial, sans-serif;
-        background-color: #f4f4f4; 
+        background-color: #f4f4f4; /* Match old design background */
         margin: 0;
         padding: 0;
     }
@@ -15,27 +14,26 @@
         background-color: white;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         border-radius: 8px;
-        position: relative;
     }
-
     .header-container {
         display: flex; 
         align-items: center; 
-        background-color: #0c3b6d; 
+        background-color: rgba(8, 16, 66, 1); 
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); 
         color: white;
         padding: 10px; 
     }
+
 
     .nav-button {
         margin-right: 15px; 
         margin-bottom: 4px;
     }
 
-    h2 {
-        color: white;
-        margin: 0;
-        font-size: 1.75rem; 
-        text-align: center; 
+    h1 {
+        margin: 0; 
+        font-size: 15px;
+        text-transform:uppercase;
     }
 
     .table-primary {
@@ -111,12 +109,12 @@
         }
     }
 </style>
-
-<div id="main" onclick="w3_close()">
-    <div class="header-container">
+<div class="header-container">
         <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open(event)">&#9776;</button>
-        <h2>Grades S.Y 2024-2025</h2>
+        <h1>Grades S.Y 2024-2025</h1>
     </div>
+
+    <div id="main" onclick="w3_close()">
 
     @if ($gradesApproved)
         <table class="table-primary">
@@ -168,13 +166,3 @@
 
 @include('templates.studentfooter')
 
-<script>
-    function w3_open(event) {
-        event.stopPropagation();
-        document.getElementById("mySidebar").style.display = "block";
-    }
-
-    function w3_close() {
-        document.getElementById("mySidebar").style.display = "none";
-    }
-</script>
