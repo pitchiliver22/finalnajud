@@ -60,7 +60,7 @@
 
     <div class="container">
         <div class="mb-3">
-            <a href="javascript:history.back()" class="btn btn-secondary">Back</a>
+            <a href="javascript:history.back()" class="btn btn-primary">Back</a>
         </div>
 
         <h1>Personal Details</h1>
