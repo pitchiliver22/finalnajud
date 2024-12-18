@@ -181,24 +181,33 @@ public function oldstudentclassload()
 public function studentgrades()
 {
     $userId = Auth::id();
-    
-    // Get the authenticated user
     $user = Auth::user();
-    
-    // Construct the full name
     $userName = trim("{$user->firstname} {$user->middlename} {$user->lastname}");
 
-    // Retrieve grades for the authenticated student based on their fullname and status
     $grades = Grade::where('fullname', $userName)
                    ->where('status', 'approved')
-                   ->get(['subject', 'edp_code', 'section', '1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter', 'overall_grade']);
+                   ->get(['subject', 'edp_code', 'section', '1st_quarter', '2nd_quarter', '3rd_quarter', '4th_quarter', 'overall_grade', 'grade_id']);
 
-    // Check if there are any approved grades
     $gradesApproved = $grades->isNotEmpty();
+    $gradeId = $grades->first()->grade_id ?? null;
+
+    $coreId = null;
+    if ($gradeId) {
+        $coreId = corevalues::where('section', $grades->first()->section)->value('core_id'); 
+    }
+
+    $attendanceId = null;
+    if ($userName) {
+        $attendanceId = Attendance::where('fullname', $userName)->value('attendance_id'); 
+    }
 
     return view('studentgrades', [
         'grades' => $grades,
         'gradesApproved' => $gradesApproved,
+        'studentId' => $userId,
+        'gradeId' => $gradeId,
+        'coreId' => $coreId,
+        'attendanceId' => $attendanceId,
     ]);
 }
 
@@ -953,4 +962,14 @@ public function principalprofile()
     
         return view('createsection', compact('sections'));
     }
+
+    public function forgotpassword()
+    {
+        return view('forgotpassword');
+    }
+    public function resetpassword()
+    {
+        return view('resetpassword');
+    }
+   
 }

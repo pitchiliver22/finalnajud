@@ -276,6 +276,29 @@ class Usercontroller extends Controller
 
         return view('studentprofile', $data);
     }
+     public function studenteditprofile(Request $request, $id)
+    {
+        $request->validate([
+            'firstname' => 'required|string|max:255',
+            'middlename' => 'nullable|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'level' => 'required|string|max:255',
+        ]);
+    
+        $profile = register_form::findOrFail($id);
+        $profile->firstname = $request->firstname;
+        $profile->middlename = $request->middlename;
+        $profile->lastname = $request->lastname;
+        $profile->email = $request->email;
+        $profile->save();
+    
+        // Update payment level if necessary
+        // $level = payment_form::where('payment_id', $profile->id)->first();
+        // $level->update(['level' => $request->level]);
+    
+        return redirect('/studenteditprofile')->with('success', 'Profile updated successfully.');
+    }
 
 
     public function delete_class($id)
@@ -456,6 +479,7 @@ public function publishgrade(Request $request)
     
         $firstFullName = !empty($fullNames) ? $fullNames[0] : 'No student found';
     
+        $importedGrades = session('importedGrades', []);
         return view('gradesubmit', [
             'assignments' => $assignments,
             'paymentForm' => $paymentForm,
@@ -471,6 +495,7 @@ public function publishgrade(Request $request)
                 '3rd_quarter' => $quartersEnabled->third_quarter_enabled ?? false,
                 '4th_quarter' => $quartersEnabled->fourth_quarter_enabled ?? false,
             ],
+            'importedGrades' => $importedGrades, 
         ]);
     }
 

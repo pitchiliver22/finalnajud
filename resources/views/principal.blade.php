@@ -84,7 +84,7 @@ p {
         <div class="w3-row">
             <div class="w3-col s6 m4 l3">
                 <div class="dashboard-card">
-                    <a href="/principalstudent" class="w3-dashyboard">
+                    <a href="" class="w3-dashyboard">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-lines-fill" viewBox="0 0 16 16">
                             <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm11-3a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5zm-2 3a.5.5 0 0 1 0 1h2a.5.5 0 0 1 0-1zm0 3a.5.5 0 0 1 0 1h2a.5.5 0 0 1 0-1zM24 4a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 24 4z" />
                         </svg>
@@ -95,7 +95,7 @@ p {
             </div>
             <div class="w3-col s6 m4 l3">
                 <div class="dashboard-card">
-                    <a href="/principalclassload" class="w3-dashyboard">
+                    <a href="/createsection" class="w3-dashyboard">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-plus" viewBox="0 0 16 16">
                             <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z" />
                             <path d="M8 4a.5.5 0 0 1 .5.5V6H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V7H6a.5.5 0 0 1 0-1h1.5V4.5A.5.5 0 0 1 8 4" />

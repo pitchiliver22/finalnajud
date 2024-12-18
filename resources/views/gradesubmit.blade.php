@@ -164,107 +164,107 @@
             <button type="submit" class="import">Import</button>
         </form>
         <br>
-
+    
         <a href="{{ route('grades.template', ['edp_code' => $edpcode]) }}" class="download">Download Grades Template</a>
      
-            <form action="{{ route('gradesubmitpost') }}" method="POST">            
-                @csrf
-
-                @foreach ($students as $index => $student)
-                    <input type="hidden" name="edp_code[]" value="{{ old('edp_code.' . $index, $edpcode) }}">
-                    <input type="hidden" name="subject[]" value="{{ old('subject.' . $index, $subject) }}">
-                    <input type="hidden" name="grade_id[]" value="{{ old('grade_id.' . $index, $studentClassIds[$student->id] ?? '') }}">
-                    <input type="hidden" name="fullname[]" value="{{ old('fullname.' . $index, $student->firstname . ' ' . $student->middlename . ' ' . $student->lastname) }}">
-                    <input type="hidden" name="section[]" value="{{ old('section.' . $index, $section) }}">
-                @endforeach
-
-                <div class="fee-list">
-                    <h4><strong>EDPCODE: {{ $edpcode }}, SUBJECT: {{ $subject }}, GRADE LEVEL: {{ $paymentForm->level ?? 'N/A' }}</strong></h4>
-                    <div class="table-responsive">
-                        <table class="table table-striped" id="student-table">
-                            <thead>
+        <form action="{{ route('gradesubmitpost') }}" method="POST">            
+            @csrf
+    
+            @foreach ($students as $index => $student)
+                <input type="hidden" name="edp_code[]" value="{{ old('edp_code.' . $index, $edpcode) }}">
+                <input type="hidden" name="subject[]" value="{{ old('subject.' . $index, $subject) }}">
+                <input type="hidden" name="grade_id[]" value="{{ old('grade_id.' . $index, $studentClassIds[$student->id] ?? '') }}">
+                <input type="hidden" name="fullname[]" value="{{ old('fullname.' . $index, $student->firstname . ' ' . $student->middlename . ' ' . $student->lastname) }}">
+                <input type="hidden" name="section[]" value="{{ old('section.' . $index, $section) }}">
+            @endforeach
+    
+            <div class="fee-list">
+                <h4><strong>EDPCODE: {{ $edpcode }}, SUBJECT: {{ $subject }}, GRADE LEVEL: {{ $paymentForm->level ?? 'N/A' }}</strong></h4>
+                <div class="table-responsive">
+                    <table class="table table-striped" id="student-table">
+                        <thead>
+                            <tr>
+                                <th>Fullname</th>
+                                <th>Section</th>
+                                @if ($quartersEnabled['1st_quarter']) <th>1st Quarter</th> @endif
+                                @if ($quartersEnabled['2nd_quarter']) <th>2nd Quarter</th> @endif
+                                @if ($quartersEnabled['3rd_quarter']) <th>3rd Quarter</th> @endif
+                                @if ($quartersEnabled['4th_quarter']) <th>4th Quarter</th> @endif
+                                <th>Overall Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($students as $index => $student)
                                 <tr>
-                                    <th>Fullname</th>
-                                    <th>Section</th>
-                                    @if ($quartersEnabled['1st_quarter']) <th>1st Quarter</th> @endif
-                                    @if ($quartersEnabled['2nd_quarter']) <th>2nd Quarter</th> @endif
-                                    @if ($quartersEnabled['3rd_quarter']) <th>3rd Quarter</th> @endif
-                                    @if ($quartersEnabled['4th_quarter']) <th>4th Quarter</th> @endif
-                                    <th>Overall Grade</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($students as $index => $student)
-                                    <tr>
-                                        <td>{{ $student->firstname }} {{ $student->middlename }} {{ $student->lastname }}</td>
-                                        <td>{{ $section }}</td>
-                                        
-                                        @if ($quartersEnabled['1st_quarter'])
-                                            <td>
-                                                <input type="number" class="form-control" 
-                                                       name="grades[{{ $index }}][1st_quarter]" 
-                                                       min="0" max="100" 
-                                                       step="0.01" 
-                                                       oninput="calculateOverall(this)" 
-                                                       value="{{ $importedGrades[$index]['grades']['1st_quarter'] ?? '' }}" 
-                                                       required>
-                                            </td>
-                                        @endif
-                                        
-                                        @if ($quartersEnabled['2nd_quarter'])
-                                            <td>
-                                                <input type="number" class="form-control" 
-                                                       name="grades[{{ $index }}][2nd_quarter]" 
-                                                       min="0" max="100" 
-                                                       step="0.01" 
-                                                       oninput="calculateOverall(this)" 
-                                                       value="{{ $importedGrades[$index]['grades']['2nd_quarter'] ?? '' }}" 
-                                                       required>
-                                            </td>
-                                        @endif
-
-                                        @if ($quartersEnabled['3rd_quarter'])
-                                            <td>
-                                                <input type="number" class="form-control" 
-                                                       name="grades[{{ $index }}][3rd_quarter]" 
-                                                       min="0" max="100" 
-                                                       step="0.01" 
-                                                       oninput="calculateOverall(this)" 
-                                                       value="{{ $importedGrades[$index]['grades']['3rd_quarter'] ?? '' }}" 
-                                                       required>
-                                            </td>
-                                        @endif
-
-                                        @if ($quartersEnabled['4th_quarter'])
-                                            <td>
-                                                <input type="number" class="form-control" 
-                                                       name="grades[{{ $index }}][4th_quarter]" 
-                                                       min="0" max="100" 
-                                                       step="0.01" 
-                                                       oninput="calculateOverall(this)" 
-                                                       value="{{ $importedGrades[$index]['grades']['4th_quarter'] ?? '' }}" 
-                                                       required>
-                                            </td>
-                                        @endif
-
-                                        <td>    
-                                            <input type="number" class="form-control" name="grades[{{ $index }}][overall_grade]" 
+                                    <td>{{ $student->firstname }} {{ $student->middlename }} {{ $student->lastname }}</td>
+                                    <td>{{ $section }}</td>
+    
+                                    @if ($quartersEnabled['1st_quarter'])
+                                        <td>
+                                            <input type="number" class="form-control" 
+                                                   name="grades[{{ $index }}][1st_quarter]" 
                                                    min="0" max="100" 
                                                    step="0.01" 
-                                                   readonly required>
+                                                   oninput="calculateOverall(this)" 
+                                                   value="{{ $importedGrades[$student->grade_id]['1st_quarter'] ?? '' }}" 
+                                                   >
                                         </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                                    @endif
+    
+                                    @if ($quartersEnabled['2nd_quarter'])
+                                        <td>
+                                            <input type="number" class="form-control" 
+                                                   name="grades[{{ $index }}][2nd_quarter]" 
+                                                   min="0" max="100" 
+                                                   step="0.01" 
+                                                   oninput="calculateOverall(this)" 
+                                                   value="{{ $importedGrades[$student->grade_id]['2nd_quarter'] ?? '' }}" 
+                                                   >
+                                        </td>
+                                    @endif
+    
+                                    @if ($quartersEnabled['3rd_quarter'])
+                                        <td>
+                                            <input type="number" class="form-control" 
+                                                   name="grades[{{ $index }}][3rd_quarter]" 
+                                                   min="0" max="100" 
+                                                   step="0.01" 
+                                                   oninput="calculateOverall(this)" 
+                                                   value="{{ $importedGrades[$student->grade_id]['3rd_quarter'] ?? '' }}" 
+                                                   >
+                                        </td>
+                                    @endif
+    
+                                    @if ($quartersEnabled['4th_quarter'])
+                                        <td>
+                                            <input type="number" class="form-control" 
+                                                   name="grades[{{ $index }}][4th_quarter]" 
+                                                   min="0" max="100" 
+                                                   step="0.01" 
+                                                   oninput="calculateOverall(this)" 
+                                                   value="{{ $importedGrades[$student->grade_id]['4th_quarter'] ?? '' }}" 
+                                                   >
+                                        </td>
+                                    @endif
+    
+                                    <td>    
+                                        <input type="number" class="form-control" name="grades[{{ $index }}][overall_grade]" 
+                                               min="0" max="100" 
+                                               step="0.01" 
+                                               value="{{ $importedGrades[$student->grade_id]['overall_grade'] ?? '' }}" 
+                                               readonly >
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-            
-                <div class="hidden-center">
-                    <button type="submit" name="submit" class="submitg">Submit Grades</button>
-                </div>
-            </form>
-      
+            </div>
+        
+            <div class="hidden-center">
+                <button type="submit" name="submit" class="submitg">Submit Grades</button>
+            </div>
+        </form>
     </div>
 </div>
 

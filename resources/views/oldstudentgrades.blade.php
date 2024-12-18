@@ -17,6 +17,7 @@
         border-radius: 8px;
         position: relative;
     }
+
     .header-container {
         display: flex; 
         align-items: center; 
@@ -26,16 +27,15 @@
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); 
     }
 
-
     .nav-button {
         margin-right: 15px; 
         margin-bottom: 4px;
     }
 
-    h1{
+    h1 {
         margin: 0; 
         font-size: 15px;
-        text-transform:uppercase;
+        text-transform: uppercase;
     }
 
     .table-primary {
@@ -75,51 +75,24 @@
     }
 
     .btn-report {
-        background-color: #4CAF50; 
+        background-color: #28a745; /* Bright green */
         color: white;
-        padding: 10px 20px;
+        padding: 12px 24px;
         border: none;
-        border-radius: 5px;
+        border-radius: 30px; /* Rounded corners */
         cursor: pointer;
-        margin-top: 20px;
-        display: block; /* Center the button below the table */
         text-align: center;
         font-size: 16px;
+        text-decoration: none; /* Remove underline from link */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+        transition: background-color 0.3s, transform 0.3s; /* Smooth transition */
     }
 
     .btn-report:hover {
-        background-color: #45a049; /* Darker green on hover */
+        background-color: #218838; /* Darker green on hover */
+        transform: translateY(-2px); /* Lift effect on hover */
     }
-    .btn-report {
-    display: inline-block;
-    background-color: #28a745; /* Bright green */
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 30px; /* Rounded corners */
-    cursor: pointer;
-    text-align: center;
-    font-size: 16px;
-    text-decoration: none; /* Remove underline from link */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-    transition: background-color 0.3s, transform 0.3s; /* Smooth transition */
-}
 
-.btn-report:hover {
-    background-color: #218838; /* Darker green on hover */
-    transform: translateY(-2px); /* Lift effect on hover */
-}
-
-.btn-report svg {
-    margin-right: 8px; /* Space between icon and text */
-    vertical-align: middle; /* Align icon with text */
-    fill: white; /* Ensure icon is white */
-    transition: transform 0.3s; /* Smooth transition for icon */
-}
-
-.btn-report:hover svg {
-    transform: translateX(2px); /* Move icon slightly on hover */
-}
     /* Responsive design */
     @media (max-width: 600px) {
         .table-primary th,
@@ -138,17 +111,14 @@
             position: absolute;
             right: 0;
         }
-       
-
-
     }
 </style>
 
 <div class="header-container">
-        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open(event)">&#9776;</button>
-        <h1>Grades S.Y 2024-2025</h1>
-    </div>
-    <div id="main" onclick="w3_close()">
+    <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open(event)">&#9776;</button>
+    <h1>Grades S.Y 2024-2025</h1>
+</div>
+<div id="main" onclick="w3_close()">
 
     @if ($gradesApproved)
         <table class="table-primary">
@@ -184,12 +154,20 @@
                 </tr>
             </tbody>
         </table>
-        <a href="{{ route('report.card.download', ['grade_id' => $gradeId, 'core_id' => $coreId, 'attendance_id' => $attendanceId]) }}" class="btn-report">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
-                <path d="M.5 15a.5.5 0 0 0 .5.5h14a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5H1a.5.5 0 0 0-.5.5v1zM7.5 0a.5.5 0 0 1 .5.5v8.793l2.354-2.354a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7 9.293V.5a.5.5 0 0 1 .5-.5z"/>
-            </svg>
-            Download Report Card
-        </a>
+
+        @if (!is_null($coreId) && !is_null($gradeId) && !is_null($attendanceId))
+            <a href="{{ route('report.card.download', ['grade_id' => $gradeId, 'core_id' => $coreId, 'attendance_id' => $attendanceId]) }}" class="btn-report">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                    <path d="M.5 15a.5.5 0 0 0 .5.5h14a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5H1a.5.5 0 0 0-.5.5v1zM7.5 0a.5.5 0 0 1 .5.5v8.793l2.354-2.354a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7 9.293V.5a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+                Download Report Card
+            </a>
+        @else
+            <div class="alert">
+                <strong>Notice:</strong> Attendance, core value, or grade is currently under processing by the teacher. Please check back later.
+            </div>
+        @endif
+
     @else
         <div class="alert">
             <strong>Notice:</strong> Your grades are currently under evaluation by the principal. Please check back later.

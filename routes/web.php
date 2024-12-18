@@ -4,6 +4,7 @@ use App\Http\Controllers\Datacontroller;
 use App\Http\Controllers\Pagecontroller;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\Usercontroller;
+use App\Http\Controllers\AuthController;
 use Dompdf\FrameDecorator\Page;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
@@ -278,3 +279,20 @@ Route::get('updateschool/{id}', [UserController::class, 'updateschool'])->middle
 
 Route::get('/grades/template', [Datacontroller::class, 'downloadTemplate'])->name('grades.template');
 Route::post('/grades/import', [Datacontroller::class, 'importGrades'])->name('grades.import');
+
+
+Route::get('/forgotpassword', [Pagecontroller::class, 'forgotpassword']);
+
+Route::get('/resetpassword', [Pagecontroller::class, 'resetpassword']);
+
+
+
+
+
+
+Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/password/reset/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
+Route::post('/password/reset', [AuthController::class, 'resetPassword'])->name('password.update');
+
+Route::get('/studenteditprofile', [Usercontroller::class, 'studenteditprofile'])->name('profile.update');

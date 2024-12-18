@@ -337,7 +337,7 @@
                             <label class="form-check-label" for="showPassword">Show Password</label>
                         </div>
                         <button class="btn btn-primary btn-block mb-3" id="button">Login</button>
-                        <a href="#" class="text-muted">Forgot Password?</a>
+                        <a href="/forgotpassword" class="text-muted">Forgot Password?</a>
                     </form>
 
                     <div class="mt-4">
