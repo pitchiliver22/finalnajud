@@ -19,30 +19,55 @@
             background-repeat: no-repeat;
             height: 100vh;
             margin: 0;
-            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
         }
+
+        .container {
+            background-color: rgba(1, 0, 66, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-family: 'Arial', sans-serif;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .btn-admission {
+            background-color: rgba(1, 0, 34, 0.8);
+            color: white; /* White text color */
+            border: none; /* Remove default border */
+        }
+
+        .btn-admission:hover {
+            background-color: rgba(11, 116, 11, 0.8);
+            color: white;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+        }
+       
     </style>
 </head>
 
 <body>
     <div class="container">
-        <div class="d-flex justify-content-center">
-            <label for="">
-                <h2>Welcome to Basic Education</h2>
-            </label>
-        </div>
-        <br>
-        <div class="d-flex justify-content-center">
-            <button type="button" class="btn btn-info" id="admissionBtn">
+        <div class="text-center">
+            <h2>Welcome to Basic Education</h2>
+            <button type="button" class="btn btn-admission" id="admissionBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                     class="bi bi-bank me-2" viewBox="0 0 16 16">
                     <path
                         d="m8 0 6.61 3h.89a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H15v7a.5.5 0 0 1 .485.38l.5 2a.498.498 0 0 1-.485.62H.5a.498.498 0 0 1-.485-.62l.5-2A.5.5 0 0 1 1 13V6H.5a.5.5 0 0 1-.5-.5v-2A.5.5 0 0 1 .5 3h.89zM3.777 3h8.447L8 1zM2 6v7h1V6zm2 0v7h2.5V6zm3.5 0v7h1V6zm2 0v7H12V6zM13 6v7h1V6zm2-1V4H1v1zm-.39 9H1.39l-.25 1h13.72z" />
                 </svg>
-                Admission
+                Click for Admission
             </button>
         </div>
     </div>

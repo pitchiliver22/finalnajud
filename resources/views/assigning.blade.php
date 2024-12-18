@@ -119,7 +119,7 @@
         </style>
 <div class="header-container">
         <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <h1>Assessment Details</h1>
+        <h1>Available Sections</h1>
     </div>
 
     <div id="main" onclick="w3_close()">
