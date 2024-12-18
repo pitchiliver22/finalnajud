@@ -1,12 +1,6 @@
 @include('templates.principalheader')
 
-<div id="main">
-    <div class="w3-teal">
-        <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <div class="w3-container">
-            <h1>Available Sections</h1>
-        </div>
-    </div>
+
 
     <div class="container">
         <style>
@@ -25,7 +19,19 @@
                 border-radius: 10px;
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             }
-
+            .header-container {
+        display: flex; 
+        align-items: center; 
+        background-color: rgba(8, 16, 66, 1); 
+        color: white;
+        padding: 10px; 
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);  
+    }
+    .header-container h1{
+        margin: 0; 
+        font-size: 15px;
+        text-transform:uppercase;
+    }
             h1 {
                 text-align: center;
                 color: #2c3e50;
@@ -111,7 +117,14 @@
                 }
             }
         </style>
+<div class="header-container">
+        <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open()">&#9776;</button>
+        <h1>Assessment Details</h1>
+    </div>
 
+    <div id="main" onclick="w3_close()">
+    <div class="container my-5">
+        <h1 class="headdr">Assessment Information</h1>
         @if (session('success'))
             <div class="alert alert-success">   
                 {{ session('success') }}
