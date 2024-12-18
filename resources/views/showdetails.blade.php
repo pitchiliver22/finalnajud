@@ -25,7 +25,6 @@
         margin: 0; 
         font-size: 14px;
         text-transform:uppercase;
-  
         
     }
 
@@ -80,65 +79,6 @@
         padding:10px;
         margin-top:-5%;
     }
-    .personaldet{
-        background-color:rgba(8, 16, 66, 1);
-        color:white;
-        padding:10px;
-        width:60%;
-        margin-top:-0.3%;
-        border-radius:8px;
-        margin-left:-5%;
-        font-size:17px;
-        font-family:'Arial',sans-serif;
-       
-    }
-    .contactdet{
-        background-color:rgba(8, 16, 66, 1);
-        color:white;
-        padding:10px;
-        width:60%;
-        margin-top:-0.3%;
-        border-radius:8px;
-        margin-left:-5%;
-        font-size:17px;
-        font-family:'Arial',sans-serif;
-    }
-    .prevschool{
-        background-color:rgba(8, 16, 66, 1);
-        color:white;
-        padding:10px;
-        width:50%;
-        margin-top:-0.3%;
-        border-radius:8px;
-        margin-left:-5%;
-        font-size:17px;
-        font-family:'Arial',sans-serif;
-    }
-    .address{
-        background-color:rgba(8, 16, 66, 1);
-        color:white;
-        padding:10px;
-        width:50%;
-        margin-top:-0.3%;
-        border-radius:8px;
-        margin-left:-7%;
-        font-size:17px;
-        font-family:'Arial',sans-serif;
-    }
-    .req{
-        background-color:rgba(8, 16, 66, 1);
-        color:white;
-        padding:10px;
-        width:50%;
-        margin-top:-0.3%;
-        border-radius:8px;
-        margin-left:-7%;
-        font-size:17px;
-        font-family:'Arial',sans-serif;
-    }
-    .personnn{
-        margin-left:-70%
-    }
     .back{
         background-color:rgba(26, 161, 21);
         color:white;
@@ -156,21 +96,21 @@
 
     <div class="header-container">
         <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <h1>Student Information</h1>
+        <h1>Student information</h1>
     </div>
 
     <div id="main" onclick="w3_close()">
-
     <div class="text-center mt-4">
             <a href="/studententries" class="back">Back to Student List</a>
         </div>
+
     <div class="container mt-4 mb-5">
-        <div class="personnn">
+        <div class="row">
             <!-- Student Information Card -->
             <div class="col-md-12 mb-4">
-                <div class="card student-info-card" style="width:80%;">
-                    <div class="card-body" >
-                        <h5 class="personaldet">Personal Details</h5>
+                <div class="card student-info-card">
+                    <div class="card-body">
+                        <h5 class="card-subtitle " style="color:rgba(8, 16, 66, 1); font-weight:bold; ">Personal Details</h5>
                         <p><strong>Name:</strong> {{ $student->firstname }} {{ $student->middlename }}
                             {{ $student->lastname }} {{ $student->suffix }}</p>
                         <p><strong>Nationality:</strong> {{ $student->nationality }}</p>
@@ -180,7 +120,7 @@
                         <p><strong>Birthplace:</strong> {{ $student->birthplace }}</p>
                         <p><strong>Religion:</strong> {{ $student->religion }}</p>
                         <br>
-                        <h5 class="contactdet">Contact Information</h5>
+                        <h5 class="card-subtitle mb-2" style="color:rgba(8, 16, 66, 1); font-weight:bold; ">Contact Information</h5>
                         <p><strong>Mother's Name:</strong> {{ $student->mother_name }}</p>
                         <p><strong>Mother's Occupation:</strong> {{ $student->mother_occupation }}</p>
                         <p><strong>Mother's Contact:</strong> {{ $student->mother_contact }}</p>
@@ -195,10 +135,10 @@
             </div>
 
             <!-- Previous School Card -->
-             
-                <div class="card school-info-card" style="margin-top:-151%; margin-left:90%;">
+            <div class="col-md-6 mb-4">
+                <div class="card school-info-card">
                     <div class="card-body">
-                        <h5 class="prevschool">Previous School</h5>
+                        <h5 class="card-title" style="color:rgba(8, 16, 66, 1); font-weight:bold; ">Previous School</h5>
                         @if ($previous)
                             <p><strong>Secondary School Name:</strong> {{ $previous->second_school_name }}</p>
                             <p><strong>Last Year Level:</strong> {{ $previous->second_last_year_level }}</p>
@@ -219,10 +159,10 @@
             </div>
 
             <!-- Address Card -->
-          
-                <div class="card school-info-card" style="width:46%; padding:10px; margin-left:12%;">
+            <div class="col-md-6 mb-4">
+                <div class="card address-card">
                     <div class="card-body">
-                        <h5 class="address">Address</h5>
+                        <h5 class="card-title" style="color:rgba(8, 16, 66, 1); font-weight:bold; ">Address</h5>
                         @if ($address)
                             <p><strong>Street Address:</strong> {{ $address->streetaddress }}</p>
                             <p><strong>Barangay:</strong> {{ $address->barangay }}</p>
@@ -233,14 +173,14 @@
                             <p>No address information available.</p>
                         @endif
                     </div>
-         
+                </div>
             </div>
 
             <!-- Required Documents Card -->
-           
-                <div class="card documents-card" style="padding:10px; margin-left:-62%;">
+            <div class="col-md-12 mb-4">
+                <div class="card documents-card">
                     <div class="card-body">
-                        <h2 class="req">Required Documents</h2>
+                        <h5 class="card-title" style="color:rgba(8, 16, 66, 1); font-weight:bold; ">Required Documents</h5>
                         @if ($require && count($require) > 0)
                             <div class="row">
                                 @foreach ($require as $doc)
@@ -264,7 +204,7 @@
             </div>
         </div>
 
-     
+ 
     </div>
 </div>
 

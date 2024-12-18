@@ -1,8 +1,4 @@
 @include('templates.principalheader')
-
-
-
-    <div class="container">
         <style>
             body {
                 font-family: 'Arial', sans-serif;
@@ -20,18 +16,18 @@
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             }
             .header-container {
-        display: flex; 
-        align-items: center; 
-        background-color: rgba(8, 16, 66, 1); 
-        color: white;
-        padding: 10px; 
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);  
-    }
-    .header-container h1{
-        margin: 0; 
-        font-size: 15px;
-        text-transform:uppercase;
-    }
+                display: flex; 
+                align-items: center; 
+                background-color: rgba(8, 16, 66, 1); 
+                color: white;
+                padding: 10px; 
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);  
+             }
+            .header-container h1{
+                margin: 0; 
+                font-size: 15px;
+                text-transform:uppercase;
+            }
             h1 {
                 text-align: center;
                 color: #2c3e50;
