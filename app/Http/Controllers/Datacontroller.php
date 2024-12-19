@@ -135,19 +135,18 @@ class Datacontroller extends Controller
 
     public function adminuserspost(Request $request)
     {
-
         $validateData = $request->validate([
             'firstname' => 'required',
             'lastname' => 'required',
             'middlename' => 'required',
             'suffix' => 'required',
             'role' => 'required',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users,email', // Specify the table and column
             'password' => 'required|min:8',
         ]);
-
+    
         User::create($validateData);
-        return redirect('/adminusers');
+        return redirect('/adminusers')->with('success', 'User created successfully.');
     }
 
     public function studentdetailspost(Request $request)

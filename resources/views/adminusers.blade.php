@@ -5,6 +5,16 @@
         <h2 class="mb-4 text-center">User Management</h2>
         <form action="/adminusers" method="POST" class="shadow p-4 rounded bg-light">
             @csrf
+
+            @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
             <div class="row g-3">
                 <div class="col">
                     <label for="firstname" class="form-label">First Name<span class="required">*</span></label>

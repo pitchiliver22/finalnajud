@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Required Documents Upload</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
     </script>
     <style>
         .image-container {
@@ -81,22 +81,22 @@
         <div class="upload-container mb-4 p-4 border rounded bg-light shadow-sm">
             <h2 class="mb-3">Uploaded Documents</h2>
             @if ($docs && count($docs) > 0)
-                <div class="row">
-                    @foreach ($docs as $doc)
-                        <div class="col-md-4 mb-3">
-                            <div class="card text-center document-card" onclick="openModal('{{ asset('storage/' . $doc->documents) }}')">
-                                <div class="card-body">
-                                    <p><strong>Type:</strong> {{ $doc->type }}</p>
-                                    <img src="{{ asset('storage/' . $doc->documents) }}"
-                                        alt="{{ $doc->documents }}" class="img-fluid document-img">
-                                </div>
+            <div class="row">
+                @foreach ($docs as $doc)
+                    <div class="col-md-4 mb-3">
+                        <div class="card text-center document-card" onclick="openModal('{{ asset('storage/documents/' . $doc->documents) }}')">
+                            <div class="card-body">
+                                <p><strong>Type:</strong> {{ $doc->type }}</p>
+                                <img src="{{ asset('storage/documents/' . $doc->documents) }}"
+                                     alt="{{ $doc->documents }}" class="img-fluid document-img">
                             </div>
                         </div>
-                    @endforeach
-                </div>
-            @else
-                <p>No required documents available.</p>
-            @endif
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <p>No required documents available.</p>
+        @endif
         </div>
 
         <!-- Modal for enlarged image -->
@@ -146,11 +146,11 @@
             select.required = true;
             select.innerHTML = `
                 <option value="" disabled selected>Select document type</option>
-                    <option value="F-138A or Report Card">F-138A or Report Card</option>
-                    <option value="Certificate of Good Moral Character">Certificate of Good Moral Character</option>
-                    <option value="Birth Certificate in Security Paper(NSO)">Birth Certificate in Security Paper(NSO)</option>
-                    <option value="Medical Certificate">Medical Certificate</option>
-                    <option value="2 pcs of latest and 2x2 colored picture">2 pcs of latest and 2x2 colored picture</option>
+                <option value="F-138A or Report Card">F-138A or Report Card</option>
+                <option value="Certificate of Good Moral Character">Certificate of Good Moral Character</option>
+                <option value="Birth Certificate in Security Paper(NSO)">Birth Certificate in Security Paper(NSO)</option>
+                <option value="Medical Certificate">Medical Certificate</option>
+                <option value="2 pcs of latest and 2x2 colored picture">2 pcs of latest and 2x2 colored picture</option>
                 <option value="Other">Other</option>
             `;
             newUpload.appendChild(select);
