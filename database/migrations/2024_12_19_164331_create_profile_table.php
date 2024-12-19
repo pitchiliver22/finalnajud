@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('profile_picture');
             $table->unsignedBigInteger('user_id');
-            $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('user');
+            
+            $table->foreign('user_id')->references('id')->on('users');
 
             $table->timestamps();
         });
