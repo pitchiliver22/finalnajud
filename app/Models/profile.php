@@ -10,6 +10,7 @@ class profile extends Model
     use HasFactory;
     protected $table = 'profile';
     protected $fillable = [
-        'profilepicture',
+        'profile_picture',
+        'user_id'
     ];
 }
