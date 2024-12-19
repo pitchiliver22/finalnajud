@@ -1,12 +1,10 @@
 @include('templates.principalheader')
 
-<div id="main">
-    <div class="w3-teal">
-        <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <div class="w3-container">
-            <h1>Sectioning</h1>
-        </div>
+<div class="header-container">
+        <button id="openNav" class="navvers" onclick="w3_open()">&#9776;</button>
+        <h1>Assessments Overview</h1>
     </div>
+    <div id="main" onclick="w3_close()">
 
     <div class="container">
         <style>
@@ -14,7 +12,7 @@
                 font-family: 'Arial', sans-serif;
                 background-color: #f0f4f8;
                 margin: 0;
-                padding: 20px;
+  
             }
 
             .container {
@@ -24,8 +22,24 @@
                 padding: 30px;
                 border-radius: 10px;
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                margin-top:2%;
             }
-
+            .header-container {
+            display: flex;
+            align-items: center;
+            background-color: rgba(8, 16, 66, 1);
+            color: white;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            max-width:500%;
+            }
+            .header-container h1{
+                margin: 0; 
+                font-size: 15px;
+                color:white;
+                margin-left:2%;
+                text-transform:uppercase;
+            }
             h1 {
                 text-align: center;
                 color: #2c3e50;
@@ -33,7 +47,17 @@
                 font-size: 24px;
                 font-weight: 600;
             }
+            .navvers{
+            background-color:rgba(8, 16, 66, 1); 
+            border-width:0;
+            color:white;
+            padding:15px;
 
+            }
+            .navvers:hover{
+                color:yellow;
+                background-color:rgba(8, 16, 66, 1); 
+            }
             .alert {
                 padding: 15px;
                 margin-bottom: 20px;

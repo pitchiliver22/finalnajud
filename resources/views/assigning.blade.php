@@ -4,9 +4,9 @@
                 font-family: 'Arial', sans-serif;
                 background-color: #f0f4f8;
                 margin: 0;
-                padding: 20px;
+              
             }
-
+      
             .container {
                 max-width: 1300px;
                 margin: auto;
@@ -27,6 +27,7 @@
                 margin: 0; 
                 font-size: 15px;
                 text-transform:uppercase;
+                color:white;
             }
             h1 {
                 text-align: center;
@@ -112,9 +113,19 @@
                     font-size: 14px;
                 }
             }
+            .navvers{
+    background-color:rgba(8, 16, 66, 1); 
+    border-width:0;
+    color:white;
+    padding:15px;
+
+}
+.navvers:hover{
+    color:yellow;
+}
         </style>
 <div class="header-container">
-        <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open()">&#9776;</button>
+        <button id="openNav" class="navvers" onclick="w3_open()">&#9776;</button>
         <h1>Available Sections</h1>
     </div>
 

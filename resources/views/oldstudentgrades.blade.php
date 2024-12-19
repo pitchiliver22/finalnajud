@@ -8,16 +8,9 @@
         padding: 0;
     }
 
-    #main {
-        max-width: 100%;
-        margin: 0 auto;
-        padding: 0px;
-        background-color: white;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-        position: relative;
+    #main{
+        padding:10px;
     }
-
     .header-container {
         display: flex; 
         align-items: center; 
@@ -55,7 +48,7 @@
     }
 
     .table-primary th {
-        background-color: #4CAF50; 
+        background-color: #278024; 
         color: white;
         text-transform: uppercase; 
     }
@@ -153,6 +146,14 @@
         }
  
     }
+    .btn-report{
+        font-size:15px;
+        background-color:rgba(8, 16, 66, 1); 
+    }
+    .btn-report:hover{
+        background-color:#243675;
+        color:white;
+    }
 </style>
 
 <div class="header-container">
@@ -195,7 +196,7 @@
                 </tr>
             </tbody>
         </table>
-
+    <br>
         @if (!is_null($coreId) && !is_null($gradeId) && !is_null($attendanceId))
             <a href="{{ route('report.card.download', ['grade_id' => $gradeId, 'core_id' => $coreId, 'attendance_id' => $attendanceId]) }}" class="btn-report">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">

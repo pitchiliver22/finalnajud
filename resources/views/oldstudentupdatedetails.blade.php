@@ -15,27 +15,28 @@
 
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color:#ededfc;
         }
 
         .container {
             margin-top: 30px;
-            background-color: #ffffff;
+            background-color: #ffff;
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
         }
 
         h1 {
             text-align: center;
             margin-bottom: 20px;
+            color:rgba(8, 16, 66, 1);
         }
 
         h4 {
             text-align: center;
             margin-bottom: 30px;
             font-weight: 300;
-            color: #6c757d;
+            color: #88888a;
         }
 
 
@@ -82,6 +83,21 @@
                 margin-top: 10px;
             }
         }
+  
+        .donebtn{
+            background-color:#39c227;
+            color:white;
+            border-width:0;
+            padding:8px;
+            font-size:15px;
+            font-family:'Arial',sans-serif;
+          
+            
+        }
+        .donebtn:hover{
+            background-color:#337a4a;
+        }
+      
     </style>
 </head>
 
@@ -224,7 +240,7 @@
                     <input type="hidden" id="details_id" name="details_id" value="{{ $details->id }}">
                 </div>
                 <div class="col-12">
-                    <button type="submit" name="submit" class="btn btn-primary">Done</button>
+                    <button type="submit" name="submit" class="donebtn">DONE</button>
                 </div>
             </div>
         </form>

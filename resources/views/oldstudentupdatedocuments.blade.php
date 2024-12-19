@@ -98,12 +98,28 @@
             border-radius: 5px;
             background-color: #e9f7ff;
         }
+        .backbtn{
+            text-decoration:none;
+            background-color: rgba(8, 16, 66, 1);;
+            color:white;
+            padding:10px;
+            margin-left:40%;
+        }
+        .backbtn:hover{
+            background-color:#233287;
+            color:white;
+        }
+     
     </style>
 </head>
 
 <body>
+
     <div class="upload-container">
+    
+ 
         <h2>Required Documents Upload</h2>
+      
         <p>Scanned copies must be clear and legible. Each file must not exceed 10MB.</p>
         <p>Accepted file formats for 2x2 ID Picture are jpg/png; all documents should be in pdf format.</p>
         <p>If your NSO / PSA Birth Certificate original copy is not clear/legible, you are required to upload a Local
@@ -147,6 +163,8 @@
             <div id="additional-uploads"></div>
             <button type="button" class="add-upload-button" onclick="addAnotherUpload()">Add Another Upload</button>
             <button type="submit" name="submit" class="btn btn-success" id="submit-button">Upload</button>
+            <a href="/oldstudentenrollment" class="backbtn">Back to enrollment</a>
+            
         </form>
     </div>
 

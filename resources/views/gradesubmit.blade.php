@@ -133,6 +133,19 @@
         background-color:#150e5e;
         color:white;
     }
+    .submitgg{
+        background-color:#0c3b6d;
+        color:white;
+        padding:12px;
+        text-decoration:none;
+        border-width:0;
+       
+        
+    }
+    .submitgg:hover{
+        background-color:#150e5e;
+        color:white;
+    }
 </style>
 
 <div class="header-container"> 
@@ -267,11 +280,10 @@
             <div class="hidden-center">
                 <button type="submit" name="submit" class="submitg">Submit Grades</button>
             </div>
-<br>
-<br>
+    <br>
             <div class="hidden-center">
                 <a href="{{ route('display.grade', ['edpcode' => $edpcode]) }}">
-                    <button type="button" name="button" class="submitg">Review Submitted Grades</button>
+                    <button type="button" name="button" class="submitgg">Review Submitted Grades</button>
                 </a>
             </div>
         </form>

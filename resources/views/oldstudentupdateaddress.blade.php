@@ -9,7 +9,7 @@
     </script>
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #ededfc;
         }
 
         .container {
@@ -17,21 +17,21 @@
             background-color: #ffffff;
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
         }
 
         h1 {
             text-align: center;
             margin-bottom: 20px;
+            color:rgba(8, 16, 66, 1);
         }
 
         h4 {
             text-align: center;
             margin-bottom: 30px;
             font-weight: 300;
-            color: #6c757d;
+            color: #88888a;
         }
-
         .custom-alert {
             position: relative;
             padding: 15px;
@@ -61,6 +61,19 @@
         .custom-alert .close:hover {
             color: #0c5e0c;
             /* Darker green on hover */
+        }
+        .donebtn{
+            background-color:#39c227;
+            color:white;
+            border-width:0;
+            padding:8px;
+            font-size:15px;
+            font-family:'Arial',sans-serif;
+          
+            
+        }
+        .donebtn:hover{
+            background-color:#337a4a;
         }
     </style>
 </head>
@@ -129,7 +142,7 @@
                 </div>
                 <input type="hidden" id="address_id" name="address_id" value="{{ $address->id }}">
                 <div class="col-12">
-                    <button type="submit" class="btn btn-primary">Done</button>
+                    <button type="submit" class="donebtn">Done</button>
                 </div>
             </div>
         </form>

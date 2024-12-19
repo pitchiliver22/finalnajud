@@ -11,6 +11,38 @@
             border-color: #007bff;
             box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color:rgba(8, 16, 66, 1);
+        }
+        .donebtn{
+            background-color:#39c227;
+            color:white;
+            border-width:0;
+            padding:8px;
+            font-size:15px;
+            font-family:'Arial',sans-serif;
+          
+            
+        }
+        .donebtn:hover{
+            background-color:#337a4a;
+        }
+        .backbtn{
+            text-decoration:none;
+            background-color: rgba(8, 16, 66, 1);;
+            color:white;
+            padding:10px;
+
+        }
+        .backbtn:hover{
+            background-color:#233287;
+            color:white;
+            text-decoration:none;
+        }
+     
     </style>
 </head>
 
@@ -53,7 +85,8 @@
                     placeholder="Enter payment details" required></textarea>
             </div>
             <input type="hidden" name="payment_id" value="{{ $registerForm->id }}">
-            <button type="submit" class="btn btn-primary btfn-block">Submit Payment</button>
+            <button type="submit" class="donebtn">Submit Payment</button>
+            <a href="/oldstudentenrollment" class="backbtn">Back to enrollment</a>
         </form>
     </div>
 

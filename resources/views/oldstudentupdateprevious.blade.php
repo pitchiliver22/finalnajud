@@ -13,7 +13,7 @@
     </script>
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #ededfc;
         }
 
         .container {
@@ -21,20 +21,23 @@
             background-color: #ffffff;
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
+    
         h1 {
             text-align: center;
             margin-bottom: 20px;
+            color:rgba(8, 16, 66, 1);
         }
 
         h4 {
             text-align: center;
             margin-bottom: 30px;
             font-weight: 300;
-            color: #6c757d;
+            color: #88888a;
         }
+
 
         .custom-alert {
             position: relative;
@@ -79,6 +82,19 @@
                 margin-top: 10px;
             }
         }
+        .donebtn{
+            background-color:#39c227;
+            color:white;
+            border-width:0;
+            padding:8px;
+            font-size:15px;
+            font-family:'Arial',sans-serif;
+          
+            
+        }
+        .donebtn:hover{
+            background-color:#337a4a;
+        }
     </style>
 </head>
 
@@ -111,7 +127,7 @@
             @csrf
 
             <!-- Secondary School -->
-            <h3 class="mb-3">Secondary School</h3>
+            <h3 class="mb-3" style="color:rgba(8, 16, 66, 1);">Secondary School</h3>
             <div class="col-md-6">
                 <label for="secondary-school-name" class="form-label">School Name <span
                         class="text-danger">*</span></label>
@@ -152,7 +168,7 @@
             </div>
 
             <!-- Primary School -->
-            <h3 class="mb-3">Primary School</h3>
+            <h3 class="mb-3" style="color:rgba(8, 16, 66, 1);">Primary School</h3>
             <div class="col-md-6">
                 <label for="primary-school-name" class="form-label">School Name <span
                         class="text-danger">*</span></label>
@@ -196,7 +212,7 @@
             <input type="hidden" name="school_id" id="school_id" value="{{ $school->school_id }}">
 
             <div class="col-12 text-end">
-                <button type="submit" name="submit" class="btn btn-primary">Done</button>
+                <button type="submit" name="submit" class="donebtn">Done</button>
             </div>
         </form>
     </div>
