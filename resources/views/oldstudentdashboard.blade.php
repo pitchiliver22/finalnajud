@@ -65,13 +65,39 @@
             margin: 5px 0;
         }
 
-    
+        .navvers{
+    background-color:rgba(8, 16, 66, 1); 
+    border-width:0;
+    color:white;
+    padding:15px;
+
+}
+.navvers:hover{
+    color:yellow;
+}
       
-        @media (max-width: 768px) {
-            .header-container {
-                flex-direction: column; /* Stack items on smaller screens */
-                align-items: flex-start; /* Align items to the start */
-            }
+        @media (max-width: 320px) {
+       
+        .header-container{
+            font-size: 12px; /* Adjust font size for mobile */
+            padding:20px;
+            width:41rem;
+         
+        }
+            .header-container h1{
+        margin-left:-50%;
+      }
+        .navvers{
+        position:absolute;
+        left:10px;
+        top:5px;
+        }
+        .headhead{
+            font-size:15px;
+        }
+        .table{
+            font-size:10px;
+        }
 
             h1 {
                 font-size: 18px; /* Adjust heading size */
@@ -90,23 +116,29 @@
             }
         }
 
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 16px; /* Further reduce heading size */
-            }
-
-            h2 {
-                font-size: 18px; /* Adjust h2 size */
-            }
-
-            p {
-                font-size: 14px; /* Adjust paragraph size */
-            }
+        @media (min-width: 320px) and (max-width:768px){
+        
+         
+            .header-container{
+            font-size: 12px; /* Adjust font size for mobile */
+            padding:20px;
+            width:41rem;
+    
+         
+        }
+            .header-container h1{
+            margin-left:-50%;
+        }
+        .navvers{
+        position:absolute;
+        left:10px;
+        top:5px;
+        }
         }
 </style>
 
 <div class="header-container"> 
-            <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open(event)">&#9776;</button>
+            <button id="openNav" class="navvers" onclick="w3_open(event)">&#9776;</button>
             <h1>Student Dashboard</h1> 
         </div>
         <div id="main" onclick="w3_close()">

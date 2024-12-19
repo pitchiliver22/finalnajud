@@ -143,41 +143,71 @@
             margin-top:150px;
         }
       
-        @media (max-width: 768px) {
+        @media (max-width: 320px) {
             .header-container {
                 flex-direction: column; /* Stack items on smaller screens */
                 align-items: flex-start; /* Align items to the start */
+  
+                
+                
             }
-
-            h1 {
-                font-size: 18px; /* Adjust heading size */
+            .closebtn{
+                display:none;
             }
-
-            .nav-button {
-                margin-bottom: 10px; /* Adjust button margin */
+       
+            .w3-bar-item{
+                font-size:10px;
+                width:500px;
+              
             }
-
-            .content {
-                margin: 10px; /* Reduce margin on smaller screens */
+            .profile-name{
+                font-size:8px;
             }
-
-            ul, ol {
-                text-align: left; /* Align lists to the left on mobile */
+            .w3-bar-item.w3-button.w3-large{
+                display:none;
+            }
+            #mySidebar{
+                padding:-15px;
+                width:500%;
+            
+            }
+            .profile-section a{
+                font-size:9px;
             }
         }
 
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 16px; /* Further reduce heading size */
+        @media (min-width: 320px) and (max-width:768px){
+            .header-container {
+                flex-direction: column; /* Stack items on smaller screens */
+                align-items: flex-start; /* Align items to the start */
+  
+                
+                
             }
-
-            h2 {
-                font-size: 18px; /* Adjust h2 size */
+            .closebtn{
+                display:none;
             }
-
-            p {
-                font-size: 14px; /* Adjust paragraph size */
+       
+            .w3-bar-item{
+                font-size:10px;
+                width:500px;
+              
             }
+            .profile-name{
+                font-size:12px;
+            }
+            .w3-bar-item.w3-button.w3-large{
+                display:none;
+            }
+            #mySidebar{
+                padding:-15px;
+                width:500%;
+            
+            }
+            .profile-section a{
+                font-size:9px;
+            }
+           
         }
     
       
@@ -189,7 +219,7 @@
     <div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="mySidebar">
         <div class="profile-section">
             <img src="image/cler.jpg" alt="Profile Picture" class="profile-picture">
-            <span class="profile-name" style="margin-top:0.5%; font-size: 15px;">
+            <span class="profile-name" >
                 {{ Auth::user()->firstname }} 
                 {{ Auth::user()->middlename ? Auth::user()->middlename . ' ' : '' }} 
                 {{ Auth::user()->lastname }} 

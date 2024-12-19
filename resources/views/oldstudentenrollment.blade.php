@@ -98,7 +98,8 @@
     h1{
         text-align: center; 
         margin: 20px 0; 
-        font-size:17px;
+        font-size:15px;
+        text-transform:uppercase;
       
     }
     h2{
@@ -109,11 +110,58 @@
         color:white;
         background: rgba(8, 16, 66, 1);
     }
+    .navvers{
+    background-color:rgba(8, 16, 66, 1); 
+    border-width:0;
+    color:white;
+    padding:15px;
+
+}
+.navvers:hover{
+    color:yellow;
+}
+@media (max-width: 320px) {
+        .header-container{
+            font-size: 12px; /* Adjust font size for mobile */
+            padding:20px;
+            width:41rem;
+         
+        }
+      .header-container h1{
+        margin-left:-50%;
+      }
+        .navvers{
+        position:absolute;
+        left:10px;
+        top:5px;
+        }
+     
+
+    }
+    @media (min-width: 320px) and (max-width:768px) {
+        .header-container{
+            font-size: 12px; /* Adjust font size for mobile */
+            padding:2px;
+            width:41rem;
+    
+         
+        }
+        .header-container h1{
+            margin-left:-50%;
+        }
+        .navvers{
+        position:absolute;
+        left:10px;
+        top:8px;
+        
+        }
+     
+    }
 </style>
 
 
 <div class="header-container ">
-        <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open()">&#9776;</button>
+        <button id="openNav" class="navvers" onclick="w3_open()">&#9776;</button>
         <h1>Student Enrollment</h1>
     </div>
     <div id="main" onclick="w3_close()">
