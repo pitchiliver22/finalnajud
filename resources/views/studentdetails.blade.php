@@ -14,40 +14,64 @@
     </script>
 
     <style>
-        body {
-            background-color: #f8f9fa;
+      body {
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(0, 0, 0, 0.3) 70%, #001f3f 100%);
+            margin: 0;
+            padding: 0;
+            background-color: #0c76e0;
+            position: relative;
         }
 
+      
         .container {
             margin-top: 30px;
-            background-color: #ffffff;
+            background-color: #ffff;
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+            max-width:70%;
+           
         }
 
         h1 {
             text-align: center;
             margin-bottom: 20px;
+            color:rgba(8, 16, 66, 1);
         }
 
         h4 {
             text-align: center;
             margin-bottom: 30px;
             font-weight: 300;
-            color: #6c757d;
+            color: #88888a;
         }
+
 
         .personal-details {
             background-color: #f4f4f4;
             padding: 20px;
             border-radius: 8px;
+           
         }
+        .donebtn{
+            background-color:#39c227;
+            color:white;
+            border-width:0;
+            padding:8px;
+            font-size:15px;
+            font-family:'Arial',sans-serif;
+          
+            
+        }
+        .donebtn:hover{
+            background-color:#337a4a;
+        }
+   
     </style>
 </head>
 
 <body>
-
+    
    <div class="container">
         <h1>Personal Details</h1>
         <h4>Please fill in the required fields diligently. All required fields are marked with an asterisk (*).</h4>
@@ -184,7 +208,7 @@
                     </div>
                     <input type="hidden" id="details_id" name="details_id" value="{{ $registerForm->id }}">
                     <div class="col-12">
-                        <button type="submit" class="btn btn-primary">Next</button>
+                        <button type="submit" class="donebtn">Next</button>
                     </div>
                 </div>
             </form>
@@ -206,6 +230,7 @@
                 errorDiv.style.display = 'none';
             }
         });
+        
     </script>
 
 
