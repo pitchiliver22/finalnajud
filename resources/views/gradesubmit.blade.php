@@ -157,6 +157,7 @@
         <form action="{{ route('grades.import') }}" method="POST" enctype="multipart/form-data">                        
             @csrf
             <div class="mb-3">
+                <input type="hidden" name="edpcode" value="{{ $edpcode }}">
                 <label for="excelFile" class="form-label">Import Grades (Excel file)</label>
                 <input type="file" class="form-control" id="excelFile" name="excel_file" accept=".xls,.xlsx" required>
             </div>
@@ -166,7 +167,9 @@
         <br>
     
         <a href="{{ route('grades.template', ['edp_code' => $edpcode]) }}" class="download">Download Grades Template</a>
-     
+        
+        <br>
+        <br>
         <form action="{{ route('gradesubmitpost') }}" method="POST">            
             @csrf
     
@@ -263,6 +266,13 @@
         
             <div class="hidden-center">
                 <button type="submit" name="submit" class="submitg">Submit Grades</button>
+            </div>
+<br>
+<br>
+            <div class="hidden-center">
+                <a href="{{ route('display.grade', ['edpcode' => $edpcode]) }}">
+                    <button type="button" name="button" class="submitg">Review Submitted Grades</button>
+                </a>
             </div>
         </form>
     </div>

@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use Dompdf\FrameDecorator\Page;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use App\Mail\TestMail;
 
 Route::get('/', function () {
     return view('welcome');
@@ -286,13 +287,11 @@ Route::get('/forgotpassword', [Pagecontroller::class, 'forgotpassword']);
 Route::get('/resetpassword', [Pagecontroller::class, 'resetpassword']);
 
 
-
-
-
-
 Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
 Route::post('/forgot-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('/password/reset/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
 Route::post('/password/reset', [AuthController::class, 'resetPassword'])->name('password.update');
 
 Route::get('/studenteditprofile', [Usercontroller::class, 'studenteditprofile'])->name('profile.update');
+Route::get('teacherdisplaygrade/{edpcode}', [PageController::class, 'teacherdisplaygrade'])->name('display.grade');
+

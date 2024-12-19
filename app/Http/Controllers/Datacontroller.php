@@ -242,7 +242,7 @@ public function address_contactpost(Request $request)
         'password' => bcrypt($validateData['password']), 
     ]);
 
-    // FacadesMail::to($user->email)->send(new ApproveStudent($user));
+    FacadesMail::to($user->email)->send(new ApproveStudent($user));
 
     $user->role = 'NewstudentFill';
 
@@ -1974,21 +1974,27 @@ public function updateQuarters(Request $request)
         return Excel::download(new GradesTemplateExport(collect($studentData), $quarterSettings, $headings), 'grades_template.xlsx');
     }
 
-        public function importGrades(Request $request)
-    {
-        try {
-            $request->validate([
-                'excel_file' => 'required|file|mimes:xlsx,csv',
-            ]);
-    
-            Excel::import(new TeacherGrades, $request->file('excel_file'));
-    
-            return redirect()->back()->with('success', 'Grades imported successfully!');
-        } catch (\Exception $e) {
-            Log::error('Import error: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Failed to import grades.');
-        }
+    public function importGrades(Request $request)
+{
+    try {
+        $request->validate([
+            'excel_file' => 'required|file|mimes:xlsx,csv',
+            'edpcode' => 'required|string', // Validate edpcode as well
+        ]);
+
+        Excel::import(new TeacherGrades, $request->file('excel_file'));
+
+        // Retrieve the edpcode from the request
+        $edpcode = $request->input('edpcode');
+
+        // Redirect to the teacherdisplaygrade route with the edpcode
+        return redirect()->route('display.grade', ['edpcode' => $edpcode])
+                         ->with('success', 'Grades imported successfully!');
+    } catch (\Exception $e) {
+        Log::error('Import error: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Failed to import grades.');
     }
+}
 
 
     

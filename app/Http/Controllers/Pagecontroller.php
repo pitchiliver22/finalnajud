@@ -971,5 +971,18 @@ public function principalprofile()
     {
         return view('resetpassword');
     }
-   
+
+    public function teacherdisplaygrade(Request $request, $edpcode)
+{
+    $grades = Grade::where('edp_code', $edpcode)->get();
+
+    if ($grades->isEmpty()) {
+        return redirect()->back()->withErrors(['No grades found for the given EDP code.']);
+    }
+
+     return view('teacherdisplaygrade', [
+        'grades' => $grades,
+        'edpcode' => $edpcode,
+    ]);
+}
 }
