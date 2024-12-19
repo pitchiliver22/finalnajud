@@ -158,9 +158,60 @@
     .update:hover{
         background-color:rgba(38, 29, 168);
     }
+    .navvers{
+    background-color:rgba(8, 16, 66, 1); 
+    border-width:0;
+    color:white;
+    padding:15px;
+
+}
+.navvers:hover{
+    color:yellow;
+}
+    @media (max-width: 320px) {
+    .header-container{
+            font-size: 12px; /* Adjust font size for mobile */
+            padding:20px;
+            width:41rem;
+         
+        }
+      .header-container h1{
+        margin-left:-70%;
+        font-size:15px;
+      }
+        .navvers{
+        position:absolute;
+        left:10px;
+        top:5px;
+        padding:15px;
+        }
+   
+      
+    }
+  @media (min-width:320px) and (max-width:768px){
+    .header-container{
+            font-size: 12px; /* Adjust font size for mobile */
+            padding:20px;
+            width:41rem;
+         
+        }
+      .header-container h1{
+        margin-left:-70%;
+        font-size:15px;
+      }
+        .navvers{
+        position:absolute;
+        left:10px;
+        top:5px;
+        padding:15px;
+        }
+ 
+
+}
+      
 </style>
 <div class="header-container">
-        <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open(event)">&#9776;</button>
+        <button id="openNav" class="navvers" onclick="w3_open(event)">&#9776;</button>
         <h1 style="text-align: center;">Evaluate Grades</h1>
     </div>
 

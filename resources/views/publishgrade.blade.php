@@ -1,18 +1,130 @@
 @include('templates.principalheader')
 
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f9fa;
+    }
+    .header-container {
+    display: flex;
+    align-items: center;
+    background-color: rgba(8, 16, 66, 1);
+    color: white;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+   
+
+    h1 {
+        margin: 0; 
+        font-size: 15px;
+        text-transform:uppercase;
+    }
+
+    .container {
+        margin-top: 20px;
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+    }
+
+    .table {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .table th,
+    .table td {
+        vertical-align: middle;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f2f2f2;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #e9ecef;
+    }
+
+    .btn-outline-secondary {
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #e0e0e0;
+    }
+
+    .btn-success {
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+    .navvers{
+    background-color:rgba(8, 16, 66, 1); 
+    border-width:0;
+    color:white;
+    padding:15px;
+
+}
+.navvers:hover{
+    color:yellow;
+}
+    @media (max-width: 320px) {
+    .header-container{
+            font-size: 12px; /* Adjust font size for mobile */
+            padding:20px;
+            width:41rem;
+         
+        }
+      .header-container h1{
+        margin-left:-60%;
+        font-size:15px;
+      }
+        .navvers{
+        position:absolute;
+        left:10px;
+        top:5px;
+        padding:15px;
+        }
+    
+      
+    }
+  @media (min-width:320px) and (max-width:768px){
+    .header-container{
+            font-size: 12px; /* Adjust font size for mobile */
+            padding:20px;
+            width:41rem;
+         
+        }
+      .header-container h1{
+        margin-left:-60%;
+        font-size:15px;
+      }
+        .navvers{
+        position:absolute;
+        left:10px;
+        top:5px;
+        padding:15px;
+        }
+      
+
+}
+</style>
 @if(session('success'))
     <div class="alert alert-success">
         {{ session('success') }}
     </div>
 @endif
 
-<div id="main">
-    <div class="w3-teal">
-        <button id="openNav" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">&#9776;</button>
-        <div class="w3-container">
-            <h1>Publish Grades</h1>
-        </div>
+<div class="header-container">
+        <button id="openNav" class="navvers" onclick="w3_open(event)">&#9776;</button>
+        <h1>Publish Grades</h1>
     </div>
+    <div id="main" onclick="w3_close()">
 
     <div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="mySidebar">
         <button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Close &times;</button>
@@ -123,64 +235,5 @@
     });
 </script>
 
-<style>
-    body {
-        font-family: 'Arial', sans-serif;
-        background-color: #f8f9fa;
-    }
-
-    .w3-teal {
-        background-color: #007bff;
-        color: white;
-        padding: 15px;
-    }
-
-    h1 {
-        margin: 0;
-        font-size: 24px;
-    }
-
-    .container {
-        margin-top: 20px;
-    }
-
-    .input-group {
-        margin-bottom: 20px;
-    }
-
-    .table {
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-    .table th,
-    .table td {
-        vertical-align: middle;
-    }
-
-    .table-striped tbody tr:nth-of-type(odd) {
-        background-color: #f2f2f2;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: #e9ecef;
-    }
-
-    .btn-outline-secondary {
-        transition: background-color 0.3s, color 0.3s;
-    }
-
-    .btn-outline-secondary:hover {
-        background-color: #e0e0e0;
-    }
-
-    .btn-success {
-        transition: background-color 0.3s, color 0.3s;
-    }
-
-    .btn-success:hover {
-        background-color: #218838;
-    }
-</style>
 
 @include('templates.principalfooter')

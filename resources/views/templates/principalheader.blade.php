@@ -19,10 +19,12 @@
             background-position: center;
             position: relative;
             color: white;
-            width: 180%;
-          
+            width:100%;
+            max-width:250px;
             overflow-y: hidden;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
         }
 
         .w3-sidebar::after {
@@ -144,47 +146,80 @@
             margin-top:150px;
         }
       
-        @media (max-width: 768px) {
+        @media (max-width: 320px) {
             .header-container {
                 flex-direction: column; /* Stack items on smaller screens */
                 align-items: flex-start; /* Align items to the start */
+  
+                
+                
             }
-
-            h1 {
-                font-size: 18px; /* Adjust heading size */
+            .closebtn{
+                display:none;
             }
-
-            .nav-button {
-                margin-bottom: 10px; /* Adjust button margin */
+       
+            .w3-bar-item{
+                font-size:10px;
+                width:500px;
+              
             }
-
-            .content {
-                margin: 10px; /* Reduce margin on smaller screens */
+            .profile-name{
+                font-size:8px;
             }
-
-            ul, ol {
-                text-align: left; /* Align lists to the left on mobile */
+            .w3-bar-item.w3-button.w3-large{
+                display:none;
             }
+            #mySidebar{
+                padding:-15px;
+                width:500%;
+            
+            }
+            .profile-section a{
+                font-size:9px;
+            }
+           
+            
+        }
+        @media (min-width: 320px) and (max-width:768px) {
+            .header-container {
+                flex-direction: column; /* Stack items on smaller screens */
+                align-items: flex-start; /* Align items to the start */
+  
+                
+                
+            }
+            .closebtn{
+                display:none;
+            }
+       
+            .w3-bar-item{
+                font-size:10px;
+                width:500px;
+              
+            }
+            .profile-name{
+                font-size:8px;
+            }
+            .w3-bar-item.w3-button.w3-large{
+                display:none;
+            }
+            #mySidebar{
+                padding:-15px;
+                width:500%;
+            
+            }
+            .profile-section a{
+                font-size:9px;
+            }
+           
+            
         }
 
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 16px; /* Further reduce heading size */
-            }
-
-            h2 {
-                font-size: 18px; /* Adjust h2 size */
-            }
-
-            p {
-                font-size: 14px; /* Adjust paragraph size */
-            }
-        }
     </style>
 </head>
 
 <body>
-<div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="mySidebar">
+<div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none;" id="mySidebar">
         <div class="profile-section">
             <img src="image/cler.jpg" alt="Profile Picture" class="profile-picture">
             <span class="profile-name">{{ auth()->user()->firstname }} {{ auth()->user()->lastname }}</span>
@@ -239,7 +274,7 @@
                 width="16" height="16" fill="currentColor" class="bi bi-align-center" viewBox="0 0 16 16">
                 <path
                     d="M8 1a.5.5 0 0 1 .5.5V6h-1V1.5A.5.5 0 0 1 8 1m0 14a.5.5 0 0 1-.5-.5V10h1v4.5a.5.5 0 0 1-.5.5M2 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z" />
-            </svg>Assessment</a>
+            </svg>Assessment List</a>
             <div class="signout">
         <a href="/logout" class="w3-bar-item">
             <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-box-arrow-left" viewBox="0 0 16 16">

@@ -144,11 +144,95 @@
                 width:35%;
                 padding:4px;
             }
+            .navvers{
+    background-color:rgba(8, 16, 66, 1); 
+    border-width:0;
+    color:white;
+    padding:15px;
+
+}
+.navvers:hover{
+    color:yellow;
+    background-color:rgba(8, 16, 66, 1);
+}
+    @media (max-width: 320px) {
+    .header-container{
+            font-size: 12px; /* Adjust font size for mobile */
+            padding:20px;
+            width:41rem;
+         
+        }
+      .header-container h1{
+        margin-left:-60%;
+        font-size:15px;
+      }
+        .navvers{
+        position:absolute;
+        left:2px;
+        top:5px;
+        width:1px;
+        padding:10px;
+        }
+        .submitts{
+            font-size:10px;
+            padding:8px;
+            
+        
+        }
+        .btnsubmit{
+            width:20rem;
+            
+        }
+        h2{
+            font-size:18px;
+            text-align:left;
+        }
+ 
+      
+    }
+  @media (min-width:320px) and (max-width:768px){
+    .header-container{
+            font-size: 12px; /* Adjust font size for mobile */
+            padding:20px;
+            width:41rem;
+         
+        }
+      .header-container h1{
+        margin-left:-60%;
+        font-size:15px;
+      }
+        .navvers{
+            position:absolute;
+        left:2px;
+        top:5px;
+        width:1px;
+        padding:10px;
+        }
+        .submitts{
+            font-size:10px;
+            padding:8px;
+            
+        
+        }
+        .btnsubmit{
+            width:20rem;
+            
+        }
+        h2{
+            font-size:15px;
+            text-align:left;
+        }
+  
+
+ 
+
+}
+      
      
         </style>
     <div class="header-container">
     <div class="burgericon">
-        <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open(event)">&#9776;</button>
+        <button id="openNav" class="navvers" onclick="w3_open(event)">&#9776;</button>
         </div>
         <h1 style="text-align: center;">Section Information</h1>
         
@@ -179,7 +263,7 @@
             <h2>Create Section & Schedule</h2>
             <form action="/createsection" method="POST">
                 @csrf
-                <label for="grade">Grade:</label>
+                <label for="grade" class="grade">Grade:</label>
                 <select class="form-control" id="grade" name="grade" required onchange="updateSections()">
                     <option value="">Select Grade</option>
                     <option value="K">Kindergarten</option>
@@ -196,7 +280,7 @@
                 </div>
 
                 <div class="btnsubmit">
-                <button type="submit">Proceed to add schedules</button>
+                <button type="submit" class="submitts">Proceed to add schedules</button>
         </div>            
             </form>
         </div>

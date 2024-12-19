@@ -52,6 +52,21 @@
             background-color:#a32231;
             color:white;
         }
+        .backtologin a{
+            text-decoration:none;
+            
+        }
+        .backtologin a:hover{
+            color:rgba(8, 16, 66, 1); 
+        }
+        @media (max-width:320px){
+            .form-control.form-control-lg{
+                margin-top:0%;
+                color:red;
+                padding:2px;
+                
+            }
+        }
     </style>
 </head>
 
@@ -159,12 +174,14 @@
                                                     <label class="form-check-label" for="showPassword">Show Password</label>
                                                 </div>
                                             </div>
-
+                                            
                                             <div class="col-md-6 mb-1">
+                                              
                                                 <div class="form-outline">
-                                                    <input type="password" id="password_confirmation" name="password_confirmation" class="form-control form-control-lg" required style="margin-top:-18%; "/>
+                                                    <input type="password" id="password_confirmation" name="password_confirmation" class="form-control form-control-lg" required/>
                                                     <label class="form-label" for="password_confirmation">Confirm Password <span class="text-danger">*</span></label>
                                                 </div>
+    
                                                 
                                                 <div class="form-check mb-1">
                                                     <input type="checkbox" class="form-check-input" id="showPasswordConfirm">
@@ -182,8 +199,12 @@
                                             <button type="button" class="reset"
                                                 onclick="resetForm()">Reset All</button>
                                             </div>
-                                        </div>
+                                           
                                     </div>
+                                    <div class="backtologin">
+                                                <a href="/login">Back to Login</a>
+                                        </div>
+                               
                                 </form>
                             </div>
                         </div>
@@ -216,6 +237,7 @@
         showPasswordCheckboxConfirm.addEventListener('change', () => {
             passwordInputConfirm.type = showPasswordCheckboxConfirm.checked ? 'text' : 'password';
         });
+     
     </script>
 </body>
 

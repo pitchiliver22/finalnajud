@@ -182,43 +182,71 @@
             width: 100%; 
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 320px) {
             .container {
-                width: 90%; 
-                padding: 0; 
+                width: 50%; 
+                padding: 1rem; 
+                margin-left:-10%;
+                
             }
+            
 
             .card {
                 padding: 1rem; 
             }
-
-            .logo img {
-                width: 100px; 
+            .hat{
+                display:none;
             }
 
+            .logo img {
+                width: 60px; 
+            }
+            .education-text{
+                font-size:20px;
+            }
             
             #musicControls,
             #popoutImage,
             #popoutText {
                 display: none; 
             }
+            .santa-gif{
+                display:none;
+            }
+
         }
 
-        @media (max-width: 480px) {
-            .hat {
-                width: 150px; 
+        @media (min-width: 320px) and (max-width:768px){
+            .container {
+                width: 50%; 
+                padding: 1rem; 
+                position:absolute;
+                margin-left:-15%;
+     
+                
+            }
+            .santa-gif{
+                display:none;
             }
 
-            .santa-gif {
-                width: 300px; 
+            .card {
+                padding: 1rem; 
+            }
+            .hat{
+                display:none;
             }
 
-            #popoutImage {
-                width: 100px; 
+            .logo img {
+                width: 60px; 
             }
-
+            .education-text{
+                font-size:20px;
+            }
+            
+            #musicControls,
+            #popoutImage,
             #popoutText {
-                font-size: 16px; 
+                display: none; 
             }
         }
 

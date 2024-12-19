@@ -14,6 +14,7 @@
     color: white;
     padding: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    max-width:500%;
 }
 
 .header-container h1 {
@@ -63,10 +64,74 @@ p {
     max-width:400%;
 }
 
-@media (max-width: 768px) {
-    .dashboard-card {
-        margin-bottom: 20px;
-    }
+.navvers{
+    background-color:rgba(8, 16, 66, 1); 
+    border-width:0;
+    color:white;
+    padding:15px;
+
+}
+.navvers:hover{
+    color:yellow;
+}
+@media(max-width:320px){
+   
+   .navvers{
+        position:absolute;
+        left:10px;
+        top:1px;
+        
+   }
+    .header-container{
+            font-size: 12px; /* Adjust font size for mobile */
+            padding:20px;
+            width:41rem;
+         
+        }
+        .header-container h1{
+        margin-left:-50%;
+      }
+   .w3-container h3
+   {
+    font-size:11px;
+    font-weight:bold;
+   }
+   .w3-container p{
+    font-size:8px;
+   }
+   .dashboard-card{
+        padding:9px;
+   }
+}
+@media(min-width:320px) and (max-width:768px) {
+    .navvers{
+        position:absolute;
+        left:10px;
+        top:1px;
+        
+   }
+    .header-container{
+            font-size: 12px; /* Adjust font size for mobile */
+            padding:20px;
+            width:41rem;
+         
+        }
+        .header-container h1{
+        margin-left:8%;
+      }
+      .w3-container h3
+   {
+    font-size:11px;
+    font-weight:bold;
+   }
+   .w3-container p{
+    font-size:8px;
+   }
+   .dashboard-card{
+        padding:9px;
+   }
+   
+
 }
 
 
@@ -75,7 +140,7 @@ p {
 
 
     <div class="header-container">
-        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open(event)">&#9776;</button>
+        <button id="openNav" class="navvers" onclick="w3_open()">&#9776;</button>
         <h1>Principal Dashboard</h1>
 
     </div>

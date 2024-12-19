@@ -4,11 +4,11 @@
     body {
         background-color: #f4f4f4; /* Consistent background color */
         font-family: Arial, sans-serif; /* Consistent font */
+        margin: 0;
+        padding:0;
     }
 
-    #main {
-     padding:10px;
-    }
+  
 
     .header-container {
     display: flex;
@@ -17,6 +17,7 @@
     color: white;
     padding: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    max-width:500%;
 }
 
     h2 {
@@ -66,13 +67,9 @@
         background-color: rgba(140, 31, 22); /* Darker shade on hover */
     }
 
-    @media (max-width: 768px) {
-        .header-container h1 {
-            font-size: 20px; /* Adjust font size for mobile */
-        }
-    }
+ 
     .header-container h1{
-        margin: 0; 
+      margin: 0; 
         font-size: 15px;
         text-transform:uppercase;
     }
@@ -96,10 +93,73 @@
         text-transform:uppercase;
         
     }
+    .navvers{
+    background-color:rgba(8, 16, 66, 1); 
+    border-width:0;
+    color:white;
+    padding:15px;
+
+}
+.navvers:hover{
+    color:yellow;
+}
+@media (max-width: 320px) {
+        .header-container{
+            font-size: 12px; /* Adjust font size for mobile */
+            padding:20px;
+            width:41rem;
+         
+        }
+      .header-container h1{
+        margin-left:-50%;
+      }
+        .navvers{
+        position:absolute;
+        left:10px;
+        top:5px;
+        }
+        .headhead{
+            font-size:15px;
+        }
+        .table{
+            font-size:10px;
+        }
+
+    }
+    @media (min-width: 320px) and (max-width:768px) {
+        .header-container{
+            font-size: 12px; /* Adjust font size for mobile */
+            padding:20px;
+            width:41rem;
+    
+         
+        }
+        .header-container h1{
+            margin-left:-50%;
+        }
+        .navvers{
+        position:absolute;
+        left:10px;
+        top:5px;
+        }
+        .headhead{
+            font-size:15px;
+        }
+        .table{
+            font-size:10px;
+        }
+        #publish{
+            font-size:10px;
+        }
+        #edit{
+            font-size:10px;
+            
+        }
+    }
     </style>
 
 <div class="header-container">
-        <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open()">&#9776;</button>
+        <button id="openNav" class="navvers" onclick="w3_open()">&#9776;</button>
         <h1>Assessments Overview</h1>
     </div>
     <div id="main" onclick="w3_close()">
@@ -138,10 +198,10 @@
                     <td>
                         <form action="{{ route('assessment.publish', $assessment->id) }}" method="POST" class="d-inline">
                             @csrf
-                            <button type="submit" class="btn btn-primary">Publish</button>
+                            <button type="submit" class="btn btn-primary" id="publish">Publish</button>
                         </form>
                         <form action="{{ route('assessment.edit', $assessment->id) }}" method="GET" class="d-inline">
-                            <button type="submit" class="btn btn-secondary">Edit</button>
+                            <button type="submit" class="btn btn-secondary" id="edit">Edit</button>
                         </form>
                     </td>
                 </tr>

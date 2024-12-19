@@ -72,6 +72,7 @@
         .email{
             font-family:'Arial',sans-serif;
             
+            
         }
         .submit{
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);  
@@ -106,7 +107,9 @@
         opacity: 1;
         animation: fall linear infinite;
     }
-
+    #email{
+        border-color:black;
+    }
     @keyframes fall {
         0% {
             transform: translateY(0) rotate(0deg);
@@ -125,6 +128,76 @@
     .beat:nth-child(even) {
         animation-duration: 7s;
     }
+    @media (max-width: 320px) {
+            .container {
+                padding: 1rem;
+                width:60%;
+                
+            }
+
+            h2 {
+                font-size: 1rem;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+            #email{
+               
+                width:90%;
+            }
+            .submit{
+                font-size:0.8rem;
+                width:98%;
+            }
+            #emailadd{
+                font-size:13px;
+            }
+            .message{
+                font-size:13px;
+            }
+        
+        }
+
+        /* Tablet Styles */
+        @media (min-width: 320px) and (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                width:60%;
+             
+            }
+
+            h2 {
+                font-size: 1rem;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+            #email{
+               
+                width:90%;
+            }
+            .submit{
+                font-size:0.8rem;
+                width:98%;
+            }
+            #emailadd{
+                font-size:13px;
+            }
+            .message{
+                font-size:13px;
+            }
+        }
+
+        Prevent overflow issues on smaller screens
+        @media (max-height: 600px) {
+            body {
+                height: auto;
+                min-height: 100vh;
+            }
+        }
+    
     </style>
 </head>
 <body>
@@ -135,8 +208,8 @@
         <form action="{{ route('password.email') }}" method="POST">
             @csrf
             <div class="form-group">
-                <label for="email" class="email">E-Mail Address</label>
-                <input type="email" id="email" style="border-color:rgba(8, 16, 66, 1); " name="email" required>
+                <label for="email" class="email" id="emailadd">E-Mail Address</label>
+                <input type="email" id="email" class="emailinput" name="email" required>
             </div>
             <button type="submit" class="submit">Send Password Reset Link</button>
         </form>

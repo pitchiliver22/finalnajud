@@ -83,10 +83,71 @@
     .savee:hover{
         background-color:#24ab28;
     }
+    .navvers{
+    background-color:rgba(8, 16, 66, 1); 
+    border-width:0;
+    color:white;
+    padding:15px;
+
+}
+.navvers:hover{
+    color:yellow;
+}
+    @media (max-width: 320px) {
+    .header-container{
+            font-size: 12px; /* Adjust font size for mobile */
+            padding:20px;
+            width:41rem;
+         
+        }
+      .header-container h1{
+        margin-left:-40%;
+        font-size:15px;
+      }
+        .navvers{
+        position:absolute;
+        left:10px;
+        top:5px;
+        padding:15px;
+        }
+        .savee{
+            font-size:15px;
+            width:50%;
+            margin-left:50%;
+        }
+
+      
+    }
+  @media (min-width:320px) and (max-width:768px){
+    .header-container{
+            font-size: 12px; /* Adjust font size for mobile */
+            padding:20px;
+            width:41rem;
+         
+        }
+      .header-container h1{
+        margin-left:-40%;
+        font-size:15px;
+      }
+        .navvers{
+        position:absolute;
+        left:10px;
+        top:5px;
+        padding:15px;
+        }
+        .savee{
+            font-size:15px;
+            width:50%;
+            margin-left:50%;
+        }
+
+
+}
+        
 </style>
 
 <div class="header-container">
-        <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open(event)">&#9776;</button>
+        <button id="openNav" class="navvers" onclick="w3_open(event)">&#9776;</button>
             <h1>Classload for {{ $selectedSection }} Grade: {{ $selectedGrade }}</h1>
         </div>
         <div id="main" onclick="w3_close()">
