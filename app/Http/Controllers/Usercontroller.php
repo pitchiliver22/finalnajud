@@ -182,7 +182,8 @@ class Usercontroller extends Controller
 
         public function assigning($id)
     {
-        // Fetch the student using the register_form ID
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
         $student = register_form::findOrFail($id);
         
         // Log the student ID
@@ -212,7 +213,9 @@ class Usercontroller extends Controller
             'title' => 'Assigning',
             'students' => $student,
             'proof' => $proof,
-            'classes' => $classes,  
+            'classes' => $classes, 
+            'picture' => $picture
+             
         ];
 
         return view('assigning', $data);
@@ -220,6 +223,9 @@ class Usercontroller extends Controller
 
     public function section($paymentId, $sectionName)
     {
+
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
         $proof = payment_form::where('payment_id', $paymentId)->firstOrFail(); 
     
         $students = register_form::where('id', $proof->payment_id)->firstOrFail(); 
@@ -233,7 +239,8 @@ class Usercontroller extends Controller
             'students' => $students,
             'proof' => $proof,
             'classes' => $classes,
-            'sectionName' => $sectionName 
+            'sectionName' => $sectionName,
+            'picture' => $picture
         ];
     
         return view('section', $data);
@@ -252,13 +259,15 @@ class Usercontroller extends Controller
         if (!$proof) {
             return redirect()->back()->with('error', 'Payment proof not found.');
         }
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first();
     
         $student = register_form::find($proof->payment_id);
         if (!$student) {
             return redirect()->back()->with('error', 'Student not found.');
         }
     
-        return view('proofofpayment', compact('proof', 'student'));
+        return view('proofofpayment', compact('proof', 'student', 'picture'));
     }
 
     public function studentprofile()
@@ -461,6 +470,8 @@ public function publishgrade(Request $request)
 
     public function gradesubmit($edp_code, $teacher_id)
     {
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
         $assignments = assign::where('edpcode', $edp_code)
                              ->where('teacher_id', $teacher_id)
                              ->get();
@@ -506,6 +517,7 @@ public function publishgrade(Request $request)
                 '4th_quarter' => $quartersEnabled->fourth_quarter_enabled ?? false,
             ],
             'importedGrades' => $importedGrades, 
+            'picture' => $picture
         ]);
     }
 

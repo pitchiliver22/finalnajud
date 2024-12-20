@@ -432,10 +432,12 @@ public function studentassessment(Request $request)
 
     public function principalclassload()
     {
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
         $section = section::all();
         $class = classes::all();
         $teachers = teacher::all();
-        return view('principalclassload', compact('class', 'teachers', 'section'));
+        return view('principalclassload', compact('class', 'teachers', 'section', 'picture'));
     }
     
     public function showEvaluateGrades(Request $request)
@@ -593,10 +595,12 @@ public function studentassessment(Request $request)
     //cashier 
     public function cashier()
     {
+        $userId = Auth::id();
+    $picture = Profile::where('user_id', $userId)->first();
         $pendingCount = payment_form::where('status', 'pending')->count();
         $approvedCount = payment_form::where('status', 'approved')->count();
         $students = studentdetails::all();
-        return view('cashier', compact('students', 'pendingCount', 'approvedCount'));
+        return view('cashier', compact('students', 'pendingCount', 'picture','approvedCount'));
     }
     public function cashieraddfee()
     {
@@ -604,7 +608,8 @@ public function studentassessment(Request $request)
     }
     public function cashierstudentfee()
 {
-    // Fetch all students
+    $userId = Auth::id();
+    $picture = Profile::where('user_id', $userId)->first();
     $students = register_form::all();
     
     // Fetch all payments
@@ -614,13 +619,16 @@ public function studentassessment(Request $request)
     return view('cashierstudentfee', [
         'students' => $students,
         'payments' => $payments,
+        'picture' => $picture
     ]);
 }
 
 public function cashierprofile()
 {
-    $user = Auth::user();
-    return view('cashierprofile', ['user' => $user]);
+    $user = Auth::user();   
+    $userId = Auth::id();
+    $picture = Profile::where('user_id', $userId)->first();
+    return view('cashierprofile', ['user' => $user, 'picture' => $picture]);
 }
 
 public function principalassessment()
@@ -650,8 +658,10 @@ public function principalprofile()
     {
         $students = register_form::where('status', 'approved')->get();
         $payments = payment_form::where('status', 'approved')->get();
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first();
 
-        return view('approvedpayment', compact('students', 'payments'));
+        return view('approvedpayment', compact('students', 'payments', 'picture'));
     }
 
     public function sectioning()
@@ -705,12 +715,15 @@ public function principalprofile()
 
     public function proofofpayment()
     {
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first();
         $students = register_form::all();
         $payments = payment_form::all();
 
         return view('cashierstudentfee', [
             'students' => $students,
             'payments' => $payments,
+            'picture' => $picture
         ]);
     }
 
@@ -1146,6 +1159,8 @@ public function principalprofile()
 
     public function teacherdisplaygrade(Request $request, $edpcode)
 {
+    $userId = Auth::id();
+    $picture = Profile::where('user_id', $userId)->first(); 
     $grades = Grade::where('edp_code', $edpcode)->get();
 
     if ($grades->isEmpty()) {
@@ -1155,6 +1170,7 @@ public function principalprofile()
      return view('teacherdisplaygrade', [
         'grades' => $grades,
         'edpcode' => $edpcode,
+        'picture' => $picture
     ]);
 }
 
@@ -1245,6 +1261,22 @@ public function teacherupdateprofile()
     $profile = profile::all();
 
     return view('teacherupdateprofile', compact('profile', 'picture'));
+}
+
+
+public function cashierupdateprofile()
+{
+    if (Auth::check()) {
+        $userId = Auth::user()->id;
+        Log::info("Authenticated User ID: " . $userId); 
+    } else {
+        Log::info("No user is authenticated.");
+    }
+
+    $picture = Profile::where('user_id', $userId)->first();
+    $profile = profile::all();
+
+    return view('cashierupdateprofile', compact('profile', 'picture'));
 }
 
 }

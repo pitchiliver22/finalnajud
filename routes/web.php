@@ -321,3 +321,7 @@ Route::post('/accountingupdateprofile', [Datacontroller::class, 'accountingupdat
 
 Route::get('/teacherupdateprofile', [Pagecontroller::class, 'teacherupdateprofile'])->middleware('auth');
 Route::post('/teacherupdateprofile', [Datacontroller::class, 'teacherupdateprofilepost'])->middleware('auth');
+
+
+Route::get('/cashierupdateprofile', [Pagecontroller::class, 'cashierupdateprofile'])->middleware('auth');
+Route::post('/cashierupdateprofile', [Datacontroller::class, 'cashierupdateprofilepost'])->middleware('auth');

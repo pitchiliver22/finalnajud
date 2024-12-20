@@ -693,6 +693,7 @@ public function address_contactpost(Request $request)
 
 public function approvePayment($id)
 {
+    
     $paymentForm = payment_form::find($id); 
 
     if (!$paymentForm) {
@@ -809,6 +810,8 @@ public function approvePayment($id)
 
         public function principalclassload(Request $request)
     {
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
         $selectedGrade = $request->input('grade', session('selectedGrade'));
         $selectedSection = $request->input('section', session('selectedSection'));
         $selectedSubject = $request->input('subject', session('selectedSubject'));
@@ -837,7 +840,7 @@ public function approvePayment($id)
                                 ->get();
         }
         
-        return view('principalclassload', compact('class', 'subjects', 'filteredTeachers', 'schedules', 'selectedGrade', 'selectedSection', 'selectedSubject'));
+        return view('principalclassload', compact('class', 'subjects', 'filteredTeachers','picture', 'schedules', 'selectedGrade', 'selectedSection', 'selectedSubject'));
     }
 
 public function principaleditassessmentpost(Request $request)
@@ -2206,5 +2209,32 @@ public function teacherupdateprofilepost(Request $request)
 
  
     return redirect('/teacherprofile')->with('success', 'Profile picture updated successfully!');
+}
+
+public function cashierupdateprofilepost(Request $request)
+{
+    $request->validate([
+        'user_id' => 'required|exists:users,id', // Validate the user_id
+        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max size 2MB
+    ]);
+    $user = Auth::user();
+    if ($request->input('user_id') != $user->id) {
+        return redirect()->back()->withErrors(['user_id' => 'Unauthorized user ID.'])->withInput();
+    }
+
+  
+    if ($request->hasFile('profile_picture')) {
+       
+        $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+
+       
+        Profile::updateOrCreate(
+            ['user_id' => $user->id], 
+            ['profile_picture' => $path] 
+        );
+    }
+
+ 
+    return redirect('/cashierprofile')->with('success', 'Profile picture updated successfully!');
 }
 }

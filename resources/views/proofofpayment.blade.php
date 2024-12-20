@@ -107,22 +107,20 @@
                     <input type="text" class="form-control" id="name" value="{{ $student->firstname }}" readonly
                         required>
                 </div>
-                <div class="form-group col-md-4">
-                    <label for="id-number">ID Number</label>
-                    <input type="text" class="form-control" id="id-number" value="12321321" readonly required>
-                </div>
+                
                 <div class="form-group col-md-4">
                     <label for="grade-level">Grade Level</label>
                     <input type="text" class="form-control" id="grade-level" value="{{ $proof->level }}" readonly
                         required>
                 </div>
-            </div>
+            
 
-            <div class="form-group">
+            <div class="form-group  col-md-4">
                 <label for="fee-type">Fee Type</label>
                 <input type="text" class="form-control" id="fee-type" value="{{ $proof->fee_type }}" readonly
                     required>
             </div>
+        </div>
             <div class="form-group">
                 <label for="amount">Amount</label>
                 <input type="number" class="form-control" id="amount" value="{{ $proof->amount }}" readonly
