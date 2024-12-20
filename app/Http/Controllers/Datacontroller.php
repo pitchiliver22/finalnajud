@@ -12,6 +12,7 @@ use App\Models\assign;
 use App\Models\classes;
 use App\Models\corevalues;
 use App\Models\grade;
+use App\Models\profile;
 use App\Models\previous_primary;
 use App\Models\previous_school;
 use App\Models\previous_secondary;
@@ -328,8 +329,12 @@ public function address_contactpost(Request $request)
         $filesUploaded[] = $filePath;
     }
 
-    $user = Auth::user();
-    $registerForm = register_form::where('user_id', $user->id)->first();
+    // Use the required_id to find the register form directly
+    $registerForm = register_form::find($validateData['required_id']);
+
+    if (!$registerForm) {
+        return redirect('/previous_school')->with('error', 'No registration form found.');
+    }
 
     if ($registerForm->status === register_form::STATUS_APPROVED) {
         return redirect('/payment_process/' . $registerForm->id)->with('success', 'Required Documents submitted successfully.');
@@ -368,11 +373,11 @@ public function address_contactpost(Request $request)
                 $user->role = 'NewStudent';
                 $user->save();
 
-                // FacadesMail::to($user->email)->send(new PendingPayment($user->toArray(), $amount, $feeType));
+                FacadesMail::to($user->email)->send(new PendingPayment($user->toArray(), $amount, $feeType));
             }
             
         }
-        return redirect('/enrollmentstep')->with('success', 'Payment submitted successfully!');
+        return redirect()->route('enrollment.step')->with('success', 'Payment submitted successfully.');
     }
 
     public function updatedetailspost(Request $request)
@@ -694,7 +699,7 @@ public function approvePayment($id)
     $user = Auth::user();
     if ($user instanceof User) {
         $user->save();
-        // FacadesMail::to($user->email)->send(new ApprovePayment($user->toArray()));
+        FacadesMail::to($user->email)->send(new ApprovePayment($user->toArray()));
     }
 
     return redirect('/cashierstudentfee')->with('success', 'Payment approved successfully.');
@@ -1996,6 +2001,69 @@ public function updateQuarters(Request $request)
 }
 
 
-    
 
+public function oldstudentupdateprofilepost(Request $request)
+{
+    // Validate the incoming request data
+    $request->validate([
+        'user_id' => 'required|exists:users,id', // Validate the user_id
+        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max size 2MB
+    ]);
+
+    // Get the authenticated user
+    $user = Auth::user();
+
+    // Check if the user_id matches the authenticated user's ID
+    if ($request->input('user_id') != $user->id) {
+        return redirect()->back()->withErrors(['user_id' => 'Unauthorized user ID.'])->withInput();
+    }
+
+    // Handle the uploaded file
+    if ($request->hasFile('profile_picture')) {
+        // Store the file and get the path
+        $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+
+        // Create or update the profile record
+        Profile::updateOrCreate(
+            ['user_id' => $user->id], // Find by user_id
+            ['profile_picture' => $path] // Update the profile_picture
+        );
+    }
+
+    // Redirect back with a success message
+    return redirect()->back()->with('success', 'Profile picture updated successfully!');
+}
+
+
+public function recordupdateprofilepost(Request $request)
+{
+    // Validate the incoming request data
+    $request->validate([
+        'user_id' => 'required|exists:users,id', // Validate the user_id
+        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max size 2MB
+    ]);
+
+    // Get the authenticated user
+    $user = Auth::user();
+
+    // Check if the user_id matches the authenticated user's ID
+    if ($request->input('user_id') != $user->id) {
+        return redirect()->back()->withErrors(['user_id' => 'Unauthorized user ID.'])->withInput();
+    }
+
+    // Handle the uploaded file
+    if ($request->hasFile('profile_picture')) {
+        // Store the file and get the path
+        $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+
+        // Create or update the profile record
+        Profile::updateOrCreate(
+            ['user_id' => $user->id], // Find by user_id
+            ['profile_picture' => $path] // Update the profile_picture
+        );
+    }
+
+    // Redirect back with a success message
+    return redirect()->back()->with('success', 'Profile picture updated successfully!');
+}
 }

@@ -518,15 +518,25 @@ public function publishgrade(Request $request)
     
 
     public function showStudentDetails($id)
-    {
-        $student = studentdetails::findOrFail($id);
+{
+    // Fetch the register form by primary key
+    $register = register_form::findOrFail($id);
+    
+    // Fetch related models based on the foreign keys that reference register_form
+    $student = studentdetails::where('details_id', $register->id)->first();
+    $address = address::where('id', $register->id)->first();
+    $previous = previous_school::where('id', $register->id)->first();
+    $require = required_docs::where('required_id', $register->id)->get();
 
-        $address = address::where('address_id', $id)->first(); // Assuming 'student_id' links the address
-        $previous = previous_school::where('school_id', $id)->first(); // Assuming 'student_id' links previous school
-        $require = required_docs::where('required_id', $id)->get(); // Assuming this returns multiple documents
-
-        return view('showdetails', compact('student', 'previous', 'require', 'address'));
-    }
+    // Return the view with the fetched data
+    return view('showdetails', [
+        'register' => $register,
+        'student' => $student,
+        'address' => $address,
+        'previous' => $previous,
+        'require' => $require,
+    ]);
+}
 
   
 

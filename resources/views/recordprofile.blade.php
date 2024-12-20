@@ -110,7 +110,12 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="saveChanges">Save changes</button>
+                <a href="/recordupdateprofile"><button type="submit" class="btn btn-primary">
+                    Update Profile Picture
+                </button></a>
+           
             </div>
+           
         </div>
     </div>
 </div>

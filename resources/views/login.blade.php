@@ -383,7 +383,10 @@
     </div>
 
     <script>
+<<<<<<< HEAD
+=======
       
+>>>>>>> 9896da008c4e6f3aff287fd73cf15389cb48e59d
 
         const passwordInput = document.getElementById('password');
         const showPasswordCheckbox = document.getElementById('showPassword');

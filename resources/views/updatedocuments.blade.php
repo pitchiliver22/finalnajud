@@ -87,7 +87,7 @@
                         <div class="card text-center document-card" onclick="openModal('{{ asset('storage/documents/' . $doc->documents) }}')">
                             <div class="card-body">
                                 <p><strong>Type:</strong> {{ $doc->type }}</p>
-                                <img src="{{ asset('storage/documents/' . $doc->documents) }}"
+                                <img src="{{ asset('storage/' . $doc->documents) }}"
                                      alt="{{ $doc->documents }}" class="img-fluid document-img">
                             </div>
                         </div>
@@ -118,7 +118,7 @@
     </form>
 
     <script>
-        function openModal(imageSrc) {
+       function openModal(imageSrc) {
             const modal = document.getElementById('image-modal');
             const modalImage = document.getElementById('modal-image');
             modalImage.src = imageSrc;

@@ -170,7 +170,8 @@
             <button type="button" class="add-upload-button" onclick="addAnotherUpload()">Add Another Upload</button>
             <button type="submit" name="submit" class="btn btn-success" id="submit-button">Upload</button>
             <div class="col-12 text-end">
-            <a href="/login" class="login">Go to login</a>    
+                <br>
+                  
             </div>    
         </form>
     </div>
