@@ -314,7 +314,9 @@ public function studentassessment(Request $request)
     //teacher 
     public function teacher()
     {
-        return view('teacher');
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
+        return view('teacher', compact('picture'));
     }
     public function teachernotification()
     {
@@ -323,14 +325,17 @@ public function studentassessment(Request $request)
     public function teacherprofile()
     {
         $user = Auth::user();
-        return view('teacherprofile', ['user' => $user]);
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
+        return view('teacherprofile', ['user' => $user, 'picture' => $picture]);
     }
 
     public function teacherclassload()
     {
-        // Get the authenticated user's ID
+       
         $authUserId = Auth::id();
-    
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
         // Fetch classes where teacher_id matches the authenticated user's ID
         $classes = Classes::where('teacher_id', $authUserId)
             ->select('section', 'edpcode', 'subject', 'grade', 'teacher_id')
@@ -350,7 +355,8 @@ public function studentassessment(Request $request)
         return view('teacherclassload', [
             'title' => 'Teacher Class Load',
             'classes' => $classes,
-            'proofs' => $proofs 
+            'proofs' => $proofs ,
+            'picture' => $picture
         ]);
     }
 
@@ -360,7 +366,8 @@ public function studentassessment(Request $request)
     {
         // Get the authenticated user's ID
         $authUserId = Auth::id();
-    
+       
+        $picture = Profile::where('user_id', $authUserId)->first(); 
         // Fetch classes where teacher_id matches the authenticated user's ID
         $classes = Classes::where('teacher_id', $authUserId)
             ->select('section', 'edpcode', 'subject', 'grade', 'teacher_id')
@@ -380,7 +387,8 @@ public function studentassessment(Request $request)
         return view('teacherattendance', [
             'title' => 'Teacher Class Load',
             'classes' => $classes,
-            'proofs' => $proofs 
+            'proofs' => $proofs,
+            'picture' => $picture
         ]);
     }
 
@@ -388,7 +396,7 @@ public function studentassessment(Request $request)
     {
         // Get the authenticated user's ID
         $authUserId = Auth::id();
-    
+        $picture = Profile::where('user_id', $authUserId)->first(); 
         // Fetch classes where teacher_id matches the authenticated user's ID
         $classes = Classes::where('teacher_id', $authUserId)
             ->select('section', 'edpcode', 'subject', 'grade', 'teacher_id')
@@ -408,7 +416,8 @@ public function studentassessment(Request $request)
         return view('teachercorevalue', [
             'title' => 'Teacher Class Load',
             'classes' => $classes,
-            'proofs' => $proofs 
+            'proofs' => $proofs,
+            'picture' => $picture
         ]);
     }
 
@@ -475,19 +484,26 @@ public function studentassessment(Request $request)
 
     public function publishgrade()
     {
+        
         return view('publishgrade');
     }
 
     //accounting
     public function accounting()
     {
-        return view('accounting');
+        $userId = Auth::id();
+    
+      
+        $picture = profile::where('user_id', $userId)->first(); 
+        return view('accounting', compact('picture'));
     }
 
     public function accountingassessment()
     {
+        $userId = Auth::id();
         $assessments = assessment::all(); 
-        return view('accountingassessment', compact('assessments'));
+        $picture = profile::where('user_id', $userId)->first();
+        return view('accountingassessment', compact('assessments', 'picture'));
     }
 
     public function createassessment()
@@ -497,7 +513,9 @@ public function studentassessment(Request $request)
     public function accountingprofile()
     {
         $user = Auth::user();
-        return view('accountingprofile', ['user' => $user]);
+        $userId = Auth::id();
+        $picture = profile::where('user_id', $userId)->first(); 
+        return view('accountingprofile', ['user' => $user, 'picture' => $picture]);
     }
 
     //record
@@ -1213,5 +1231,20 @@ public function accountingupdateprofile()
     return view('accountingupdateprofile', compact('profile', 'picture'));
 }
 
+
+public function teacherupdateprofile()
+{
+    if (Auth::check()) {
+        $userId = Auth::user()->id;
+        Log::info("Authenticated User ID: " . $userId); 
+    } else {
+        Log::info("No user is authenticated.");
+    }
+
+    $picture = Profile::where('user_id', $userId)->first();
+    $profile = profile::all();
+
+    return view('teacherupdateprofile', compact('profile', 'picture'));
+}
 
 }

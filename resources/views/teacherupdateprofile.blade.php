@@ -1,4 +1,4 @@
-@include('templates.accountingheader')
+@include('templates.teacherheader')
 <style>
     .header-container {
         display: flex; 
@@ -61,7 +61,7 @@
                         </div>
                     @endif
 
-                    <form action="/accountingupdateprofile" method="POST" enctype="multipart/form-data">
+                    <form action="/teacherupdateprofile" method="POST" enctype="multipart/form-data">
                         @csrf
                     
                         <!-- Hidden input for profile_id -->
@@ -87,4 +87,4 @@
     }
 </script>
 
-@include('templates.accountingfooter')
+@include('templates.teacherfooter')

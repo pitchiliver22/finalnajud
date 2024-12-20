@@ -734,7 +734,8 @@ public function approvePayment($id)
 
     // Get the teacher's ID from the validated data
     $teacherId = $validatedData['adviser'];
-
+    $userId = Auth::id();
+    $picture = Profile::where('user_id', $userId)->first(); 
     // Retrieve the user_id of the teacher using the teacher's ID
     $userId = Teacher::where('id', $teacherId)->value('user_id');
     
@@ -753,6 +754,7 @@ public function approvePayment($id)
             'selectedSection' => strtoupper($validatedData['section']),
             'selectedSubject' => strtoupper($validatedData['subject']),
             'selectedAdviser' => $teacherId,
+            'picture' => $picture
         ]);
     }
 
@@ -2154,16 +2156,11 @@ public function principalupdateprofilepost(Request $request)
 
 public function accountingupdateprofilepost(Request $request)
 {
-   
     $request->validate([
         'user_id' => 'required|exists:users,id', // Validate the user_id
         'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max size 2MB
     ]);
-
- 
     $user = Auth::user();
-
-  
     if ($request->input('user_id') != $user->id) {
         return redirect()->back()->withErrors(['user_id' => 'Unauthorized user ID.'])->withInput();
     }
@@ -2182,5 +2179,32 @@ public function accountingupdateprofilepost(Request $request)
 
  
     return redirect('/accountingprofile')->with('success', 'Profile picture updated successfully!');
+}
+
+public function teacherupdateprofilepost(Request $request)
+{
+    $request->validate([
+        'user_id' => 'required|exists:users,id', // Validate the user_id
+        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max size 2MB
+    ]);
+    $user = Auth::user();
+    if ($request->input('user_id') != $user->id) {
+        return redirect()->back()->withErrors(['user_id' => 'Unauthorized user ID.'])->withInput();
+    }
+
+  
+    if ($request->hasFile('profile_picture')) {
+       
+        $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+
+       
+        Profile::updateOrCreate(
+            ['user_id' => $user->id], 
+            ['profile_picture' => $path] 
+        );
+    }
+
+ 
+    return redirect('/teacherprofile')->with('success', 'Profile picture updated successfully!');
 }
 }
