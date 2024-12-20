@@ -17,12 +17,12 @@
 
 
     .profile-image {
-        width: 180px;
-        height: 180px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 4px solid #007bff;
-    }
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;  
+}
 
     .nav-button {
         margin-right: 15px; 
@@ -38,13 +38,14 @@
         font-size: 15px;
         text-transform:uppercase;
     }
-    .editbtn{
-        background-color:#118215;
-        color:white;
-        border-width:0;
-        padding:5px;
-        margin-bottom:2%;
-    }
+    .editbtn {
+    background-color: #118215;
+    color: white;
+    border-width: 0;
+    padding: 8px 20px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
     .editbtn:hover{
         background-color:#22a327;
         color:white;
@@ -52,14 +53,23 @@
     .classedit{
         padding:25px;
     }
-    .updateprof{
-        background-color:rgba(8, 16, 66, 1); 
-        color:white;
-        border-width:0;
-        padding:5px;
-        width:115%;
-        
-    }
+    .updateprof {
+    background-color: rgba(8, 16, 66, 1);
+    color: white;
+    border-width: 0;
+    padding: 8px 20px;
+    border-radius: 4px;
+    width: auto;
+}
+
+.email-section {
+    margin-bottom: 20px;
+}
+
+.text-muted {
+    color: #a0a0a0 !important;
+}
+
     .updateprof:hover{
         background-color:#2231a3;
         color:white;
@@ -76,19 +86,39 @@
 }
 .profilename{
     font-family:'Arial',sans-serif;
+    color:white;
   
 }
 .grade{
     margin-right:2%;
 }
 .card{
+ 
     padding:50px;
-    background-color:#f0f1f7;
+    background:linear-gradient(to bottom,rgba(8, 16, 66, 1),#1a2566);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7); 
 }
-.profile-image.img-fluid
-{
-    margin-right:50%;
-   
+.profile-image {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    margin-bottom: 15px;
+}
+
+.profile-header {
+    background-color: #118215;
+    color: white;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    margin-bottom: 0px;
+}
+.grade-level {
+    color: white;
+    margin-top: 10px;
 }
 </style>
 
@@ -98,51 +128,58 @@
             <h1>Student Dashboard</h1> 
         </div>
         <div id="main" onclick="w3_close()">
+    
 <section class="container-fluid py-5 bg-custom">
     <div class="row justify-content-center">
         <div class="col-md-9 col-lg-7 col-xl-6">
+        <div class="profile-header">
+                Profile Details
+            </div>
             <div class="card">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            @if ($picture)
-                                <img src="{{ asset('storage/' . $picture->profile_picture) }}" 
-                                     alt="Profile Image"  
-                                     class="profile-image img-fluid" 
-                                     onerror="this.onerror=null; this.src='{{ asset('path/to/default/image.png') }}';">
-                            @else
-                                <img src="{{ asset('path/to/default/image.png') }}" 
-                                     alt="Default Profile Image" 
-                                     class="profile-image img-fluid">
-                            @endif
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5 class="mb-1 uppercase" id="firstnameDisplay">{{ $profile->firstname }} {{ $profile->middlename }} {{ $profile->lastname }} {{ $profile->suffix }}</h5>
-                          
-                            <div class="d-flex justify-content-between bg-light rounded-3 p-2 mb-2">
-                                <div class="grade">
-                                    <p class="small text-muted mb-1">Grade Level</p>
-                                    <p>{{ $level->level }}</p>
-                                </div>
-                                <div class="email">
-                                    <p class="small text-muted mb-1">Email Address</p>
-                                    <p >{{ $profile->email }}</p>
-                                </div>
-                                
-                                <div class="classedit" id="editbtnn">
-                                    <button type="button" class="editbtn" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                                        Edit Profile
-                                    </button> 
-                                    
-                                    <a href="/oldstudentupdateprofile"><button type="submit" class="updateprof">
-                                        Update Profile Picture
-                                    </button></a>
-                                    
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <div class="card-body p-4">
+        <div class="d-flex">
+            <!-- Profile Picture Column -->
+            <div class="text-center me-4">
+                @if ($picture)
+                    <img src="{{ asset('storage/' . $picture->profile_picture) }}" 
+                         alt="Profile Image"  
+                         class="profile-image img-fluid mb-3" 
+                         onerror="this.onerror=null; this.src='{{ asset('path/to/default/image.png') }}';">
+                @else
+                    <img src="{{ asset('path/to/default/image.png') }}" 
+                         alt="Default Profile Image" 
+                         class="profile-image img-fluid mb-3">
+                @endif
+                <div class="grade-level text-center">
+                    
+                    <p class="text-white">{{ $level->level }}</p>
                 </div>
+            </div>
+
+            <!-- User Details Column -->
+            <div class="flex-grow-1">
+                <h5 class="mb-2" style="color:white;">{{ $profile->firstname }} {{ $profile->middlename }} {{ $profile->lastname }} {{ $profile->suffix }}</h5>
+                
+                <div class="email-section mb-3">
+                    
+                    <p class="text-white">{{ $profile->email }}</p>
+                </div>
+
+                <div class="button-section">
+                    <button type="button" class="editbtn mb-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        Edit Profile
+                    </button> 
+                    <br>
+                    <a href="/oldstudentupdateprofile">
+                        <button type="submit" class="updateprof">
+                            Update Profile Picture
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
             </div>
         </div>
     </div>
