@@ -120,11 +120,13 @@
             width: 500px;
             overflow: hidden;
             animation: santa-ride 20s linear infinite;
+            
         }
 
         .santa-gif img {
             width: 100%;
             height: auto;
+        
         }
 
         @keyframes santa-ride {
