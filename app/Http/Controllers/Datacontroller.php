@@ -119,7 +119,7 @@ class Datacontroller extends Controller
                     return redirect('/principal')->with('success', 'Welcome, Principal!');
                 case 'Accounting':
                    // sweetalert()->success('Welcome Accounting!');
-                    return redirect('/accounting')->with('success', 'Welcome, Accounting!');
+                    return redirect('/accountingassessment')->with('success', 'Welcome, Accounting!');
                 default:
                     return back()->with('error', 'Invalid user role.');
             }
