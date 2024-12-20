@@ -227,9 +227,8 @@
  
 
 }
-      
-     
         </style>
+
     <div class="header-container">
     <div class="burgericon">
         <button id="openNav" class="navvers" onclick="w3_open(event)">&#9776;</button>
@@ -271,17 +270,17 @@
                         <option value="Grade {{ $i }}">Grade {{ $i }}</option>
                     @endfor
                 </select>
-
+        
                 <div class="col">
                     <label for="section">Section</label>
                     <select class="form-control" id="section" name="section" required onchange="handleSectionChange()">
                         <option value="">Select Section</option>
                     </select>
                 </div>
-
+        
                 <div class="btnsubmit">
-                <button type="submit" class="submitts">Proceed to add schedules</button>
-        </div>            
+                    <button type="submit" class="submitts">Proceed to add schedules</button>
+                </div>            
             </form>
         </div>
 
@@ -318,6 +317,9 @@
 
 @include('templates.principalfooter')
 
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 <script>
     const sectionsByGrade = {
         'K': ["Faith"],
@@ -355,7 +357,10 @@
 
     function handleSectionChange() {
         const sectionSelect = document.getElementById('section');
+        console.log('Selected section value:', sectionSelect.value); // Debug log
+        // Check if "Add New Section" was selected
         if (sectionSelect.value === 'add') {
+            console.log('Add New Section selected'); 
             const grade = document.getElementById('grade').value;
 
             // Use SweetAlert2 for a custom input dialog
@@ -366,19 +371,14 @@
                 showCancelButton: true,
                 confirmButtonText: 'Add Section',
                 cancelButtonText: 'Cancel',
-                preConfirm: (newSection) => {
-                    return new Promise((resolve) => {
-                        if (!newSection) {
-                            Swal.showValidationMessage('Please enter a section name');
-                        } else {
-                            resolve();
-                        }
-                    });
+                inputValidator: (value) => {
+                    return !value && 'Please enter a section name'; // Validation
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
                     const newSection = result.value;
 
+                    // Check if the section already exists
                     if (!sectionsByGrade[grade].includes(newSection)) {
                         sectionsByGrade[grade].push(newSection);
                         updateSections();

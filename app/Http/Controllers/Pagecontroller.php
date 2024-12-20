@@ -193,6 +193,28 @@ public function oldstudentclassload()
         return view('oldstudentprofile', $data);
     }
 
+    public function editprofile()
+    {
+        
+        $userId = Auth::id();
+    
+
+        $profile = register_form::where('user_id', $userId)->firstOrFail();
+        
+   
+        $picture = Profile::where('user_id', $userId)->first(); // Get the specific user's picture
+        $level = payment_form::where('payment_id', $profile->id)->first();
+    
+        $data = [
+            'title' => 'Student Profile',
+            'profile' => $profile,
+            'level' => $level,
+            'picture' => $picture
+        ];
+    
+        return view('editprofile', $data);
+    }
+
     public function enrollmentStep()
 {
     if (Auth::check()) {
@@ -504,6 +526,27 @@ public function studentassessment(Request $request)
         return view('accountingprofile', ['user' => $user, 'picture' => $picture]);
     }
 
+    public function accountingeditprofile()
+    {
+        $userId = Auth::id();
+    
+
+        $profile = register_form::where('user_id', $userId)->firstOrFail();
+        
+   
+        $picture = Profile::where('user_id', $userId)->first(); // Get the specific user's picture
+        $level = payment_form::where('payment_id', $profile->id)->first();
+    
+        $data = [
+            'title' => 'Student Profile',
+            'profile' => $profile,
+            'level' => $level,
+            'picture' => $picture
+        ];
+    
+        return view('editprofile', $data);
+    }
+
     //record
     public function record()
     {
@@ -735,14 +778,15 @@ public function principalprofile()
     {
         $totalStudents = register_form::count();
 
-        $totalAccounting = User::where('role', 'accountant')->count();
-        $totalPrincipal = User::where('role', 'principal')->count();
-        $totalTeachers = User::where('role', 'teacher')->count();
-        $totalCashiers = User::where('role', 'cashier')->count();
+        $totalAccounting = User::where('role', 'Accounting')->count();
+        $totalPrincipal = User::where('role', 'Principal')->count();
+        $totalTeachers = User::where('role', 'Teacher')->count();
+        $totalCashiers = User::where('role', 'Cashier')->count();
+        $record = User::where('role', 'Record')->count();
 
         $students = register_form::all(); 
 
-        return view('adminreport', compact('totalStudents', 'totalAccounting', 'totalPrincipal', 'totalTeachers', 'totalCashiers', 'students'));
+        return view('adminreport', compact('totalStudents', 'record', 'totalAccounting', 'totalPrincipal', 'totalTeachers', 'totalCashiers', 'students'));
     }
 
     public function adminusers()
@@ -1262,9 +1306,10 @@ public function cashierupdateprofile()
 
 public function totalstudent()
 {
-    $OldStudents = User::where('role', 'Oldstudent')->count();
+    $oldStudents = User::where('role', 'Oldstudent')->get();
+    $newStudents = User::where('role', 'Newstudent')->get();
 
-    return view('totalstudent', compact('totalStudents'));
+    return view('totalstudent', compact('oldStudents', 'newStudents'));
 }
 public function totalteacher()
 {
@@ -1274,30 +1319,32 @@ public function totalteacher()
 }
 public function totalprincipal()
 {
-    
-    $totalPrincipal = User::where('role', 'Principal')->count();
-    return view('totalprincipal', compact('totalPrincipal'));
+    $principals = User::where('role', 'Principal')->get();
+    $totalPrincipal = $principals->count();
+    return view('totalprincipal', compact('principals', 'totalPrincipal'));
 }
 
 public function totalcashier()
 {
-    $totalCashiers = User::where('role', 'Cashier')->count();
+    $cashiers = User::where('role', 'Cashier')->get();
+    $totalCashiers = $cashiers->count();
 
-    return view('totalcashier', compact('totalCashiers'));
+    return view('totalcashier', compact('cashiers', 'totalCashiers'));
 }
 
 public function totalaccounting()
 {
-    $totalAccounting = User::where('role', 'Accounting')->count();
+    $accountingStaff = User::where('role', 'Accounting')->get();
+    $totalAccounting = $accountingStaff->count();
 
-    return view('totalaccounting', compact('totalAccounting'));
+    return view('totalaccounting', compact('accountingStaff', 'totalAccounting'));
 }
 
 public function totalrecord()
 {
-    $totalRecord = User::where('role', 'Record')->count();
+    $totalRecord = User::where('role', 'Record')->get();
+    $countRecord = $totalRecord->count();
 
-    return view('totalrecord', compact('totalAccounting'));
+    return view('totalrecord', compact('totalRecord', 'countRecord'));
 }
-
 }
