@@ -152,7 +152,7 @@
                 </div>
                         </div>
                         <div class="flex-grow-2" style="margin-top:-40px;">
-                            <h5 class="mb-1 uppercase" id="firstnameDisplay">{{ $profile->firstname }} {{ $profile->middlename }} {{ $profile->lastname }} {{ $profile->suffix }}</h5>
+                            <h5 class="mb-1 profile-name-line" id="firstnameDisplay">{{ $profile->firstname }} {{ $profile->middlename }} {{ $profile->lastname }} {{ $profile->suffix }}</h5>
                             <!-- <div class="d-flex justify-content-between bg-light rounded-3 p-2 mb-2"> -->
                                 
                             <div class="email-section mb-4">
