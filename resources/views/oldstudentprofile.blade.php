@@ -5,14 +5,15 @@
 
 
 <style>
-  .header-container {
+
+    .header-container {
         display: flex; 
         align-items: center; 
         background-color: rgba(8, 16, 66, 1); 
-        color: white;
+        color:white;
         padding: 10px; 
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);  
-    }
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); 
+            }
 
 
     .profile-image {
@@ -37,11 +38,64 @@
         font-size: 15px;
         text-transform:uppercase;
     }
+    .editbtn{
+        background-color:#118215;
+        color:white;
+        border-width:0;
+        padding:5px;
+        margin-bottom:2%;
+    }
+    .editbtn:hover{
+        background-color:#22a327;
+        color:white;
+    }
+    .classedit{
+        padding:25px;
+    }
+    .updateprof{
+        background-color:rgba(8, 16, 66, 1); 
+        color:white;
+        border-width:0;
+        padding:5px;
+        width:115%;
+        
+    }
+    .updateprof:hover{
+        background-color:#2231a3;
+        color:white;
+    }
+    .navvers{
+    background-color:rgba(8, 16, 66, 1); 
+    border-width:0;
+    color:white;
+    padding:15px;
+
+}
+.navvers:hover{
+    color:yellow;
+}
+.profilename{
+    font-family:'Arial',sans-serif;
+  
+}
+.grade{
+    margin-right:2%;
+}
+.card{
+    padding:50px;
+    background-color:#f0f1f7;
+}
+.profile-image.img-fluid
+{
+    margin-right:50%;
+   
+}
 </style>
 
-    <div class="header-container">
-        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
-        <h1 class="text-light">Student Profile</h1>
+
+<div class="header-container"> 
+            <button id="openNav" class="navvers" onclick="w3_open(event)">&#9776;</button>
+            <h1>Student Dashboard</h1> 
         </div>
         <div id="main" onclick="w3_close()">
 <section class="container-fluid py-5 bg-custom">
@@ -62,24 +116,25 @@
                                      class="profile-image img-fluid">
                             @endif
                         </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5 class="mb-1 uppercase" id="firstnameDisplay">{{ $profile->firstname }} {{ $profile->middlename }} {{ $profile->lastname }} {{ $profile->suffix }}</h5>
-                            <p class="mb-2 pb-1">Student ID: 232023</p>
+                        <div class="profilename">
+                            <h5 class="mb-1 uppercase" id="firstnameDisplay" style="font-weight:bold">{{ $profile->firstname }} {{ $profile->middlename }} {{ $profile->lastname }} {{ $profile->suffix }}</h5>
+                        
                             <div class="d-flex justify-content-between bg-light rounded-3 p-2 mb-2">
-                                <div>
+                                <div class="grade">
                                     <p class="small text-muted mb-1">Grade Level</p>
-                                    <p class="mb-0">{{ $level->level }}</p>
+                                    <p>{{ $level->level }}</p>
                                 </div>
-                                <div>
-                                    <p class="small text-muted mb-1">Email</p>
-                                    <p class="mb-0">{{ $profile->email }}</p>
+                                <div class="email">
+                                    <p class="small text-muted mb-1">Email Address</p>
+                                    <p >{{ $profile->email }}</p>
                                 </div>
-                                <div class="d-flex justify-content-end pt-1">
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                
+                                <div class="classedit" id="editbtnn">
+                                    <button type="button" class="editbtn" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                                         Edit Profile
                                     </button> 
                                     
-                                    <a href="/oldstudentupdateprofile"><button type="submit" class="btn btn-primary">
+                                    <a href="/oldstudentupdateprofile"><button type="submit" class="updateprof">
                                         Update Profile Picture
                                     </button></a>
                                     

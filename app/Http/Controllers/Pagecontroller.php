@@ -709,7 +709,7 @@ public function principalprofile()
         $profile = register_form::where('user_id', $userId)->firstOrFail();
         
 
-        $picture = Profile::where('user_id', $userId)->first(); 
+        $picture = profile::where('user_id', $userId)->first(); 
     
         $level = payment_form::where('payment_id', $profile->id)->first();
     

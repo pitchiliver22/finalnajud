@@ -28,13 +28,27 @@
         h1 {
             text-align: center;
             margin-bottom: 20px;
+            color:rgba(8, 16, 66, 1);
         }
 
         h4 {
             text-align: center;
             margin-bottom: 30px;
             font-weight: 300;
-            color: #6c757d;
+          
+        }
+        .donebtn{
+            background-color:#39c227;
+            color:white;
+            border-width:0;
+            padding:8px;
+            font-size:15px;
+            font-family:'Arial',sans-serif;
+          
+            
+        }
+        .donebtn:hover{
+            background-color:#337a4a;
         }
     </style>
 </head>
@@ -167,7 +181,7 @@
 
 
             <div class="col-12 text-end">
-                <button type="submit" name="submit" class="btn btn-primary">Next</button>
+                <button type="submit" name="submit" class="donebtn">Next</button>
             </div>
         </form>
     </div>  
