@@ -301,6 +301,7 @@ Route::get('teacherdisplaygrade/{edpcode}', [PageController::class, 'teacherdisp
 
 
 Route::get('/oldstudentupdateprofile', [Pagecontroller::class, 'oldstudentupdateprofile'])->middleware('auth');
+
 Route::post('/oldstudentupdateprofile', [Datacontroller::class, 'oldstudentupdateprofilepost'])->middleware('auth');
 
 
