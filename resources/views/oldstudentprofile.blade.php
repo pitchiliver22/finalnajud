@@ -16,14 +16,7 @@
             }
 
 
-    .profile-image {
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 4px solid white;  
-}
-
+ 
     .nav-button {
         margin-right: 15px; 
         background: transparent;
@@ -91,17 +84,19 @@
 }
 .card{
  
-    padding:50px;
+    padding:40px;
     /* background:linear-gradient(to bottom,rgba(8, 16, 66, 1),#1d2a78); */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7); 
+    height:45vh;
 }
 .profile-image {
-    width: 180px;
-    height: 180px;
+    width: 250px;
+    height: 250px;
     border-radius: 0;
     object-fit: cover;
-    border: 2px solid black;
-    margin-bottom: 15px;
+    border: 6px solid white;
+    margin-top:-20%;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.4);
 }
 
 .profile-header {
@@ -150,7 +145,7 @@
                 @if ($picture)
                     <img src="{{ asset('storage/' . $picture->profile_picture) }}" 
                          alt="Profile Image"  
-                         class="profile-image img-fluid mb-3" 
+                         class="profile-image img-fluid mb-1" 
                          onerror="this.onerror=null; this.src='{{ asset('path/to/default/image.png') }}';">
                 @else
                     <img src="{{ asset('path/to/default/image.png') }}" 
