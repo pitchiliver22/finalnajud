@@ -87,11 +87,11 @@
     padding:40px;
     /* background:linear-gradient(to bottom,rgba(8, 16, 66, 1),#1d2a78); */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7); 
-    height:45vh;
+    height:55vh;
 }
 .profile-image {
-    width: 250px;
-    height: 250px;
+    width: 200px;
+    height: 200px;
     border-radius: 0;
     object-fit: cover;
     border: 6px solid white;
@@ -127,7 +127,7 @@
 
 <div class="header-container"> 
             <button id="openNav" class="navvers" onclick="w3_open(event)">&#9776;</button>
-            <h1>Student Dashboard</h1> 
+            <h1>Student profile</h1> 
         </div>
         <div id="main" onclick="w3_close()">
     
@@ -139,7 +139,7 @@
             </div>
             <div class="card">
     <div class="card-body p-4">
-        <div class="d-flex">
+    <div class="d-flex align-items-center">
             <!-- Profile Picture Column -->
             <div class="text-center me-4">
                 @if ($picture)

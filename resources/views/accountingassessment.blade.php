@@ -37,8 +37,9 @@
         padding: 0px;
     }
     h1{
-        font-size:17px;
-      
+        margin: 0; 
+        font-size: 15px;
+        text-transform:uppercase;
     }
 
     .table-striped tbody tr:nth-of-type(odd) {
@@ -68,10 +69,20 @@
         background-color:rgba(37, 89, 20);
         color:white;
     }
+    .navvers{
+    background-color:rgba(8, 16, 66, 1); 
+    border-width:0;
+    color:white;
+    padding:15px;
+
+}
+.navvers:hover{
+    color:yellow;
+}
     </style>
 
 <div class="header-container">
-        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
+        <button id="openNav" class="navvers" onclick="w3_open()">&#9776;</button>
         <div class="w3-container" style="margin-left: 15px;">
             <h1>Assessment</h1>
         </div>

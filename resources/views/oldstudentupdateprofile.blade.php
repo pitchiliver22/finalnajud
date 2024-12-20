@@ -73,7 +73,7 @@
 
 <div class="header-container"> 
             <button id="openNav" class="navvers" onclick="w3_open(event)">&#9776;</button>
-            <h1>Student Dashboard</h1> 
+            <h1>Student Profile</h1> 
         </div>
         <div id="main" onclick="w3_close()">
 
