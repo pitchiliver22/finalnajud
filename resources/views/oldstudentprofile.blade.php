@@ -64,7 +64,7 @@
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h5 class="mb-1 uppercase" id="firstnameDisplay">{{ $profile->firstname }} {{ $profile->middlename }} {{ $profile->lastname }} {{ $profile->suffix }}</h5>
-                            <p class="mb-2 pb-1">Student ID: 232023</p>
+                          
                             <div class="d-flex justify-content-between bg-light rounded-3 p-2 mb-2">
                                 <div>
                                     <p class="small text-muted mb-1">Grade Level</p>

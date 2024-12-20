@@ -156,16 +156,30 @@ public function oldstudentclassload()
 
     public function studentprofile()
     {
-        if (Auth::check()) {
-            $userId = Auth::user()->id;
-            Log::info("Authenticated User ID: " . $userId); // Log the user ID
-        } else {
-            Log::info("No user is authenticated.");
+        $userId = Auth::id();
+    
+
+        $profile = register_form::where('user_id', $userId)->firstOrFail();
+        
+   
+        $picture = Profile::where('user_id', $userId)->first(); // Get the specific user's picture
+    
+    
+        $level = payment_form::where('payment_id', $profile->id)->first();
+    
+      
+        if (!$level) {
+            return redirect()->back()->with('error', 'You need to upload your proof of payment first before browsing your profile.');
         }
     
-        $picture = Profile::where('user_id', $userId)->first();
-
-        return view('studentprofile',compact('picture'));
+        $data = [
+            'title' => 'Student Profile',
+            'profile' => $profile,
+            'level' => $level,
+            'picture' => $picture
+        ];
+    
+        return view('studentprofile', $data);
     }
     public function oldstudentprofile()
     {
@@ -402,7 +416,9 @@ public function studentassessment(Request $request)
     //principal
     public function principal()
     {
-        return view('principal');
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
+        return view('principal', compact( 'picture'));
     }
 
     public function principalclassload()
@@ -416,7 +432,8 @@ public function studentassessment(Request $request)
     public function showEvaluateGrades(Request $request)
     {
         $quarterSettings = QuarterSettings::first();
-    
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
         if (!$quarterSettings) {
             $quarterSettings = new QuarterSettings();
             $quarterSettings->first_quarter_enabled = false;
@@ -452,6 +469,7 @@ public function studentassessment(Request $request)
             'quarterSettings' => $quarterSettings,
             'assigns' => $assigns,
             'grades' => $grades,
+            'picture' => $picture
         ]);
     }
 
@@ -485,22 +503,38 @@ public function studentassessment(Request $request)
     //record
     public function record()
     {
+        $userId = Auth::id();
+    
         $pendingCount = register_form::where('status', 'pending')->count();
         $approvedCount = register_form::where('status', 'approved')->count();
 
+        $picture = Profile::where('user_id', $userId)->first(); 
         $students = studentdetails::all(); 
 
-        return view('record', compact('students', 'pendingCount', 'approvedCount'));
+        return view('record', compact('students', 'pendingCount', 'approvedCount', 'picture'));
     }
 
     public function recordprofile()
     {
         $user = Auth::user();
-        return view('recordprofile', ['user' => $user]);
+        if (Auth::check()) {
+            $userId = Auth::user()->id;
+            Log::info("Authenticated User ID: " . $userId); // Log the user ID
+        } else {
+            Log::info("No user is authenticated.");
+        }
+        
+        $picture = Profile::where('user_id', $userId)->first();
+
+        return view('recordprofile', ['user' => $user,
+    'picture' => $picture]);
     }
 
     public function studententries()
     {
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
+        
         $studentDetails = studentdetails::with('register')->get(); // Eager load register
     
         // Your other datasets
@@ -509,7 +543,7 @@ public function studentassessment(Request $request)
         $requiredDocs = required_docs::all();
     
         // Pass all datasets to the view
-        return view('studententries', compact('studentDetails', 'previousSchools', 'addresses', 'requiredDocs'));
+        return view('studententries', compact('studentDetails', 'previousSchools','picture', 'addresses', 'requiredDocs'));
     }
 
     public function showdetails()
@@ -519,14 +553,18 @@ public function studentassessment(Request $request)
 
     public function studentapplicant()
     {
+       $userId = Auth::id();
         $account = register_form::where('status', register_form::STATUS_PENDING)->get();
-        return view('studentapplicant', compact('account'));
+        $picture = Profile::where('user_id', $userId)->first(); 
+        return view('studentapplicant', compact('account', 'picture'));
     }
 
     public function approvedaccount()
     {
+        $userId = Auth::id();
         $account = register_form::where('status', 'approved')->get();
-        return view('approvedaccount', compact('account'));
+        $picture = Profile::where('user_id', $userId)->first(); 
+        return view('approvedaccount', compact('account', 'picture'));
     }
     public function  recordapproval()
     {
@@ -569,8 +607,10 @@ public function cashierprofile()
 
 public function principalassessment()
 {
+    $userId = Auth::id();
+    $picture = Profile::where('user_id', $userId)->first();
     $assessments = Assessment::all(); 
-    return view('principalassessment', compact('assessments'));
+    return view('principalassessment', compact('assessments', 'picture'));
 }
 
 public function principaleditassessment()
@@ -580,8 +620,11 @@ public function principaleditassessment()
 
 public function principalprofile()
 {
+    $userId = Auth::id();
+    $picture = Profile::where('user_id', $userId)->first(); 
+      
     $user = Auth::user();
-    return view('principalprofile', ['user' => $user]);
+    return view('principalprofile', ['user' => $user, 'picture' => $picture]);
 }
 
 
@@ -595,6 +638,8 @@ public function principalprofile()
 
     public function sectioning()
     {
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
         $students = register_form::all();
         $payments = payment_form::all();
 
@@ -607,11 +652,14 @@ public function principalprofile()
         return view('sectioning', [
             'students' => $unassignedStudents,
             'payments' => $payments,
+            'picture' => $picture
         ]);
     }
 
     public function assigning()
     {
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
         $students = register_form::all();
         $payments = payment_form::all();
         $classes = classes::all();
@@ -619,7 +667,8 @@ public function principalprofile()
         return view('assigning', [
             'students' => $students,
             'payments' => $payments,
-            'classes' => $classes
+            'classes' => $classes,
+            'picture' => $picture
         ]);
     }
 
@@ -1052,15 +1101,20 @@ public function principalprofile()
     }
     public function principalteacher()
     {
-        return view('principalteacher');
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
+        return view('principalteacher', compact('picture'));
+        
     }
 
     public function createsection()
     {
       
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
         $sections = section::all();
     
-        return view('createsection', compact('sections'));
+        return view('createsection', compact('sections', 'picture'));
     }
 
     public function forgotpassword()
@@ -1109,8 +1163,9 @@ public function recordupdateprofile()
     } else {
         Log::info("No user is authenticated.");
     }
+    $picture = Profile::where('user_id', $userId)->first(); 
 
-    return view('recordupdateprofile');
+    return view('recordupdateprofile', compact('picture'));
 }
 
 public function studentupdateprofile()
@@ -1127,5 +1182,36 @@ public function studentupdateprofile()
 
     return view('studentupdateprofile', compact('profile', 'picture'));
 }
+
+public function principalupdateprofile()
+{
+    if (Auth::check()) {
+        $userId = Auth::user()->id;
+        Log::info("Authenticated User ID: " . $userId); 
+    } else {
+        Log::info("No user is authenticated.");
+    }
+
+    $picture = Profile::where('user_id', $userId)->first();
+    $profile = profile::all();
+
+    return view('principalupdateprofile', compact('profile', 'picture'));
+}
+
+public function accountingupdateprofile()
+{
+    if (Auth::check()) {
+        $userId = Auth::user()->id;
+        Log::info("Authenticated User ID: " . $userId); 
+    } else {
+        Log::info("No user is authenticated.");
+    }
+
+    $picture = Profile::where('user_id', $userId)->first();
+    $profile = profile::all();
+
+    return view('accountingupdateprofile', compact('profile', 'picture'));
+}
+
 
 }

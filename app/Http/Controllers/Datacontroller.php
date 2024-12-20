@@ -1064,31 +1064,44 @@ public function updateQuarters(Request $request)
     }
 
     public function updateProfile(Request $request)
-    {
-        $validatedData = $request->validate([
-            'firstname' => 'required|string|max:255',
-            'middlename' => 'nullable|string|max:255',
-            'lastname' => 'required|string|max:255',
-            'suffix' => 'nullable|string|max:10',
-        ]);
+{
+    $validatedData = $request->validate([
+        'firstname' => 'required|string|max:255',
+        'middlename' => 'nullable|string|max:255',
+        'lastname' => 'required|string|max:255',
+        'suffix' => 'nullable|string|max:10',
+    ]);
 
-        $userId = Auth::id();
-        $profile = register_form::find($userId);
-        $users = User::find($userId);
-        $studentdetails = studentdetails::find($userId);
+    $userId = Auth::id();
+    $profile = register_form::where('user_id', $userId)->first();
+    $users = User::find($userId);
+    $studentdetails = studentdetails::where('user_id', $userId)->first();
 
-        if (!$profile) {
-            return response()->json(['error' => 'Profile not found.'], 404);
-        }
-
-        $profile->update($validatedData);
-        $users->update($validatedData);
-        $studentdetails->update($validatedData);
-
-        Log::info('Profile updated:', $validatedData);
-
-        return response()->json(['success' => 'Profile updated successfully.']);
+    if (!$profile || !$users || !$studentdetails) {
+        return response()->json(['error' => 'Profile not found.'], 404);
     }
+
+    $profile->update([
+        'firstname' => $validatedData['firstname'], 
+        'middlename' => $validatedData['middlename'], 
+        'lastname' => $validatedData['lastname'], 
+        'suffix' => $validatedData['suffix']
+    ]);
+
+    $users->update([
+        'firstname' => $validatedData['firstname'], 
+        'lastname' => $validatedData['lastname']
+    ]);
+
+    $studentdetails->update([
+        'firstname' => $validatedData['firstname'], 
+        'lastname' => $validatedData['lastname']
+    ]);
+
+    Log::info('Profile updated:', $validatedData);
+
+    return response()->json(['success' => 'Profile updated successfully.']);
+}
 
         public function gradesubmitpost(Request $request)
         {
@@ -1362,10 +1375,13 @@ public function updateQuarters(Request $request)
 
     public function showTeachers()
 {
+ 
+    $userId = Auth::id();
+    $picture = Profile::where('user_id', $userId)->first(); 
     $teachers = User::where('role', 'teacher')->get()->map(function ($user) {
         $fullName = trim($user->firstname . ' ' . $user->middlename . ' ' . $user->lastname);
         $teacherRecord = Teacher::where('name', $fullName)->first();
-
+        
         return [
             'id' => $user->id,
             'name' => $fullName,
@@ -1374,7 +1390,7 @@ public function updateQuarters(Request $request)
         ];
     });
 
-    return view('principalteacher', compact('teachers'));
+    return view('principalteacher', compact('teachers', 'picture'));
 }
     
     public function teachersubjectpost(Request $request)
@@ -2012,26 +2028,24 @@ public function updateQuarters(Request $request)
 
 public function oldstudentupdateprofilepost(Request $request)
 {
-    // Validate the incoming request data
+ 
     $request->validate([
         'user_id' => 'required|exists:users,id', // Validate the user_id
         'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max size 2MB
     ]);
 
-    // Get the authenticated user
     $user = Auth::user();
 
-    // Check if the user_id matches the authenticated user's ID
+   
     if ($request->input('user_id') != $user->id) {
         return redirect()->back()->withErrors(['user_id' => 'Unauthorized user ID.'])->withInput();
     }
 
-    // Handle the uploaded file
     if ($request->hasFile('profile_picture')) {
         // Store the file and get the path
         $path = $request->file('profile_picture')->store('profile_pictures', 'public');
 
-        // Create or update the profile record
+     
         Profile::updateOrCreate(
             ['user_id' => $user->id], // Find by user_id
             ['profile_picture' => $path] // Update the profile_picture
@@ -2039,7 +2053,7 @@ public function oldstudentupdateprofilepost(Request $request)
     }
 
     // Redirect back with a success message
-    return redirect()->back()->with('success', 'Profile picture updated successfully!');
+    return redirect('/oldstudentprofile')->with('success', 'Profile picture updated successfully!');
 }
 
 
@@ -2104,6 +2118,69 @@ public function recordupdateprofilepost(Request $request)
     }
 
     // Redirect back with a success message
-    return redirect()->back()->with('success', 'Profile picture updated successfully!');
+    return redirect('/recordprofile')->with('success', 'Profile picture updated successfully!');
+}
+public function principalupdateprofilepost(Request $request)
+{
+   
+    $request->validate([
+        'user_id' => 'required|exists:users,id', // Validate the user_id
+        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max size 2MB
+    ]);
+
+ 
+    $user = Auth::user();
+
+  
+    if ($request->input('user_id') != $user->id) {
+        return redirect()->back()->withErrors(['user_id' => 'Unauthorized user ID.'])->withInput();
+    }
+
+  
+    if ($request->hasFile('profile_picture')) {
+       
+        $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+
+       
+        Profile::updateOrCreate(
+            ['user_id' => $user->id], 
+            ['profile_picture' => $path] 
+        );
+    }
+
+ 
+    return redirect('/principalprofile')->with('success', 'Profile picture updated successfully!');
+}
+
+public function accountingupdateprofilepost(Request $request)
+{
+   
+    $request->validate([
+        'user_id' => 'required|exists:users,id', // Validate the user_id
+        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max size 2MB
+    ]);
+
+ 
+    $user = Auth::user();
+
+  
+    if ($request->input('user_id') != $user->id) {
+        return redirect()->back()->withErrors(['user_id' => 'Unauthorized user ID.'])->withInput();
+    }
+
+  
+    if ($request->hasFile('profile_picture')) {
+       
+        $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+
+       
+        Profile::updateOrCreate(
+            ['user_id' => $user->id], 
+            ['profile_picture' => $path] 
+        );
+    }
+
+ 
+    return redirect('/accountingprofile')->with('success', 'Profile picture updated successfully!');
 }
 }

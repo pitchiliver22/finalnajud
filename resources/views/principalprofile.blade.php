@@ -43,7 +43,7 @@
         <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
         <h1 class="text-light">Principal Profile</h1>
     </div>
-<
+
 <div id="main" onclick="w3_close()">
 <section class="container-fluid py-5 bg-custom">
     <div class="row justify-content-center">
@@ -52,8 +52,11 @@
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0">
-                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                                 alt="Profile Image" class="profile-image">
+                            @if ($picture)
+                                <img src="{{ asset('storage/' . $picture->profile_picture) }}" alt="Profile Image" class="profile-image img-fluid" onerror="this.onerror=null; this.src='{{ asset('path/to/default/image.png') }}';">
+                            @else
+                                <img src="{{ asset('path/to/default/image.png') }}" alt="Default Profile Image" class="profile-image img-fluid">
+                            @endif
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h5 class="mb-1 uppercase" id="firstnameDisplay">{{ $user->firstname }} {{ $user->middlename }} {{ $user->lastname }} {{ $user->suffix }}</h5>
@@ -66,6 +69,10 @@
                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                                         Edit Profile
                                     </button>                                 </div>
+
+                                    <a href="/principalupdateprofile">
+                                        <button type="button" class="btn btn-primary">upload Profile Picture</button>
+                                    </a>
                             </div>
                         </div>
                     </div>

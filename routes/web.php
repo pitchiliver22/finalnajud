@@ -33,6 +33,7 @@ Route::get('studentdetails/{registerFormId}', [UserController::class, 'studentde
 
 Route::post('/update-profile', [Datacontroller::class, 'updateProfile'])->name('update.profile');
 
+
 Route::get('address_contact', [Pagecontroller::class, 'address_contact'])->middleware('auth');
 Route::post('address_contact', [Datacontroller::class, 'address_contactpost'])->middleware('auth');
 Route::get('address_contact/{registerFormId}', [UserController::class, 'address_contact'])->name('address_contact')->middleware('auth');
@@ -308,3 +309,10 @@ Route::post('/recordupdateprofile', [Datacontroller::class, 'recordupdateprofile
 
 Route::get('/studentupdateprofile', [Pagecontroller::class, 'studentupdateprofile'])->middleware('auth');
 Route::post('/studentupdateprofile', [Datacontroller::class, 'studentupdateprofilepost'])->middleware('auth');
+
+Route::get('/principalupdateprofile', [Pagecontroller::class, 'principalupdateprofile'])->middleware('auth');
+Route::post('/principalupdateprofile', [Datacontroller::class, 'principalupdateprofilepost'])->middleware('auth');
+
+
+Route::get('/accountingupdateprofile', [Pagecontroller::class, 'accountingupdateprofile'])->middleware('auth');
+Route::post('/accountingupdateprofile', [Datacontroller::class, 'accountingupdateprofilepost'])->middleware('auth');

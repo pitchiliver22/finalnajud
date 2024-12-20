@@ -52,8 +52,11 @@
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0">
-                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                                 alt="Profile Image" class="profile-image">
+                            @if ($picture)
+                            <img src="{{ asset('storage/' . $picture->profile_picture) }}" alt="Profile Image" class="profile-image img-fluid" onerror="this.onerror=null; this.src='{{ asset('path/to/default/image.png') }}';">
+                        @else
+                            <img src="{{ asset('path/to/default/image.png') }}" alt="Default Profile Image" class="profile-image img-fluid">
+                        @endif
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h5 class="mb-1 uppercase" id="firstnameDisplay">{{ $user->firstname }} {{ $user->middlename }} {{ $user->lastname }} {{ $user->suffix }}</h5>
@@ -65,6 +68,9 @@
                                 <div class="d-flex justify-content-end pt-1">
                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">Edit Profile</button>
                                 </div>
+                                <a href="/recordupdateprofile"><button type="submit" class="btn btn-primary">
+                                    Update Profile Picture
+                                </button></a>
                             </div>
                         </div>
                     </div>
@@ -110,9 +116,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="saveChanges">Save changes</button>
-                <a href="/recordupdateprofile"><button type="submit" class="btn btn-primary">
-                    Update Profile Picture
-                </button></a>
+               
            
             </div>
            
