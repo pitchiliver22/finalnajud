@@ -54,13 +54,14 @@
         padding:25px;
     }
     .updateprof {
-    background-color: rgba(8, 16, 66, 1);
+    background-color: #2b398f;
     color: white;
     border-width: 0;
     padding: 8px 20px;
     border-radius: 4px;
     width: auto;
 }
+
 
 .email-section {
     margin-bottom: 20px;
@@ -71,7 +72,7 @@
 }
 
     .updateprof:hover{
-        background-color:#2231a3;
+        background-color:#0c0e54;
         color:white;
     }
     .navvers{
@@ -84,41 +85,47 @@
 .navvers:hover{
     color:yellow;
 }
-.profilename{
-    font-family:'Arial',sans-serif;
-    color:white;
-  
-}
+
 .grade{
     margin-right:2%;
 }
 .card{
  
     padding:50px;
-    background:linear-gradient(to bottom,rgba(8, 16, 66, 1),#1a2566);
+    /* background:linear-gradient(to bottom,rgba(8, 16, 66, 1),#1d2a78); */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7); 
 }
 .profile-image {
     width: 180px;
     height: 180px;
-    border-radius: 50%;
+    border-radius: 0;
     object-fit: cover;
-    border: 4px solid white;
+    border: 2px solid black;
     margin-bottom: 15px;
 }
 
 .profile-header {
-    background-color: #118215;
+    background-color:rgba(8, 16, 66, 1); 
     color: white;
     padding: 10px 20px;
     font-weight: bold;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     margin-bottom: 0px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); 
 }
 .grade-level {
-    color: white;
+    color: black;
     margin-top: 10px;
+}
+.profile-name-line {
+    border-bottom: 2px solid black;
+    margin-bottom: 10px; 
+    color:black;
+    font-weight:bold;
+    font-family:'Tahoma',sans-serif;
+   
+    text-transform:uppercase;
 }
 </style>
 
@@ -152,17 +159,17 @@
                 @endif
                 <div class="grade-level text-center">
                     
-                    <p class="text-white">{{ $level->level }}</p>
+                    <p class="text-black">{{ $level->level }}</p>
                 </div>
             </div>
 
             <!-- User Details Column -->
-            <div class="flex-grow-1">
-                <h5 class="mb-2" style="color:white;">{{ $profile->firstname }} {{ $profile->middlename }} {{ $profile->lastname }} {{ $profile->suffix }}</h5>
+            <div class="flex-grow-2" style="margin-top:-40px;">
+                <h5 class="mb-1 profile-name-line" >{{ $profile->firstname }} {{ $profile->middlename }} {{ $profile->lastname }} {{ $profile->suffix }}</h5>
                 
-                <div class="email-section mb-3">
+                <div class="email-section mb-4">
                     
-                    <p class="text-white">{{ $profile->email }}</p>
+                    <p class="text-black">{{ $profile->email }}</p>
                 </div>
 
                 <div class="button-section">
