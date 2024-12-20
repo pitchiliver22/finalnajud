@@ -34,6 +34,7 @@
             width: 100%;
             max-width: 450px; /* Maximum width for larger screens */
             padding: 0 20px; /* Padding for small screens */
+            
         }
 
         .card {
@@ -42,7 +43,7 @@
             padding: 1.5rem; /* Adjusted padding for better fit */
             width: 200%; /* Full width of the container */
             height: auto; /* Set to auto for dynamic height based on content */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.8);
             text-align: center;
             position: relative;
         }
@@ -314,6 +315,9 @@
         background-color:rgba(33, 15, 115);
         color:white;
     }
+    #button{
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);  
+    }
     </style>
 </head>
 
@@ -364,7 +368,7 @@
                             <input type="checkbox" class="form-check-input" id="showPassword">
                             <label class="form-check-label" for="showPassword">Show Password</label>
                         </div>
-                        <button class="btn btn-primary btn-block mb-3" id="button">Login</button>
+                        <button class="btn btn-primary btn-block mb-3" id="button" >Login</button>
                         <a href="/forgotpassword" class="text-muted">Forgot Password?</a>
                     </form>
 
