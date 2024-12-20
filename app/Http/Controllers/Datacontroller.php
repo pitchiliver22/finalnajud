@@ -1068,45 +1068,47 @@ public function updateQuarters(Request $request)
         }
     }
 
-    public function updateProfile(Request $request)
-{
-    $validatedData = $request->validate([
-        'firstname' => 'required|string|max:255',
-        'middlename' => 'nullable|string|max:255',
-        'lastname' => 'required|string|max:255',
-        'suffix' => 'nullable|string|max:10',
-    ]);
+        public function updateProfile(Request $request)
+    {
+        $validatedData = $request->validate([
+            'firstname' => 'required|string|max:255',
+            'middlename' => 'nullable|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'suffix' => 'nullable|string|max:10',
+        ]);
 
-    $userId = Auth::id();
-    $profile = register_form::where('user_id', $userId)->first();
-    $users = User::find($userId);
-    $studentdetails = studentdetails::where('user_id', $userId)->first();
+        $userId = Auth::id();
+        $profile = register_form::where('user_id', $userId)->first();
+        $users = User::find($userId);
+        $studentdetails = studentdetails::where('user_id', $userId)->first();
 
-    if (!$profile || !$users || !$studentdetails) {
-        return response()->json(['error' => 'Profile not found.'], 404);
+        if (!$profile || !$users || !$studentdetails) {
+            return response()->json(['error' => 'Profile not found.'], 404);
+        }
+
+        $profile->update([
+            'firstname' => $validatedData['firstname'], 
+            'middlename' => $validatedData['middlename'], 
+            'lastname' => $validatedData['lastname'], 
+            'suffix' => $validatedData['suffix']
+        ]);
+
+        $users->update([
+            'firstname' => $validatedData['firstname'], 
+            'middlename' => $validatedData['middlename'],
+            'lastname' => $validatedData['lastname']
+        ]);
+
+        $studentdetails->update([
+            'firstname' => $validatedData['firstname'], 
+            'middlename' => $validatedData['middlename'],
+            'lastname' => $validatedData['lastname']
+        ]);
+
+        Log::info('Profile updated:', $validatedData);
+
+        return response()->json(['success' => 'Profile updated successfully.']);
     }
-
-    $profile->update([
-        'firstname' => $validatedData['firstname'], 
-        'middlename' => $validatedData['middlename'], 
-        'lastname' => $validatedData['lastname'], 
-        'suffix' => $validatedData['suffix']
-    ]);
-
-    $users->update([
-        'firstname' => $validatedData['firstname'], 
-        'lastname' => $validatedData['lastname']
-    ]);
-
-    $studentdetails->update([
-        'firstname' => $validatedData['firstname'], 
-        'lastname' => $validatedData['lastname']
-    ]);
-
-    Log::info('Profile updated:', $validatedData);
-
-    return response()->json(['success' => 'Profile updated successfully.']);
-}
 
         public function gradesubmitpost(Request $request)
         {
@@ -2094,12 +2096,57 @@ public function studentupdateprofilepost(Request $request)
     return redirect('/studentprofile')->with('success', 'Profile picture updated successfully!');
 }
 
+public function editprofilepost(Request $request)
+{
+   
+    $request->validate([
+        'firstname' => 'required|string|max:255',
+        'middlename' => 'nullable|string|max:255',
+        'lastname' => 'required|string|max:255',
+        'suffix' => 'nullable|string|max:255',
+        'email' => 'required|email|max:255', 
+    ]);
+
+
+    $userId = Auth::id();
+
+    $profile = register_form::where('user_id', $userId)->firstOrFail();
+
+    $profile->firstname = $request->firstname;
+    $profile->middlename = $request->middlename;
+    $profile->lastname = $request->lastname;
+    $profile->suffix = $request->suffix;
+
+    // Also update the corresponding user record
+    $user = User::where('id', $userId)->firstOrFail();
+    $user->firstname = $request->firstname;
+    $user->middlename = $request->middlename;
+    $user->lastname = $request->lastname;
+    $user->suffix = $request->suffix;
+
+    // Find the user's student details
+    $studentDetails = studentdetails::where('details_id', $profile->id)->firstOrFail();
+
+    // Update the student details fields
+    $studentDetails->firstname = $request->firstname;
+    $studentDetails->middlename = $request->middlename;
+    $studentDetails->lastname = $request->lastname;
+    $studentDetails->suffix = $request->suffix;
+
+    // Save all changes
+    $profile->save();
+    $user->save();
+    $studentDetails->save();
+
+    // Redirect back with a success message
+    return redirect()->route('editprofile')->with('success', 'Profile updated successfully.');
+}
+
 public function recordupdateprofilepost(Request $request)
 {
-    // Validate the incoming request data
     $request->validate([
-        'user_id' => 'required|exists:users,id', // Validate the user_id
-        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max size 2MB
+        'user_id' => 'required|exists:users,id', 
+        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', 
     ]);
 
     // Get the authenticated user
@@ -2125,6 +2172,7 @@ public function recordupdateprofilepost(Request $request)
     // Redirect back with a success message
     return redirect('/recordprofile')->with('success', 'Profile picture updated successfully!');
 }
+
 public function principalupdateprofilepost(Request $request)
 {
    

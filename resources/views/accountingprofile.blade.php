@@ -63,9 +63,11 @@
                                     <p class="mb-0">{{ $user->email }}</p>
                                 </div>
                                 <div class="d-flex justify-content-end pt-1">
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                                        Edit Profile
-                                    </button>
+                                    <a href="{{ url('accountingeditprofile') }}">
+                                        <button type="button" class="btn-primary">
+                                            Edit Profile Details
+                                        </button>
+                                    </a>
                                  </div>
 
                                  <a href="/accountingupdateprofile">
@@ -80,92 +82,11 @@
     </div>
 </section>
 
-<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="editProfileForm">
-                    <div class="form-group">
-                        <label for="firstname">First Name</label>
-                        <input type="text" class="form-control" id="firstname" name="firstname" value="{{ $user->firstname }}">
-                    </div>
-                    <div class="form-group">
-                        <label for="middlename">Middle Name</label>
-                        <input type="text" class="form-control" id="middlename" name="middlename" value="{{ $user->middlename }}">
-                    </div>
-                    <div class="form-group">
-                        <label for="lastname">Last Name</label>
-                        <input type="text" class="form-control" id="lastname" name="lastname" value="{{ $user->lastname }}">
-                    </div>
-                    <div class="form-group">
-                        <label for="suffix">Suffix</label>
-                        <input type="text" class="form-control" id="suffix" name="suffix" value="{{ $user->suffix }}">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ $user->email }}" readonly>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveChanges">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
     function w3_open() {
         document.getElementById("mySidebar").style.display = "block";
     }
 
-    document.getElementById('saveChanges').addEventListener('click', function() {
-        const formData = {
-            firstname: document.getElementById('firstname').value,
-            middlename: document.getElementById('middlename').value,
-            lastname: document.getElementById('lastname').value,
-            suffix: document.getElementById('suffix').value,
-        };
-
-        $.ajax({
-            url: '{{ route('update.profile') }}',
-            method: 'POST',
-            data: formData,
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            success: function(response) {
-                $('#editProfileModal').modal('hide');
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: response.success,
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    location.reload();
-                });
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON && xhr.responseJSON.error ?
-                    xhr.responseJSON.error :
-                    'There was an error saving your changes. Please try again.';
-
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: errorMessage,
-                    confirmButtonText: 'OK'
-                });
-            }
-        });
-    });
 </script>
 
 

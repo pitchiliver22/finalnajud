@@ -172,9 +172,11 @@
                 </div>
 
                 <div class="button-section">
-                    <button type="button" class="editbtn mb-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                        Edit Profile
-                    </button> 
+                    <a href="{{ url('editprofile') }}">
+                        <button type="button" class="editbtn mb-2">
+                            Edit Profile Details
+                        </button>
+                    </a>
                     <br>
                     <a href="/oldstudentupdateprofile">
                         <button type="submit" class="updateprof">
@@ -192,105 +194,12 @@
 </section>
 
 
- <!-- Edit Profile Modal -->
- <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="editProfileForm">
-                    <div class="mb-3">
-                        <label for="firstname" class="form-label">First Name</label>
-                        <input type="text" class="form-control" id="firstname" name="firstname" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="middlename" class="form-label">Middle Name</label>
-                        <input type="text" class="form-control" id="middlename" name="middlename">
-                    </div>
-                    <div class="mb-3">
-                        <label for="lastname" class="form-label">Last Name</label>
-                        <input type="text" class="form-control" id="lastname" name="lastname" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="suffix" class="form-label">Suffix</label>
-                        <input type="text" class="form-control" id="suffix" name="suffix">
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" readonly>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveChanges">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 
 
 <script>
     function w3_open() {
         document.getElementById("mySidebar").style.display = "block";
     }
-
-    const modal = new bootstrap.Modal(document.getElementById('editProfileModal'));
-
-        document.querySelector('[data-bs-toggle="modal"]').addEventListener('click', () => {
-            // Populate the modal with the existing profile data
-            document.getElementById('firstname').value = "{{ $profile->firstname }}";
-            document.getElementById('middlename').value = "{{ $profile->middlename }}";
-            document.getElementById('lastname').value = "{{ $profile->lastname }}";
-            document.getElementById('suffix').value = "{{ $profile->suffix }}";
-            document.getElementById('email').value = "{{ $profile->email }}"; // Read-only
-            modal.show();
-        });
-
-        document.getElementById('saveChanges').addEventListener('click', function() {
-            const formData = {
-                firstname: document.getElementById('firstname').value,
-                middlename: document.getElementById('middlename').value,
-                lastname: document.getElementById('lastname').value,
-                suffix: document.getElementById('suffix').value,
-            };
-
-            // AJAX request to save changes
-            $.ajax({
-                url: '{{ route('update.profile') }}',
-                method: 'POST',
-                data: formData,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    modal.hide();
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Profile Updated',
-                        text: response.success,
-                    }).then(() => {
-                        location.reload();
-                    });
-                },
-                error: function(xhr) {
-                    const errorMessage = xhr.responseJSON && xhr.responseJSON.error ?
-                        xhr.responseJSON.error :
-                        'There was an error saving your changes. Please try again.';
-
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: errorMessage,
-                    });
-                }
-            });
-        });
-
 </script>
 
 @include('templates.oldstudentfooter')

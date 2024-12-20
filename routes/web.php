@@ -146,6 +146,7 @@ Route::put('principaleditassessment/{id}', [DataController::class, 'principaledi
 //accounting 
 Route::get('accounting', [Pagecontroller::class, 'accounting']);
 Route::get('accountingprofile', [Pagecontroller::class, 'accountingprofile']);
+Route::get('accountingeditprofile', [Pagecontroller::class, 'accountingeditprofile']);
 Route::get('accountingassessment', [Pagecontroller::class, 'accountingassessment']);
 Route::get('createassessment', [Pagecontroller::class, 'createassessment']);
 Route::post('/createassessment', [Datacontroller::class, 'assessmentpost'])->name('assessment.post');
@@ -209,6 +210,9 @@ Route::get('oldstudent', [Pagecontroller::class, 'oldstudent']);
 Route::post('oldstudent', [Datacontroller::class, 'oldstudentpost']);
 
 Route::get('oldstudentprofile', [Pagecontroller::class, 'oldstudentprofile'])->middleware('auth');
+
+Route::get('editprofile', [Pagecontroller::class, 'editprofile'])->name('editprofile');
+Route::post('editprofile', [Datacontroller::class, 'editprofilepost'])->name('editprofilepost');
 
 Route::get('oldstudentdashboard', [Pagecontroller::class, 'oldstudentdashboard'])->middleware('auth');
 
@@ -328,8 +332,9 @@ Route::post('/cashierupdateprofile', [Datacontroller::class, 'cashierupdateprofi
 
 
 
-Route::get('/totalstudent', [Pagecontroller::class, 'totalstudent'])->middleware('auth');
-Route::get('/totalteacher', [Pagecontroller::class, 'totalteacher'])->middleware('auth');
-Route::get('/totalprincipal', [Pagecontroller::class, 'totalprincipal'])->middleware('auth');
-Route::get('/totalrecord', [Pagecontroller::class, 'totalrecord'])->middleware('auth');
-Route::get('/totalcashier', [Pagecontroller::class, 'totalcashier'])->middleware('auth');
+Route::get('/totalstudent', [Pagecontroller::class, 'totalstudent']);
+Route::get('/totalteacher', [Pagecontroller::class, 'totalteacher']);
+Route::get('/totalprincipal', [Pagecontroller::class, 'totalprincipal']);
+Route::get('/totalrecord', [Pagecontroller::class, 'totalrecord']);
+Route::get('/totalcashier', [Pagecontroller::class, 'totalcashier']);
+Route::get('/totalaccounting', [Pagecontroller::class, 'totalaccounting']);

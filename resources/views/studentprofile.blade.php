@@ -58,10 +58,10 @@
                                 <div>
                                     <p class="small text-muted mb-1">Grade Level</p>
                                     @if($level)
-                {{ $level->level }}
-            @else
-                No payment information available.
-            @endif
+                                    {{ $level->level }}
+                                @else
+                                    No payment information available.
+                                @endif
                                 </div>
                                 <div>
                                     <p class="small text-muted mb-1">Email</p>
