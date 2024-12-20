@@ -144,22 +144,6 @@
                                 <img src="{{ asset('path/to/default/image.png') }}" alt="Default Profile Image" class="profile-image img-fluid">
                             @endif
                         </div>
-<<<<<<< HEAD
-                        <div class="flex-grow-1 ms-3">
-                            <h5 class="mb-1 uppercase" id="firstnameDisplay">{{ $user->firstname }} {{ $user->middlename }} {{ $user->lastname }} {{ $user->suffix }}</h5>
-                            <div class="d-flex justify-content-between bg-light rounded-3 p-2 mb-2">
-                                <div>
-                                    <p class="small text-muted mb-1">Email</p>
-                                    <p class="mb-0">{{ $user->email }}</p>
-                                </div>
-                                <div class="d-flex justify-content-end pt-1">
-                                    <a href="{{ url('accountingeditprofile') }}">
-                                        <button type="button" class="btn-primary">
-                                            Edit Profile Details
-                                        </button>
-                                    </a>
-                                 </div>
-=======
                         <div class="flex-grow-2" style="margin-top:-40px;">
                         <h5 class="mb-1 uppercase" id="firstnameDisplay">{{ $user->firstname }} {{ $user->middlename }} {{ $user->lastname }} {{ $user->suffix }}</h5>
                             <!-- <div class="d-flex justify-content-between bg-light rounded-3 p-2 mb-2"> -->
@@ -171,7 +155,6 @@
                         Edit Profile
                         </button>
                         </div>
->>>>>>> 5a502777716b2da94535c0f79da38ec0c19eb7d9
 
                     <a href="/accountingupdateprofile">
                     <button type="button" class="updateprof">Upload Profile Picture</button>

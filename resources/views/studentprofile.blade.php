@@ -142,26 +142,6 @@
                             @else
                                 <img src="{{ asset('path/to/default/image.png') }}" alt="Default Profile Image" class="profile-image img-fluid">
                             @endif
-<<<<<<< HEAD
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5 class="mb-1 uppercase" id="firstnameDisplay">{{ $profile->firstname }} {{ $profile->middlename }} {{ $profile->lastname }} {{ $profile->suffix }}</h5>
-                            <div class="d-flex justify-content-between bg-light rounded-3 p-2 mb-2">
-                                <div>
-                                    <p class="small text-muted mb-1">Grade Level</p>
-                                    @if($level)
-                                    {{ $level->level }}
-                                @else
-                                    No payment information available.
-                                @endif
-                                </div>
-                                <div>
-                                    <p class="small text-muted mb-1">Email</p>
-                                    <p class="mb-0">{{ $profile->email }}</p>
-                                </div>
-                                <div class="d-flex justify-content-end pt-1">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">Edit Profile</button>
-=======
                             <div class="grade-level text-center">
                     
                     @if($level)
@@ -183,7 +163,6 @@
                     <button type="button" class="editbtn mb-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                         Edit Profile
                     </button> 
->>>>>>> 5a502777716b2da94535c0f79da38ec0c19eb7d9
                                     <a href="/studentupdateprofile">
                                         <button type="button" class="updateprof">Upload Profile Picture</button>
                                     </a>
