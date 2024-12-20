@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\address;
+use App\Models\profile;
 use App\Models\assessment;
 use App\Models\assign;
 use App\Models\attendance;
@@ -113,6 +114,8 @@ public function oldstudentclassload()
         return redirect()->route('login')->withErrors('No registration form found.');
     }
 
+    $picture = Profile::where('user_id', $userId)->first();
+
     $assignedClasses = assign::where('class_id', $registerForm->id)->get();
 
     $student = $registerForm;
@@ -123,6 +126,7 @@ public function oldstudentclassload()
         'assignedClasses' => $assignedClasses,
         'student' => $student,
         'proof' => $proof,
+        'picture' => $picture
     ]);
 }
 
@@ -130,13 +134,15 @@ public function oldstudentclassload()
     {
         return view('studentprofile');
     }
-
     public function oldstudentprofile()
     {
         $userId = Auth::id();
     
         // Retrieve the user's profile
         $profile = register_form::where('user_id', $userId)->firstOrFail();
+        
+        // Retrieve the user's profile picture
+        $picture = Profile::where('user_id', $userId)->first(); // Get the specific user's picture
     
         // Check if the user has made a payment
         $level = payment_form::where('payment_id', $profile->id)->first();
@@ -150,6 +156,7 @@ public function oldstudentclassload()
             'title' => 'Student Profile',
             'profile' => $profile,
             'level' => $level,
+            'picture' => $picture // This will now be a single profile instance
         ];
     
         return view('oldstudentprofile', $data);
@@ -157,6 +164,13 @@ public function oldstudentclassload()
 
     public function enrollmentStep()
 {
+    if (Auth::check()) {
+        $userId = Auth::user()->id;
+        //Log::info("Authenticated User ID: " . $userId); // Log the user ID
+    } else {
+        //Log::info("No user is authenticated.");
+    }
+
     if (!Auth::check()) {
         return redirect()->route('login');
     }
@@ -174,8 +188,8 @@ public function oldstudentclassload()
     $requiredDocs = required_docs::where('required_id', $registerForm->id)->first();
     $payment = payment_form::where('payment_id', $registerForm->id)->first(); 
     $assignStatus = assign::where('class_id', $registerForm->id)->first(); 
-
-    return view('enrollmentstep', compact('details', 'address', 'previousSchool', 'requiredDocs', 'payment', 'assignStatus'));
+    $picture = Profile::where('user_id', $userId)->first();
+    return view('enrollmentstep', compact('details', 'address', 'previousSchool', 'requiredDocs', 'payment', 'assignStatus',  'picture'));
 }
 
 public function studentgrades()
@@ -445,12 +459,13 @@ public function studentassessment(Request $request)
 
     public function studententries()
     {
-
-        $studentDetails = studentdetails::all();
+        $studentDetails = studentdetails::with('register')->get(); // Eager load register
+    
+        // Your other datasets
         $previousSchools = previous_school::all();
         $addresses = address::all();
         $requiredDocs = required_docs::all();
-
+    
         // Pass all datasets to the view
         return view('studententries', compact('studentDetails', 'previousSchools', 'addresses', 'requiredDocs'));
     }
@@ -646,7 +661,30 @@ public function principalprofile()
 
     public function oldstudentdashboard()
     {
-        return view('oldstudentdashboard');
+        $userId = Auth::id();
+    
+        // Retrieve the user's profile
+        $profile = register_form::where('user_id', $userId)->firstOrFail();
+        
+        // Retrieve the user's profile picture
+        $picture = Profile::where('user_id', $userId)->first(); // Get the specific user's picture
+    
+        // Check if the user has made a payment
+        $level = payment_form::where('payment_id', $profile->id)->first();
+    
+        // If payment record doesn't exist, return an error message
+        if (!$level) {
+            return redirect()->back()->with('error', 'You need to upload your proof of payment first before browsing your profile.');
+        }
+    
+        $data = [
+            'title' => 'Student Profile',
+            'profile' => $profile,
+            'level' => $level,
+            'picture' => $picture // This will now be a single profile instance
+        ];
+    
+        return view('oldstudentdashboard', $data);
     }
 
     public function oldstudentaddress()
@@ -703,9 +741,17 @@ public function principalprofile()
     {
         $schoolYears = assessment::select('school_year')->distinct()->pluck('school_year');
 
+        if (Auth::check()) {
+            $userId = Auth::user()->id;
+            Log::info("Authenticated User ID: " . $userId); // Log the user ID
+        } else {
+            Log::info("No user is authenticated.");
+        }
+    
         $user = Auth::user();
         $paymentId = $user ? $user->payment_id : null; 
-
+        $picture = Profile::where('user_id', $userId)->first();
+   
         $userPayment = payment_form::where('payment_id', $paymentId)->first();
         $authGradeLevel = $userPayment ? strtolower(str_replace(' ', '', trim($userPayment->level))) : null;
 
@@ -721,12 +767,20 @@ public function principalprofile()
 
         $assessments = $assessments->get();
 
-        return view('oldstudentassessment', compact('assessments', 'schoolYears', 'authGradeLevel'));
+        return view('oldstudentassessment', compact('assessments', 'schoolYears', 'authGradeLevel' , 'picture'));
     }
 
 
         public function oldstudentenrollment()
         {
+
+            if (Auth::check()) {
+                $userId = Auth::user()->id;
+                Log::info("Authenticated User ID: " . $userId); // Log the user ID
+            } else {
+                Log::info("No user is authenticated.");
+            }
+
             if (!Auth::check()) {
                 return redirect()->route('login');
             }
@@ -747,7 +801,8 @@ public function principalprofile()
             $previousSchool = previous_school::where('school_id', $registerFormId)->first();
             $requiredDocs = required_docs::where('required_id', $registerFormId)->first();
             $assign = assign::where('class_id', $registerFormId)->first();
-        
+          $picture = Profile::where('user_id', $userId)->first();
+  
             $allCompleted = true;
         
             $paymentStatus = $payment && is_object($payment) ? $payment->status : null;
@@ -802,7 +857,8 @@ public function principalprofile()
                 'school_id',
                 'required_id',
                 'payment_id',
-                'class_id'
+                'class_id',
+                'picture'
             ));
         }
 
@@ -886,6 +942,8 @@ public function principalprofile()
         if ($userName) {
             $attendanceId = Attendance::where('fullname', $userName)->value('attendance_id'); 
         }
+        $picture = Profile::where('user_id', $userId)->first();
+   
     
         return view('oldstudentgrades', [
             'grades' => $grades,
@@ -894,6 +952,7 @@ public function principalprofile()
             'gradeId' => $gradeId,
             'coreId' => $coreId,
             'attendanceId' => $attendanceId,
+            'picture' => $picture
         ]);
     }
 
@@ -984,5 +1043,32 @@ public function principalprofile()
         'grades' => $grades,
         'edpcode' => $edpcode,
     ]);
+}
+
+public function oldstudentupdateprofile()
+{
+    if (Auth::check()) {
+        $userId = Auth::user()->id;
+        Log::info("Authenticated User ID: " . $userId); // Log the user ID
+    } else {
+        Log::info("No user is authenticated.");
+    }
+
+    $picture = Profile::where('user_id', $userId)->first();
+    $profile = profile::all();
+
+    return view('oldstudentupdateprofile', compact('profile', 'picture'));
+}
+
+public function recordupdateprofile()
+{
+    if (Auth::check()) {
+        $userId = Auth::user()->id;
+        Log::info("Authenticated User ID: " . $userId); // Log the user ID
+    } else {
+        Log::info("No user is authenticated.");
+    }
+
+    return view('recordupdateprofile');
 }
 }

@@ -132,9 +132,8 @@
             <div class="form-group">
                 <label for="payment-proof">Payment Proof (Image)</label>
                 <br>
-                <img src="{{ asset('storage/payment_proofs/' . $proof->payment_proof) }}" alt="Payment Proof" class="payment-proof-image img-fluid" id="paymentProofImage" data-toggle="modal" data-target="#imageModal">
-                <p>{{ asset('storage/payment_proofs/' . $proof->payment_proof) }}</p> <!-- For debugging -->
-            </div>
+                <img src="{{ asset('storage/' . $proof->payment_proof) }}" alt="Payment Proof" class="payment-proof-image img-fluid" id="paymentProofImage" data-toggle="modal" data-target="#imageModal">
+                 </div>
             
             <!-- Modal -->
             <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">

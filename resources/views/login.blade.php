@@ -377,25 +377,6 @@
     </div>
 
     <script>
-        const snowContainer = document.getElementById('snow-container');
-
-        function createSnowflake() {
-            const snowflake = document.createElement('div');
-            snowflake.classList.add('snowflake');
-            snowflake.innerHTML = '&#10054;';
-            snowflake.style.left = Math.random() * 100 + 'vw';
-            snowflake.style.animationDuration = Math.random() * 3 + 7 + 's';
-            snowflake.style.opacity = Math.random();
-            snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
-
-            snowContainer.appendChild(snowflake);
-
-            setTimeout(() => {
-                snowflake.remove();
-            }, 10000);
-        }
-
-        setInterval(createSnowflake, 200);
 
         const passwordInput = document.getElementById('password');
         const showPasswordCheckbox = document.getElementById('showPassword');
