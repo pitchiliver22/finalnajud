@@ -154,7 +154,11 @@
                 @endif
                 <div class="grade-level text-center">
                     
-                    <p class="text-black">{{ $level->level }}</p>
+                    @if($level)
+                {{ $level->level }}
+            @else
+                No payment information available.
+            @endif
                 </div>
             </div>
 

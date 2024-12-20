@@ -57,18 +57,18 @@ Route::get('payment_process/{registerFormId}', [UserController::class, 'payment_
 //student
 Route::get('studentdashboard', [Pagecontroller::class, 'studentdashboard'])->middleware('auth');
 
-Route::get('studentprofile', [Pagecontroller::class, 'studentprofile']);
+Route::get('studentprofile', [Pagecontroller::class, 'studentprofile'])->middleware('auth');;
 Route::get('studentprofile', [Usercontroller::class, 'studentprofile'])->middleware('auth');
 
 Route::get('studentclassload', [Pagecontroller::class, 'studentclassload'])->middleware('auth');
 Route::get('/student/classload/pdf/{student_id}', [PDFController::class, 'generatePDF'])->name('student.classload.pdf');
 
-Route::get('enrollmentstep', [Pagecontroller::class, 'enrollmentstep']);
+Route::get('enrollmentstep', [Pagecontroller::class, 'enrollmentstep'])->middleware('auth');;
 
 
 Route::get('studentgrades', [PageController::class, 'studentgrades'])->middleware('auth');
 
-Route::get('studentassessment', [Pagecontroller::class, 'studentassessment']);
+Route::get('studentassessment', [Pagecontroller::class, 'studentassessment'])->middleware('auth');;
 
 
 //teacher
@@ -325,3 +325,11 @@ Route::post('/teacherupdateprofile', [Datacontroller::class, 'teacherupdateprofi
 
 Route::get('/cashierupdateprofile', [Pagecontroller::class, 'cashierupdateprofile'])->middleware('auth');
 Route::post('/cashierupdateprofile', [Datacontroller::class, 'cashierupdateprofilepost'])->middleware('auth');
+
+
+
+Route::get('/totalstudent', [Pagecontroller::class, 'totalstudent'])->middleware('auth');
+Route::get('/totalteacher', [Pagecontroller::class, 'totalteacher'])->middleware('auth');
+Route::get('/totalprincipal', [Pagecontroller::class, 'totalprincipal'])->middleware('auth');
+Route::get('/totalrecord', [Pagecontroller::class, 'totalrecord'])->middleware('auth');
+Route::get('/totalcashier', [Pagecontroller::class, 'totalcashier'])->middleware('auth');

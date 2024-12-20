@@ -61,7 +61,7 @@
                         </div>
                     @endif
 
-                    <form action="/oldstudentupdateprofile" method="POST" enctype="multipart/form-data">
+                    <form action="/studentupdateprofile" method="POST" enctype="multipart/form-data">
                         @csrf
                     
                         <!-- Hidden input for profile_id -->

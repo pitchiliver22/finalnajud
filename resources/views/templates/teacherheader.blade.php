@@ -184,8 +184,8 @@
 <body>
 <div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="mySidebar">
         <div class="profile-section">
-            <img src="{{ asset('storage/' . $picture->profile_picture) }}" alt="Profile Picture" class="profile-picture">
-            <span class="profile-name">{{ auth()->user()->firstname }} {{ auth()->user()->lastname }}</span>
+            <img src="{{ $picture && $picture->profile_picture ? asset('storage/' . $picture->profile_picture) : asset('path/to/default-image.jpg') }}" alt="Profile Picture" class="profile-picture">  <span class="profile-name">{{ auth()->user()->firstname }} {{ auth()->user()->lastname }}</span>
+           <span class="profile-name">{{ auth()->user()->firstname }} {{ auth()->user()->lastname }}</span>
             <a href="/teacherprofile">View Profile</a>
         </div>
         <a href="/teacher" class="w3-bar-item"><svg xmlns="http://www.w3.org/2000/svg" width="16"

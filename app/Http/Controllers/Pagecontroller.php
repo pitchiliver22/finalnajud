@@ -85,17 +85,14 @@ class Pagecontroller extends Controller
 
         $picture = Profile::where('user_id', $userId)->first(); 
     
-        $level = payment_form::where('payment_id', $profile->id)->first();
-    
+       
       
-        if (!$level) {
-            return redirect()->back()->with('error', 'You need to upload your proof of payment first before browsing your profile.');
-        }
+       
     
         $data = [
             'title' => 'Student Profile',
             'profile' => $profile,
-            'level' => $level,
+           
             'picture' => $picture 
         ];
     
@@ -163,14 +160,8 @@ public function oldstudentclassload()
         
    
         $picture = Profile::where('user_id', $userId)->first(); // Get the specific user's picture
-    
-    
         $level = payment_form::where('payment_id', $profile->id)->first();
-    
-      
-        if (!$level) {
-            return redirect()->back()->with('error', 'You need to upload your proof of payment first before browsing your profile.');
-        }
+  
     
         $data = [
             'title' => 'Student Profile',
@@ -190,14 +181,7 @@ public function oldstudentclassload()
         
    
         $picture = Profile::where('user_id', $userId)->first(); // Get the specific user's picture
-    
-    
         $level = payment_form::where('payment_id', $profile->id)->first();
-    
-      
-        if (!$level) {
-            return redirect()->back()->with('error', 'You need to upload your proof of payment first before browsing your profile.');
-        }
     
         $data = [
             'title' => 'Student Profile',
@@ -791,12 +775,9 @@ public function principalprofile()
 
         $picture = profile::where('user_id', $userId)->first(); 
     
+       
         $level = payment_form::where('payment_id', $profile->id)->first();
     
-      
-        if (!$level) {
-            return redirect()->back()->with('error', 'You need to upload your proof of payment first before browsing your profile.');
-        }
     
         $data = [
             'title' => 'Student Profile',
@@ -1277,6 +1258,46 @@ public function cashierupdateprofile()
     $profile = profile::all();
 
     return view('cashierupdateprofile', compact('profile', 'picture'));
+}
+
+public function totalstudent()
+{
+    $OldStudents = User::where('role', 'Oldstudent')->count();
+
+    return view('totalstudent', compact('totalStudents'));
+}
+public function totalteacher()
+{
+    $teachers = User::where('role', 'Teacher')->get();
+
+    return view('totalteacher', compact('teachers'));
+}
+public function totalprincipal()
+{
+    
+    $totalPrincipal = User::where('role', 'Principal')->count();
+    return view('totalprincipal', compact('totalPrincipal'));
+}
+
+public function totalcashier()
+{
+    $totalCashiers = User::where('role', 'Cashier')->count();
+
+    return view('totalcashier', compact('totalCashiers'));
+}
+
+public function totalaccounting()
+{
+    $totalAccounting = User::where('role', 'Accounting')->count();
+
+    return view('totalaccounting', compact('totalAccounting'));
+}
+
+public function totalrecord()
+{
+    $totalRecord = User::where('role', 'Record')->count();
+
+    return view('totalrecord', compact('totalAccounting'));
 }
 
 }

@@ -50,9 +50,10 @@ class Usercontroller extends Controller
 
     public function recordapproval($id)
     {
+        $userId = Auth::id();
         $account = register_form::findOrFail($id);
-
-        return view('recordapproval', compact('account'));
+        $picture = profile::where('user_id', $userId)->first(); 
+        return view('recordapproval', compact('account','picture'));
     }
 
     public function studentdetails($registerFormId)
@@ -543,7 +544,8 @@ public function publishgrade(Request $request)
 {
     // Fetch the register form by primary key
     $register = register_form::findOrFail($id);
-    
+    $userId = Auth::id();
+    $picture = profile::where('user_id', $userId)->first(); 
     // Fetch related models based on the foreign keys that reference register_form
     $student = studentdetails::where('details_id', $register->id)->first();
     $address = address::where('id', $register->id)->first();
@@ -557,6 +559,7 @@ public function publishgrade(Request $request)
         'address' => $address,
         'previous' => $previous,
         'require' => $require,
+        'picture' => $picture
     ]);
 }
 

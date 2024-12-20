@@ -41,7 +41,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Total Teacher</h5>
                     <p class="card-text">{{ $totalTeachers }}</p>
-                    <a href="#" class="btn btn-primary">View Details</a>
+                    <a href="/totalteacher" class="btn btn-primary">View Details</a>
                 </div>
             </div>
         </div>

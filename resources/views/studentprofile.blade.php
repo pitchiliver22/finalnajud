@@ -57,7 +57,11 @@
                             <div class="d-flex justify-content-between bg-light rounded-3 p-2 mb-2">
                                 <div>
                                     <p class="small text-muted mb-1">Grade Level</p>
-                                    <p class="mb-0">{{ $level->level }}</p>
+                                    @if($level)
+                {{ $level->level }}
+            @else
+                No payment information available.
+            @endif
                                 </div>
                                 <div>
                                     <p class="small text-muted mb-1">Email</p>

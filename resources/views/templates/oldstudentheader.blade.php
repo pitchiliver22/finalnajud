@@ -218,8 +218,7 @@
 <body>
     <div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="mySidebar">
         <div class="profile-section">
-            <img src="{{ asset('storage/' . $picture->profile_picture) }}" alt="Profile Picture" class="profile-picture">
-            <span class="profile-name" >
+            <img src="{{ $picture && $picture->profile_picture ? asset('storage/' . $picture->profile_picture) : asset('path/to/default-image.jpg') }}" alt="Profile Picture" class="profile-picture">
                 {{ Auth::user()->firstname }} 
                 {{ Auth::user()->middlename ? Auth::user()->middlename . ' ' : '' }} 
                 {{ Auth::user()->lastname }} 
