@@ -116,15 +116,9 @@
                                      class="profile-image img-fluid">
                             @endif
                         </div>
-<<<<<<< HEAD
                         <div class="flex-grow-1 ms-3">
                             <h5 class="mb-1 uppercase" id="firstnameDisplay">{{ $profile->firstname }} {{ $profile->middlename }} {{ $profile->lastname }} {{ $profile->suffix }}</h5>
                           
-=======
-                        <div class="profilename">
-                            <h5 class="mb-1 uppercase" id="firstnameDisplay" style="font-weight:bold">{{ $profile->firstname }} {{ $profile->middlename }} {{ $profile->lastname }} {{ $profile->suffix }}</h5>
-                        
->>>>>>> 175100c22df9e552b6a1f082c1221e0f9eac2450
                             <div class="d-flex justify-content-between bg-light rounded-3 p-2 mb-2">
                                 <div class="grade">
                                     <p class="small text-muted mb-1">Grade Level</p>
