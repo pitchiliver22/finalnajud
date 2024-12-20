@@ -61,6 +61,7 @@ Route::get('studentprofile', [Usercontroller::class, 'studentprofile'])->middlew
 
 Route::get('studentclassload', [Pagecontroller::class, 'studentclassload'])->middleware('auth');
 Route::get('/student/classload/pdf/{student_id}', [PDFController::class, 'generatePDF'])->name('student.classload.pdf');
+
 Route::get('enrollmentstep', [Pagecontroller::class, 'enrollmentstep']);
 
 

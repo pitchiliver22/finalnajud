@@ -9,6 +9,13 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
     </script>
     <style>
+        body {
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(0, 0, 0, 0.3) 70%, #001f3f 100%);
+            margin: 0;
+            padding: 0;
+            background-color: #0c76e0;
+            position: relative;
+        }
         .upload-container {
             width: 80%;
             margin: 0 auto;
@@ -16,6 +23,8 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             background-color: #f9f9f9;
+            margin-top:2%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .file-input {
@@ -98,6 +107,20 @@
             border-radius: 5px;
             background-color: #e9f7ff;
         }
+        .login{
+            text-decoration:none;
+            font-size:18px;
+            background-color:#1e2e75;
+            padding:10px;
+            color:white;
+        }
+        .login:hover{
+            background-color:#2e4194;
+            color:white;
+        }
+        .col-12{
+            margin-top:-3%;
+        }
     </style>
 </head>
 
@@ -146,6 +169,10 @@
             <div id="additional-uploads"></div>
             <button type="button" class="add-upload-button" onclick="addAnotherUpload()">Add Another Upload</button>
             <button type="submit" name="submit" class="btn btn-success" id="submit-button">Upload</button>
+            <div class="col-12 text-end">
+                <br>
+                  
+            </div>    
         </form>
     </div>
 

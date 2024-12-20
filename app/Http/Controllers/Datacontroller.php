@@ -120,7 +120,7 @@ class Datacontroller extends Controller
                     return redirect('/principal')->with('success', 'Welcome, Principal!');
                 case 'Accounting':
                    // sweetalert()->success('Welcome Accounting!');
-                    return redirect('/accounting')->with('success', 'Welcome, Accounting!');
+                    return redirect('/accountingassessment')->with('success', 'Welcome, Accounting!');
                 default:
                     return back()->with('error', 'Invalid user role.');
             }
@@ -329,8 +329,12 @@ public function address_contactpost(Request $request)
         $filesUploaded[] = $filePath;
     }
 
-    $user = Auth::user();
-    $registerForm = register_form::where('user_id', $user->id)->first();
+    // Use the required_id to find the register form directly
+    $registerForm = register_form::find($validateData['required_id']);
+
+    if (!$registerForm) {
+        return redirect('/previous_school')->with('error', 'No registration form found.');
+    }
 
     if ($registerForm->status === register_form::STATUS_APPROVED) {
         return redirect('/payment_process/' . $registerForm->id)->with('success', 'Required Documents submitted successfully.');
@@ -369,11 +373,11 @@ public function address_contactpost(Request $request)
                 $user->role = 'NewStudent';
                 $user->save();
 
-                // FacadesMail::to($user->email)->send(new PendingPayment($user->toArray(), $amount, $feeType));
+                FacadesMail::to($user->email)->send(new PendingPayment($user->toArray(), $amount, $feeType));
             }
             
         }
-        return redirect('/enrollmentstep')->with('success', 'Payment submitted successfully!');
+        return redirect()->route('enrollment.step')->with('success', 'Payment submitted successfully.');
     }
 
     public function updatedetailspost(Request $request)

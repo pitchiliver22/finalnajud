@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <title>Student Dashboard</title>
-
+    <link rel="icon" type="image/png" sizes="32x32" href="image/uclogo.png" class="titlelogo">
     <style>
             .w3-sidebar {
             background-image: url('image/ucbuild.png');

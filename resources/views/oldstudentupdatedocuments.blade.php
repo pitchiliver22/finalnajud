@@ -16,6 +16,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             background-color: #f9f9f9;
+            margin-top:2%;
         }
 
         .file-input {
