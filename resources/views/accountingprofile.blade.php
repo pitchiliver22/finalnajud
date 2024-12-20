@@ -1,21 +1,15 @@
 @include('templates.accountingheader')
-
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
-<div id="main">
-    <div class="header-container">
-        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
-        <h1 class="text-light">Accounting Profile</h1>
-    </div>
-</div>
+<!-- 
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
 
 <style>
     .header-container {
         display: flex; 
         align-items: center; 
-        background-color: #0c3b6d; 
+        background-color: rgba(8, 16, 66, 1); 
         color: white;
         padding: 10px; 
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);  
     }
 
     .profile-image {
@@ -37,9 +31,16 @@
 
     h1 {
         margin: 0; 
-        font-size: 24px;
+        font-size: 15px;
+        text-transform:uppercase;
     }
 </style>
+
+<div class="header-container"> 
+        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
+        <h1 class="text-light">Accounting Profile</h1>
+    </div>
+    <div id="main" onclick="w3_close()">
 
 <section class="container-fluid py-5 bg-custom">
     <div class="row justify-content-center">

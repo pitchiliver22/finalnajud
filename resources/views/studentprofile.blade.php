@@ -2,12 +2,12 @@
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-<div id="main">
+
     <div class="header-container">
         <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
         <h1 class="text-light">Student Profile</h1>
     </div>
-</div>
+    <div id="main" onclick="w3_close()">
 
 <style>
    .header-container {

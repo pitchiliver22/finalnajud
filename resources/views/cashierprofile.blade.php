@@ -2,22 +2,21 @@
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-<div id="main">
-    <div class="header-container">
+<div class="header-container"> 
         <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open()">&#9776;</button>
         <h1 class="text-light">Cashier Profile</h1>
-    </div>
-</div>
+        </div>
+        <div id="main" onclick="w3_close()">
 
 <style>
-    .header-container {
+     .header-container {
         display: flex; 
         align-items: center; 
-        background-color: #0c3b6d; 
+        background-color: rgba(8, 16, 66, 1); 
         color: white;
         padding: 10px; 
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);  
     }
-
     .profile-image {
         width: 180px;
         height: 180px;
@@ -34,10 +33,10 @@
         font-size: 24px;
         cursor: pointer;
     }
-
     h1 {
         margin: 0; 
-        font-size: 24px;
+        font-size: 15px;
+        text-transform:uppercase;
     }
 </style>
 
