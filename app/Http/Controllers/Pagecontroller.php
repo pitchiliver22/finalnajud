@@ -77,12 +77,35 @@ class Pagecontroller extends Controller
 
     public function studentdashboard()
     {
-        return view('studentdashboard');
+        $userId = Auth::id();
+    
+      
+        $profile = register_form::where('user_id', $userId)->firstOrFail();
+        
+
+        $picture = Profile::where('user_id', $userId)->first(); 
+    
+        $level = payment_form::where('payment_id', $profile->id)->first();
+    
+      
+        if (!$level) {
+            return redirect()->back()->with('error', 'You need to upload your proof of payment first before browsing your profile.');
+        }
+    
+        $data = [
+            'title' => 'Student Profile',
+            'profile' => $profile,
+            'level' => $level,
+            'picture' => $picture 
+        ];
+    
+        return view('studentdashboard', $data);
     }
     public function studentclassload()
 {
     $userId = Auth::id(); 
 
+    $picture = Profile::where('user_id', $userId)->first(); 
     $registerForm = \App\Models\register_form::where('user_id', $userId)->first();
 
     if (!$registerForm) {
@@ -99,6 +122,7 @@ class Pagecontroller extends Controller
         'assignedClasses' => $assignedClasses,
         'student' => $student,
         'proof' => $proof,
+        'picture' => $picture
     ]);
 }
 
@@ -132,22 +156,31 @@ public function oldstudentclassload()
 
     public function studentprofile()
     {
-        return view('studentprofile');
+        if (Auth::check()) {
+            $userId = Auth::user()->id;
+            Log::info("Authenticated User ID: " . $userId); // Log the user ID
+        } else {
+            Log::info("No user is authenticated.");
+        }
+    
+        $picture = Profile::where('user_id', $userId)->first();
+
+        return view('studentprofile',compact('picture'));
     }
     public function oldstudentprofile()
     {
         $userId = Auth::id();
     
-        // Retrieve the user's profile
+
         $profile = register_form::where('user_id', $userId)->firstOrFail();
         
-        // Retrieve the user's profile picture
+   
         $picture = Profile::where('user_id', $userId)->first(); // Get the specific user's picture
     
-        // Check if the user has made a payment
+    
         $level = payment_form::where('payment_id', $profile->id)->first();
     
-        // If payment record doesn't exist, return an error message
+      
         if (!$level) {
             return redirect()->back()->with('error', 'You need to upload your proof of payment first before browsing your profile.');
         }
@@ -156,7 +189,7 @@ public function oldstudentclassload()
             'title' => 'Student Profile',
             'profile' => $profile,
             'level' => $level,
-            'picture' => $picture // This will now be a single profile instance
+            'picture' => $picture
         ];
     
         return view('oldstudentprofile', $data);
@@ -204,6 +237,7 @@ public function studentgrades()
 
     $gradesApproved = $grades->isNotEmpty();
     $gradeId = $grades->first()->grade_id ?? null;
+    $picture = Profile::where('user_id', $userId)->first();
 
     $coreId = null;
     if ($gradeId) {
@@ -222,6 +256,7 @@ public function studentgrades()
         'gradeId' => $gradeId,
         'coreId' => $coreId,
         'attendanceId' => $attendanceId,
+        'picture' => $picture
     ]);
 }
 
@@ -230,6 +265,13 @@ public function studentassessment(Request $request)
     $schoolYears = assessment::select('school_year')->distinct()->pluck('school_year');
 
     $user = Auth::user();
+    if (Auth::check()) {
+        $userId = Auth::user()->id;
+        //Log::info("Authenticated User ID: " . $userId); // Log the user ID
+    } else {
+        //Log::info("No user is authenticated.");
+    }
+    $picture = Profile::where('user_id', $userId)->first();
     $paymentId = $user ? $user->payment_id : null; // Safely get payment_id
 
     $userPayment = payment_form::where('payment_id', $paymentId)->first();
@@ -252,7 +294,7 @@ public function studentassessment(Request $request)
     $assessments = $assessments->get();
 
     // Return the view with assessments, school years, and the user's grade level
-    return view('studentassessment', compact('assessments', 'schoolYears', 'authGradeLevel'));
+    return view('studentassessment', compact('assessments', 'schoolYears', 'authGradeLevel', 'picture'));
 }
 
     //teacher 
@@ -663,16 +705,15 @@ public function principalprofile()
     {
         $userId = Auth::id();
     
-        // Retrieve the user's profile
+      
         $profile = register_form::where('user_id', $userId)->firstOrFail();
         
-        // Retrieve the user's profile picture
-        $picture = Profile::where('user_id', $userId)->first(); // Get the specific user's picture
+
+        $picture = Profile::where('user_id', $userId)->first(); 
     
-        // Check if the user has made a payment
         $level = payment_form::where('payment_id', $profile->id)->first();
     
-        // If payment record doesn't exist, return an error message
+      
         if (!$level) {
             return redirect()->back()->with('error', 'You need to upload your proof of payment first before browsing your profile.');
         }
@@ -681,7 +722,7 @@ public function principalprofile()
             'title' => 'Student Profile',
             'profile' => $profile,
             'level' => $level,
-            'picture' => $picture // This will now be a single profile instance
+            'picture' => $picture 
         ];
     
         return view('oldstudentdashboard', $data);
@@ -1071,4 +1112,20 @@ public function recordupdateprofile()
 
     return view('recordupdateprofile');
 }
+
+public function studentupdateprofile()
+{
+    if (Auth::check()) {
+        $userId = Auth::user()->id;
+        Log::info("Authenticated User ID: " . $userId); 
+    } else {
+        Log::info("No user is authenticated.");
+    }
+
+    $picture = Profile::where('user_id', $userId)->first();
+    $profile = profile::all();
+
+    return view('studentupdateprofile', compact('profile', 'picture'));
+}
+
 }

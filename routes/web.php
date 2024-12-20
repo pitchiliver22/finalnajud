@@ -305,3 +305,6 @@ Route::post('/oldstudentupdateprofile', [Datacontroller::class, 'oldstudentupdat
 
 Route::get('/recordupdateprofile', [Pagecontroller::class, 'recordupdateprofile'])->middleware('auth');
 Route::post('/recordupdateprofile', [Datacontroller::class, 'recordupdateprofilepost'])->middleware('auth');
+
+Route::get('/studentupdateprofile', [Pagecontroller::class, 'studentupdateprofile'])->middleware('auth');
+Route::post('/studentupdateprofile', [Datacontroller::class, 'studentupdateprofilepost'])->middleware('auth');

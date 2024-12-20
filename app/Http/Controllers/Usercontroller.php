@@ -22,6 +22,7 @@ use tidy;
 use App\Http\Controllers\showAssessment;
 use App\Mail\PublishAssessment;
 use App\Models\attendance;
+use App\Models\profile;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 
 class Usercontroller extends Controller
@@ -262,6 +263,14 @@ class Usercontroller extends Controller
 
     public function studentprofile()
     {
+        if (Auth::check()) {
+            $userId = Auth::user()->id;
+            Log::info("Authenticated User ID: " . $userId); // Log the user ID
+        } else {
+            Log::info("No user is authenticated.");
+        }
+    
+        $picture = profile::where('user_id', $userId)->first();
         $userId = Auth::id();
 
         $profile = register_form::where('user_id', $userId)->firstOrFail();
@@ -272,6 +281,7 @@ class Usercontroller extends Controller
             'title' => 'Student Profile',
             'profile' => $profile,
             'level' => $level,
+            'picture' => $picture
         ];
 
         return view('studentprofile', $data);

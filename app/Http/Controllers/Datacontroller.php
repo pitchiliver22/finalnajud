@@ -607,6 +607,13 @@ public function address_contactpost(Request $request)
         if (!Auth::check()) {
             return redirect()->route('login');
         }
+        if (Auth::check()) {
+            $userId = Auth::user()->id;
+            //Log::info("Authenticated User ID: " . $userId); // Log the user ID
+        } else {
+            //Log::info("No user is authenticated.");
+        }
+    
     
         $user = Auth::user();
     
@@ -624,7 +631,7 @@ public function address_contactpost(Request $request)
         $previousSchool = previous_school::where('school_id', $registerFormId)->first();
         $requiredDocs = required_docs::where('required_id', $registerFormId)->first();
         $assign = assign::where('class_id', $registerFormId)->first();
-    
+        $picture = Profile::where('user_id', $userId)->first();
         $allCompleted = true;
     
         $paymentStatus = $payment ? $payment->status : null;
@@ -679,7 +686,8 @@ public function address_contactpost(Request $request)
             'school_id',
             'required_id',
             'payment_id',
-            'class_id'
+            'class_id',
+            'picture'
         ));
     }
 
@@ -2034,6 +2042,38 @@ public function oldstudentupdateprofilepost(Request $request)
     return redirect()->back()->with('success', 'Profile picture updated successfully!');
 }
 
+
+public function studentupdateprofilepost(Request $request)
+{
+   
+    $request->validate([
+        'user_id' => 'required|exists:users,id', // Validate the user_id
+        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max size 2MB
+    ]);
+
+ 
+    $user = Auth::user();
+
+  
+    if ($request->input('user_id') != $user->id) {
+        return redirect()->back()->withErrors(['user_id' => 'Unauthorized user ID.'])->withInput();
+    }
+
+  
+    if ($request->hasFile('profile_picture')) {
+       
+        $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+
+       
+        Profile::updateOrCreate(
+            ['user_id' => $user->id], 
+            ['profile_picture' => $path] 
+        );
+    }
+
+ 
+    return redirect('/studentprofile')->with('success', 'Profile picture updated successfully!');
+}
 
 public function recordupdateprofilepost(Request $request)
 {

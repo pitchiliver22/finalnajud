@@ -50,12 +50,19 @@
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
                             <div class="flex-shrink-0">
-                                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                                     alt="Profile Image" class="profile-image">
-                            </div>
+                                @if ($picture)
+                                <img src="{{ asset('storage/' . $picture->profile_picture) }}" 
+                                     alt="Profile Image"  
+                                     class="profile-image img-fluid" 
+                                     onerror="this.onerror=null; this.src='{{ asset('path/to/default/image.png') }}';">
+                            @else
+                                <img src="{{ asset('path/to/default/image.png') }}" 
+                                     alt="Default Profile Image" 
+                                     class="profile-image img-fluid">
+                            @endif
+                        </div>
                             <div class="flex-grow-1 ms-3">
                                 <h5 class="mb-1 uppercase" id="firstnameDisplay">{{ $profile->firstname }} {{ $profile->middlename }} {{ $profile->lastname }} {{ $profile->suffix }}</h5>
-                                <p class="mb-2 pb-1">Student ID: 232023</p>
                                 <div class="d-flex justify-content-between bg-light rounded-3 p-2 mb-2">
                                     <div>
                                         <p class="small text-muted mb-1">Grade Level</p>
@@ -68,6 +75,10 @@
                                     <div class="d-flex justify-content-end pt-1">
                                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">Edit Profile</button>
                                     </div>
+
+                                    <a href="/studentupdateprofile"><button type="submit" class="btn btn-primary">
+                                        Update Profile Picture
+                                    </button></a>
                                 </div>
                             </div>
                         </div>
