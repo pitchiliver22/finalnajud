@@ -438,8 +438,7 @@ public function studentassessment(Request $request)
 
     public function principalclassload()
     {
-        $userId = Auth::id();
-        $picture = Profile::where('user_id', $userId)->first(); 
+        
         $section = section::all();
         $class = classes::all();
         $teachers = teacher::all();
@@ -477,6 +476,9 @@ public function studentassessment(Request $request)
         $assignsQuery = classes::distinct()->select('teacher_id', 'subject', 'adviser', 'section','grade');
 
         $assigns = $assignsQuery->get();
+        $userId = Auth::id();
+        
+        $picture = Profile::where('user_id', $userId)->first(); 
         
         $grades = grade::where('status', 'pending')->get()->unique('subject');
     
@@ -492,8 +494,12 @@ public function studentassessment(Request $request)
 
     public function publishgrade()
     {
+        $userId = Auth::id();
+    
+
+        $picture = profile::where('user_id', $userId)->firstOrFail();
         
-        return view('publishgrade');
+        return view('publishgrade', compact('picture'));
     }
 
     //accounting
@@ -529,21 +535,17 @@ public function studentassessment(Request $request)
     public function accountingeditprofile()
     {
         $userId = Auth::id();
-    
 
-        $profile = register_form::where('user_id', $userId)->firstOrFail();
-        
-   
-        $picture = Profile::where('user_id', $userId)->first(); // Get the specific user's picture
-        $level = payment_form::where('payment_id', $profile->id)->first();
-    
+        $profile = User::findOrFail($userId);
+
+        $picture = profile::where('user_id', $userId)->first(); 
+
         $data = [
             'title' => 'Student Profile',
             'profile' => $profile,
-            'level' => $level,
-            'picture' => $picture
+            'picture' => $picture,
         ];
-    
+
         return view('editprofile', $data);
     }
 
@@ -794,6 +796,12 @@ public function principalprofile()
         $account = User::all();
         return view('adminusers', compact('account'));
     }
+    public function updateusers($id)
+    {
+        $user = User::findOrFail($id); // Get the user
+        return view("updateusers", compact('user')); // Pass user data to the view
+    }
+
     public function adminnotification()
     {
         return view('adminnotification');

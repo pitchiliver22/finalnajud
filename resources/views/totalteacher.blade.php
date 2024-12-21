@@ -28,6 +28,9 @@
 </head>
 <body>
     <div class="container">
+        <a href="adminreport" class="btn btn-secondary">
+            Back
+        </a>
         <h1>Total Teachers</h1>
         <table>
             <thead>

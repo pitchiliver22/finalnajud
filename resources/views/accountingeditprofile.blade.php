@@ -137,7 +137,7 @@
                                     Update Profile
                                 </button>
 
-                                <a href="accountingassessment" class="btn btn-secondary">
+                                <a href="accountingprofile" class="btn btn-secondary">
                                     Back
                                 </a>
                             </form>

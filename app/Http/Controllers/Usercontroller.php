@@ -23,6 +23,7 @@ use App\Http\Controllers\showAssessment;
 use App\Mail\PublishAssessment;
 use App\Models\attendance;
 use App\Models\profile;
+use App\Models\User;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 
 class Usercontroller extends Controller
@@ -335,6 +336,8 @@ class Usercontroller extends Controller
 
     public function teachercorevaluesubmit($teacher_id, $edp_code)
 {
+    $userId = Auth::id();
+    $picture = Profile::where('user_id', $userId)->first(); 
     // Fetch assignments based on the provided edp_code and teacher_id
     $assignments = Assign::where('edpcode', $edp_code)
                          ->where('teacher_id', $teacher_id)
@@ -384,11 +387,14 @@ class Usercontroller extends Controller
         'studentClassIds' => $studentClassIds,
         'edpcode' => $edp_code,
         'section' => $section,
+        'picture' => $picture
     ]);
 }
 
 public function teacherAttendanceSubmit($teacher_id, $edp_code)
 {
+    $userId = Auth::id();
+    $picture = Profile::where('user_id', $userId)->first(); 
     // Fetch attendance records based on the provided edp_code and teacher_id
     $attendanceRecords = Assign::where('edpcode', $edp_code)
                                ->where('teacher_id', $teacher_id)
@@ -439,6 +445,7 @@ public function teacherAttendanceSubmit($teacher_id, $edp_code)
         'paymentForm' => $paymentForm,
         'studentClassIds' => $studentClassIds,
         'edpcode' => $edp_code, 
+        'picture' => $picture
     ]);
 }
 
@@ -446,7 +453,11 @@ public function publishgrade(Request $request)
 {
     $edp_code = $request->input('edp_code');
     $subject = $request->input('subject');
+    $userId = Auth::id();
+    
 
+    $picture = profile::where('user_id', $userId)->firstOrFail();
+    
     $grades = grade::where('subject', $subject)
         ->where('edp_code', $edp_code)
         ->where('status', 'pending')
@@ -463,10 +474,62 @@ public function publishgrade(Request $request)
         'grades' => $grades,
         'edpcode' => $edp_code,
         'subject' => $subject,
+        'picture' => $picture
     ]);
 }
 
+
+
+public function edit($id)
+{
+    $user = User::findOrFail($id); // Find the user by ID or fail
+    return view('updateusers', compact('user')); // Return the edit view with the user data
+}
+
+// Update the specified user in storage
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'firstname' => 'required|string|max:255',
+        'middlename' => 'required|string|max:255',
+        'lastname' => 'required|string|max:255',
+        'suffix' => 'required|string|max:10',
+        'email' => 'required|email|max:255|unique:users,email,'.$id,
+        'password' => 'nullable|string|min:8|confirmed',
+        'role' => 'required|string|max:50',
+    ]);
+
+    $user = User::findOrFail($id); // Find the user by ID or fail
+
+    // Prepare the data for update
+    $data = [
+        'firstname' => $request->input('firstname'),
+        'middlename' => $request->input('middlename'),
+        'lastname' => $request->input('lastname'),
+        'suffix' => $request->input('suffix'),
+        'email' => $request->input('email'),
+        'role' => $request->input('role'),
+    ];
+
+    // Update password if provided
+    if ($request->filled('password')) {
+        $data['password'] = bcrypt($request->input('password'));
+    }
+
+    $user->update($data); // Use the update method
+
+    return redirect('/adminusers')->with('success', 'User updated successfully.'); // Redirect with success message
+}
    
+public function deleteUser($id)
+{
+ 
+    $user = User::findOrFail($id);
+    $user->delete();
+
+   
+    return redirect('/adminusers')->with('success', 'User deleted successfully.');
+}
 
 
     public function gradesubmit($edp_code, $teacher_id)

@@ -28,6 +28,10 @@
 </head>
 <body>
     <div class="container">
+        <a href="adminreport" class="btn btn-secondary">
+            Back
+        </a>
+
         <h1>Total Students</h1>
 
         <p>Total Number of Students: {{ count($oldStudents) + count($newStudents) }}</p>

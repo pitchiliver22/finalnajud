@@ -28,6 +28,9 @@
 </head>
 <body>
     <div class="container">
+        <a href="adminreport" class="btn btn-secondary">
+            Back
+        </a>t
         <h1>Total Cashiers</h1>
 
         <p>Total Number of Cashiers: {{ $totalCashiers }}</p>

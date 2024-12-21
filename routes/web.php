@@ -194,6 +194,11 @@ Route::get('adminmanageclassload', [Pagecontroller::class, 'adminmanageclassload
 Route::get('adminusers', [Pagecontroller::class, 'adminusers']);
 Route::post('adminusers', [Datacontroller::class, 'adminuserspost']);
 
+Route::get('/updateusers/{id}', [UserController::class, 'edit'])->name('users.edit');
+Route::post('/updateusers/{id}', [UserController::class, 'update'])->name('users.update');
+
+Route::get('/delete_users/{id}', [UserController::class, 'deleteUser'])->name('users.delete');
+
 Route::get('adminimportuser', [Pagecontroller::class, 'adminimportuser']);
 Route::post('adminimportuser', [Datacontroller::class, 'CoreUsersImport']);
 

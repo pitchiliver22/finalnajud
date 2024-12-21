@@ -20,7 +20,7 @@ class AuthController extends Controller
     }
 
     // Handle the form submission and send the reset link
-    public function sendResetLinkEmail(Request $request)
+    public function     sendResetLinkEmail(Request $request)
     {
         $request->validate(['email' => 'required|email']);
 

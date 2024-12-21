@@ -105,36 +105,19 @@
     <div id="main" onclick="w3_close()">
 
     <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Gradebook</h5>
-                    <p class="card-text">Manage and view student grades.</p>
-                    <a href="#" class="btn btn-primary">Open Gradebook</a>
-                </div>
-            </div>
-        </div>
+        
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Grade Submitted</h5>
                     <p class="card-text">View and confirm submitted grades.</p>
-                    <a href="#" class="btn btn-primary">View Submissions</a>
+                    <a href="/teacherclassload" class="btn btn-primary">View Submissions</a>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Report</h5>
-                    <p class="card-text">Generate reports on student performance.</p>
-                    <a href="#" class="btn btn-primary">Generate Report</a>
-                </div>
-            </div>
-        </div>
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">

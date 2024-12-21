@@ -92,20 +92,10 @@
 
         margin-left:30%;
     }
-    .navvers{
-    background-color:rgba(8, 16, 66, 1); 
-    border-width:0;
-    color:white;
-    padding:15px;
-
-}
-.navvers:hover{
-    color:yellow;
-}   
 </style>
 
 <div class="header-container"> 
-    <button id="openNav" class="navvers" onclick="w3_open()">&#9776;</button>
+    <button id="openNav" class="navvers" onclick="w3_open(event)">&#9776;</button>
     <h1>Student Dashboard</h1> 
 </div>
 
@@ -159,5 +149,10 @@
     </div>
 </section>
 
+<script>
+    function w3_open() {
+        document.getElementById("mySidebar").style.display = "block";
+    }
+</script>
 
 @include('templates.oldstudentfooter')

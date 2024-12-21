@@ -868,7 +868,7 @@ public function principaleditassessmentpost(Request $request)
         'status' => 'published', 
     ]);
 
-    // FacadesMail::to('accounting@example.com')->send(new EditAssessment($assessment));
+    FacadesMail::to('accounting@example.com')->send(new EditAssessment($assessment));
 
     return redirect()->route('/principalassessment', $assessment->id) 
                      ->with('success', 'Assessment updated and email sent successfully!');
@@ -1159,7 +1159,7 @@ public function updateQuarters(Request $request)
 
                 $assignments = Assign::where('teacher_id', Auth::id())->get();
 
-                // FacadesMail::to('principal@example.com')->send(new GradeSubmit($assignments));
+                FacadesMail::to('principal@example.com')->send(new GradeSubmit($assignments));
         
                 return redirect('/teacherclassload')->with('success', 'Student Grades submitted successfully.');
             } catch (\Exception $e) {
@@ -1341,7 +1341,7 @@ public function updateQuarters(Request $request)
             $student->save();
 
 
-            // FacadesMail::to($user->email)->send(new ApproveStudent($user));
+            FacadesMail::to($user->email)->send(new ApproveStudent($user));
         }
 
         return redirect()->back()->with('success', 'Selected students have been approved and notified.');
@@ -1373,7 +1373,7 @@ public function updateQuarters(Request $request)
             if ($user instanceof User) {
                 $user->save();
     
-                // FacadesMail::to($user->email)->send(new ApprovePayment($user->toArray()));
+                FacadesMail::to($user->email)->send(new ApprovePayment($user->toArray()));
             }
         }
     
@@ -1914,7 +1914,7 @@ public function updateQuarters(Request $request)
             $teacher = user::find($assignment->teacher_id); 
     
             if ($teacher) {
-                // FacadesMail::to($teacher->email)->send(new EvaluateGrade($teacher));
+                FacadesMail::to($teacher->email)->send(new EvaluateGrade($teacher));
             }
         }
     
@@ -2259,30 +2259,56 @@ public function teacherupdateprofilepost(Request $request)
     return redirect('/teacherprofile')->with('success', 'Profile picture updated successfully!');
 }
 
-public function cashierupdateprofilepost(Request $request)
-{
-    $request->validate([
-        'user_id' => 'required|exists:users,id', // Validate the user_id
-        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max size 2MB
-    ]);
-    $user = Auth::user();
-    if ($request->input('user_id') != $user->id) {
-        return redirect()->back()->withErrors(['user_id' => 'Unauthorized user ID.'])->withInput();
+    public function cashierupdateprofilepost(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id', // Validate the user_id
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max size 2MB
+        ]);
+        $user = Auth::user();
+        if ($request->input('user_id') != $user->id) {
+            return redirect()->back()->withErrors(['user_id' => 'Unauthorized user ID.'])->withInput();
+        }
+
+    
+        if ($request->hasFile('profile_picture')) {
+        
+            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+
+        
+            Profile::updateOrCreate(
+                ['user_id' => $user->id], 
+                ['profile_picture' => $path] 
+            );
+        }
+
+    
+        return redirect('/cashierprofile')->with('success', 'Profile picture updated successfully!');
     }
 
-  
-    if ($request->hasFile('profile_picture')) {
-       
-        $path = $request->file('profile_picture')->store('profile_pictures', 'public');
-
-       
-        Profile::updateOrCreate(
-            ['user_id' => $user->id], 
-            ['profile_picture' => $path] 
-        );
+    public function accountingeditprofilepost(Request $request)
+    {
+        $request->validate([
+            'firstname' => 'required|string|max:255',
+            'middlename' => 'nullable|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'suffix' => 'nullable|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,', 
+        ]);
+    
+        $userId = Auth::id();
+    
+        $user = User::findOrFail($userId);
+    
+        $user->firstname = $request->firstname;
+        $user->middlename = $request->middlename;
+        $user->lastname = $request->lastname;
+        $user->suffix = $request->suffix;
+        $user->email = $request->email;
+    
+        $user->save();
+    
+        return redirect()->route('accountingeditprofile')->with('success', 'Profile updated successfully.');
     }
 
- 
-    return redirect('/cashierprofile')->with('success', 'Profile picture updated successfully!');
-}
 }

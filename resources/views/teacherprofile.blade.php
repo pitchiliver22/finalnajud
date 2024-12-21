@@ -158,7 +158,7 @@
                                     </button>                                 
                                 </div>
                                 <a href="/teacherupdateprofile">
-                                    <button type="button" class="updateprof">upload Profile Picture</button>
+                                    <button type="button" class="updateprof">Upload Profile Picture</button>
                                 </a>
                             </div>
                         </div>
