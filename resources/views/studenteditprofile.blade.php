@@ -1,4 +1,4 @@
-@include('templates.accountingheader')
+@include('templates.studentheader')
 
 <style>
     .header-container {
@@ -40,7 +40,7 @@
     .classedit {
         padding: 25px;
     }
-
+r
     .email-section {
         margin-bottom: 20px;
     }
@@ -121,7 +121,7 @@
 
 <div class="header-container"> 
     <button id="openNav" class="navvers" onclick="w3_open(event)">&#9776;</button>
-    <h1>Accounting</h1> 
+    <h1>Student</h1> 
 </div>
 
 <section class="container-fluid py-5 bg-custom">
@@ -134,7 +134,7 @@
                 <div class="card-body p-4">
                     <div class="d-flex">
 
-                        <form action="{{ route('accountingeditprofile') }}" method="POST" class="centercenter">
+                        <form action="{{ route('studenteditprofile') }}" method="POST" class="centercenter">
                                 @csrf
                                 <div class="mb-3">
                                     <label for="firstname" class="form-label">First Name</label>
@@ -162,7 +162,7 @@
                                     Update Profile
                                 </button>
 
-                                <a href="accountingprofile" class="btn btn-secondary">
+                                <a href="studentprofile" class="btn btn-secondary">
                                     Back
                                 </a>
                             </form>
@@ -180,4 +180,4 @@
     }
 </script>
 
-@include('templates.accountingfooter')
+@include('templates.studentfooter')

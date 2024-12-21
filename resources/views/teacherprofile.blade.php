@@ -153,9 +153,11 @@
                     <p class="text-black">{{ $user->email }}</p>
                 </div>
                                 <div class="button-section">
-                                    <button type="button" class="editbtn mb-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                                        Edit Profile
-                                    </button>                                 
+                                    <a href="teachereditprofile">
+                                        <button type="button" class="editbtn mb-2">
+                                            Edit Profile Details
+                                        </button>
+                                    </a>                                 
                                 </div>
                                 <a href="/teacherupdateprofile">
                                     <button type="button" class="updateprof">Upload Profile Picture</button>

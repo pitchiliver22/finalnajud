@@ -172,6 +172,24 @@ public function oldstudentclassload()
     
         return view('studentprofile', $data);
     }
+
+    public function studenteditprofile()
+    {
+        $userId = Auth::id();
+
+        $profile = User::findOrFail($userId);
+
+        $picture = profile::where('user_id', $userId)->first(); 
+
+        $data = [
+            'title' => 'Student Profile',
+            'profile' => $profile,
+            'picture' => $picture,
+        ];
+
+        return view('studenteditprofile', $data);
+    }
+
     public function oldstudentprofile()
     {
         $userId = Auth::id();
@@ -334,6 +352,23 @@ public function studentassessment(Request $request)
         $userId = Auth::id();
         $picture = Profile::where('user_id', $userId)->first(); 
         return view('teacherprofile', ['user' => $user, 'picture' => $picture]);
+    }
+
+    public function teachereditprofile()
+    {
+        $userId = Auth::id();
+
+        $profile = User::findOrFail($userId);
+
+        $picture = profile::where('user_id', $userId)->first(); 
+
+        $data = [
+            'title' => 'Student Profile',
+            'profile' => $profile,
+            'picture' => $picture,
+        ];
+
+        return view('teachereditprofile', $data);
     }
 
     public function teacherclassload()
@@ -546,7 +581,7 @@ public function studentassessment(Request $request)
             'picture' => $picture,
         ];
 
-        return view('editprofile', $data);
+        return view('accountingeditprofile', $data);
     }
 
     //record
@@ -577,6 +612,23 @@ public function studentassessment(Request $request)
 
         return view('recordprofile', ['user' => $user,
     'picture' => $picture]);
+    }
+
+    public function recordeditprofile()
+    {
+        $userId = Auth::id();
+
+        $profile = User::findOrFail($userId);
+
+        $picture = profile::where('user_id', $userId)->first(); 
+
+        $data = [
+            'title' => 'Student Profile',
+            'profile' => $profile,
+            'picture' => $picture,
+        ];
+
+        return view('recordeditprofile', $data);
     }
 
     public function studententries()
@@ -660,6 +712,23 @@ public function cashierprofile()
     return view('cashierprofile', ['user' => $user, 'picture' => $picture]);
 }
 
+public function cashiereditprofile()
+{
+    $userId = Auth::id();
+
+        $profile = User::findOrFail($userId);
+
+        $picture = profile::where('user_id', $userId)->first(); 
+
+        $data = [
+            'title' => 'Student Profile',
+            'profile' => $profile,
+            'picture' => $picture,
+        ];
+
+        return view('cashiereditprofile', $data);
+}
+
 public function principalassessment()
 {
     $userId = Auth::id();
@@ -680,6 +749,23 @@ public function principalprofile()
       
     $user = Auth::user();
     return view('principalprofile', ['user' => $user, 'picture' => $picture]);
+}
+
+public function principaleditprofile()
+{
+    $userId = Auth::id();
+
+        $profile = User::findOrFail($userId);
+
+        $picture = profile::where('user_id', $userId)->first(); 
+
+        $data = [
+            'title' => 'Student Profile',
+            'profile' => $profile,
+            'picture' => $picture,
+        ];
+
+        return view('principaleditprofile', $data);
 }
 
 

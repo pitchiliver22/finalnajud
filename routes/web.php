@@ -60,6 +60,9 @@ Route::get('studentdashboard', [Pagecontroller::class, 'studentdashboard'])->mid
 Route::get('studentprofile', [Pagecontroller::class, 'studentprofile'])->middleware('auth');;
 Route::get('studentprofile', [Usercontroller::class, 'studentprofile'])->middleware('auth');
 
+Route::get('studenteditprofile', [Pagecontroller::class, 'studenteditprofile']);
+Route::post('studenteditprofile', [Datacontroller::class, 'studenteditprofilepost'])->name('studenteditprofile');
+
 Route::get('studentclassload', [Pagecontroller::class, 'studentclassload'])->middleware('auth');
 Route::get('/student/classload/pdf/{student_id}', [PDFController::class, 'generatePDF'])->name('student.classload.pdf');
 
@@ -75,6 +78,9 @@ Route::get('studentassessment', [Pagecontroller::class, 'studentassessment'])->m
 Route::get('teacher', [Pagecontroller::class, 'teacher'])->middleware('auth');
 Route::get('teachernotification', [Pagecontroller::class, 'teachernotification'])->middleware('auth');
 Route::get('teacherprofile', [Pagecontroller::class, 'teacherprofile'])->middleware('auth');
+
+Route::get('teachereditprofile', [Pagecontroller::class, 'teachereditprofile']);
+Route::post('teachereditprofile', [Datacontroller::class, 'teachereditprofilepost'])->name('teachereditprofile');
 
 Route::get('teacherclassload', [Pagecontroller::class, 'teacherclassload'])->middleware('auth');
 
@@ -99,6 +105,9 @@ Route::get('/principalteacher', [DataController::class, 'showTeachers'])->name('
 Route::post('/principalteacher', [DataController::class, 'teachersubjectpost']);
 
 Route::get('principalprofile', [Pagecontroller::class, 'principalprofile']);
+
+Route::get('principaleditprofile', [Pagecontroller::class, 'principaleditprofile']);
+Route::post('principaleditprofile', [Datacontroller::class, 'principaleditprofilepost'])->name('principaleditprofile');
 
 Route::post('/update-quarters', [Datacontroller::class, 'updateQuarters'])->name('update.quarters');
 Route::get('/submittedgrades', [Pagecontroller::class, 'showEvaluateGrades'])->name('evaluate.grades');
@@ -147,6 +156,7 @@ Route::put('principaleditassessment/{id}', [DataController::class, 'principaledi
 Route::get('accounting', [Pagecontroller::class, 'accounting']);
 Route::get('accountingprofile', [Pagecontroller::class, 'accountingprofile']);
 Route::get('accountingeditprofile', [Pagecontroller::class, 'accountingeditprofile']);
+Route::post('accountingeditprofile', [Datacontroller::class, 'accountingeditprofilepost'])->name('accountingeditprofile');
 Route::get('accountingassessment', [Pagecontroller::class, 'accountingassessment']);
 Route::get('createassessment', [Pagecontroller::class, 'createassessment']);
 Route::post('/createassessment', [Datacontroller::class, 'assessmentpost'])->name('assessment.post');
@@ -186,6 +196,8 @@ Route::post('/proofofpayment/{id}', [Datacontroller::class, 'approvePayment']);
 
 
 Route::get('cashierprofile', [Pagecontroller::class, 'cashierprofile']);
+Route::get('cashiereditprofile', [Pagecontroller::class, 'cashiereditprofile']);
+Route::post('cashiereditprofile', [Datacontroller::class, 'cashiereditprofilepost'])->name('cashiereditprofile');
 
 //admin
 Route::get('admin', [Pagecontroller::class, 'admin']);
@@ -215,6 +227,8 @@ Route::get('oldstudent', [Pagecontroller::class, 'oldstudent']);
 Route::post('oldstudent', [Datacontroller::class, 'oldstudentpost']);
 
 Route::get('oldstudentprofile', [Pagecontroller::class, 'oldstudentprofile'])->middleware('auth');
+
+
 
 Route::get('editprofile', [Pagecontroller::class, 'editprofile'])->name('editprofile');
 Route::post('editprofile', [Datacontroller::class, 'editprofilepost'])->name('editprofilepost');
@@ -305,7 +319,7 @@ Route::post('/forgot-password', [AuthController::class, 'sendResetLinkEmail'])->
 Route::get('/password/reset/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
 Route::post('/password/reset', [AuthController::class, 'resetPassword'])->name('password.update');
 
-Route::get('/studenteditprofile', [Usercontroller::class, 'studenteditprofile'])->name('profile.update');
+// Route::get('/studenteditprofile', [Usercontroller::class, 'studenteditprofile'])->name('profile.update');
 Route::get('teacherdisplaygrade/{edpcode}', [PageController::class, 'teacherdisplaygrade'])->name('display.grade');
 
 
@@ -316,6 +330,9 @@ Route::post('/oldstudentupdateprofile', [Datacontroller::class, 'oldstudentupdat
 
 Route::get('/recordupdateprofile', [Pagecontroller::class, 'recordupdateprofile'])->middleware('auth');
 Route::post('/recordupdateprofile', [Datacontroller::class, 'recordupdateprofilepost'])->middleware('auth');
+
+Route::get('recordeditprofile', [Pagecontroller::class, 'recordeditprofile']);
+Route::post('recordeditprofile', [Datacontroller::class, 'recordeditprofilepost'])->name('recordeditprofile');;
 
 Route::get('/studentupdateprofile', [Pagecontroller::class, 'studentupdateprofile'])->middleware('auth');
 Route::post('/studentupdateprofile', [Datacontroller::class, 'studentupdateprofilepost'])->middleware('auth');

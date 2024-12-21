@@ -151,7 +151,7 @@
                         <p class="mb-0">{{ $user->email }}</p>
                             </div>
                         <div class="button-section">
-                            <a href="{{ url('accountingeditprofile') }}">
+                            <a href="accountingeditprofile">
                                 <button type="button" class="editbtn mb-2">
                                     Edit Profile Details
                                 </button>

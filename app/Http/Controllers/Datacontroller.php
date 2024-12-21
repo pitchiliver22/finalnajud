@@ -2293,7 +2293,7 @@ public function teacherupdateprofilepost(Request $request)
             'middlename' => 'nullable|string|max:255',
             'lastname' => 'required|string|max:255',
             'suffix' => 'nullable|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,', 
+            'email' => 'required|email|max:255|unique:users,email,' . Auth::id(),
         ]);
     
         $userId = Auth::id();
@@ -2311,4 +2311,149 @@ public function teacherupdateprofilepost(Request $request)
         return redirect()->route('accountingeditprofile')->with('success', 'Profile updated successfully.');
     }
 
+    public function recordeditprofilepost(Request $request)
+    {
+        $request->validate([
+            'firstname' => 'required|string|max:255',
+            'middlename' => 'nullable|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'suffix' => 'nullable|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . Auth::id(),
+        ]);
+    
+        $userId = Auth::id();
+    
+        $user = User::findOrFail($userId);
+    
+        $user->firstname = $request->firstname;
+        $user->middlename = $request->middlename;
+        $user->lastname = $request->lastname;
+        $user->suffix = $request->suffix;
+        $user->email = $request->email;
+    
+        $user->save();
+    
+        return redirect()->route('recordeditprofile')->with('success', 'Profile updated successfully.');
+    }
+
+    public function principaleditprofilepost(Request $request)
+    {
+        $request->validate([
+            'firstname' => 'required|string|max:255',
+            'middlename' => 'nullable|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'suffix' => 'nullable|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . Auth::id(),
+        ]);
+    
+        $userId = Auth::id();
+    
+        $user = User::findOrFail($userId);
+    
+        $user->firstname = $request->firstname;
+        $user->middlename = $request->middlename;
+        $user->lastname = $request->lastname;
+        $user->suffix = $request->suffix;
+        $user->email = $request->email;
+    
+        $user->save();
+    
+        return redirect()->route('principaleditprofile')->with('success', 'Profile updated successfully.');
+    }
+
+    public function cashiereditprofilepost(Request $request)
+    {
+        $request->validate([
+            'firstname' => 'required|string|max:255',
+            'middlename' => 'nullable|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'suffix' => 'nullable|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . Auth::id(),
+        ]);
+    
+        $userId = Auth::id();
+    
+        $user = User::findOrFail($userId);
+    
+        $user->firstname = $request->firstname;
+        $user->middlename = $request->middlename;
+        $user->lastname = $request->lastname;
+        $user->suffix = $request->suffix;
+        $user->email = $request->email;
+    
+        $user->save();
+    
+        return redirect()->route('cashiereditprofile')->with('success', 'Profile updated successfully.');
+    }
+
+    public function teachereditprofilepost(Request $request)
+    {
+        $request->validate([
+            'firstname' => 'required|string|max:255',
+            'middlename' => 'nullable|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'suffix' => 'nullable|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . Auth::id(),
+        ]);
+    
+        $userId = Auth::id();
+    
+        $user = User::findOrFail($userId);
+    
+        $user->firstname = $request->firstname;
+        $user->middlename = $request->middlename;
+        $user->lastname = $request->lastname;
+        $user->suffix = $request->suffix;
+        $user->email = $request->email;
+    
+        $user->save();
+    
+        return redirect()->route('teachereditprofile')->with('success', 'Profile updated successfully.');
+    }
+
+    public function studenteditprofilepost(Request $request)
+    {
+        $request->validate([
+            'firstname' => 'required|string|max:255',
+            'middlename' => 'nullable|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'suffix' => 'nullable|string|max:255',
+            'email' => 'required|email|max:255', 
+        ]);
+    
+    
+        $userId = Auth::id();
+    
+        $profile = register_form::where('user_id', $userId)->firstOrFail();
+    
+        $profile->firstname = $request->firstname;
+        $profile->middlename = $request->middlename;
+        $profile->lastname = $request->lastname;
+        $profile->suffix = $request->suffix;
+    
+        // Also update the corresponding user record
+        $user = User::where('id', $userId)->firstOrFail();
+        $user->firstname = $request->firstname;
+        $user->middlename = $request->middlename;
+        $user->lastname = $request->lastname;
+        $user->suffix = $request->suffix;
+    
+        // Find the user's student details
+        $studentDetails = studentdetails::where('details_id', $profile->id)->firstOrFail();
+    
+        // Update the student details fields
+        $studentDetails->firstname = $request->firstname;
+        $studentDetails->middlename = $request->middlename;
+        $studentDetails->lastname = $request->lastname;
+        $studentDetails->suffix = $request->suffix;
+    
+        // Save all changes
+        $profile->save();
+        $user->save();
+        $studentDetails->save();
+    
+        // Redirect back with a success message
+        return redirect()->route('studenteditprofile')->with('success', 'Profile updated successfully.');
+    }
 }
+
