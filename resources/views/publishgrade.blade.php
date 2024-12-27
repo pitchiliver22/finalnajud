@@ -164,14 +164,14 @@
             </div>
      
 
-        <form action="{{ route('publishgrade.post') }}" method="POST" id="publishGradesForm">
-            @csrf
-            <input type="hidden" name="subject" value="{{ $subject }}"> <!-- Add subject as a hidden input -->
-            @foreach ($grades as $grade)
-            <input type="hidden" name="grade_id[]" value="{{ $grade->grade_id }}">
-            @endforeach
-            <button type="submit" class="btn btn-success mb-3">Publish Grades</button>
-        </form>
+            <form action="{{ route('publishgrade.post') }}" method="POST" id="publishGradesForm">
+                @csrf
+                <input type="hidden" name="subject" value="{{ $subject }}">
+                @foreach ($grades as $grade)
+                    <input type="hidden" name="grade_id[]" value="{{ $grade->grade_id }}">
+                @endforeach
+                <button type="submit" class="btn btn-success mb-3">Publish Grades</button>
+            </form>
 
         <div class="mb-3">
             <a href="javascript:history.back()" class="btn btn-secondary">Back</a>

@@ -324,8 +324,12 @@ class Usercontroller extends Controller
 
     public function delete_class($id)
     {
-        classes::where('id', $id)->delete();
-        return redirect('/principalclassload')->with('success', 'Deleted class load successfully.');
+        $class = classes::find($id);
+        if ($class) {
+            $class->delete();
+            return redirect('/principalclassload')->with('success', 'Deleted class load successfully.');
+        }
+        return redirect('/principalclassload')->with('error', 'Class not found.');
     }
 
     public function update_class($id)
@@ -451,11 +455,13 @@ public function teacherAttendanceSubmit($teacher_id, $edp_code)
 
 public function publishgrade(Request $request)
 {
+   
+    $userId = Auth::id();
     $edp_code = $request->input('edp_code');
     $subject = $request->input('subject');
-    $userId = Auth::id();
-    
+    Log::info('Publish Grade called with:', $request->all());
 
+    
     $picture = profile::where('user_id', $userId)->firstOrFail();
     
     $grades = grade::where('subject', $subject)
@@ -468,6 +474,11 @@ public function publishgrade(Request $request)
 
     if ($grades->isEmpty()) {
         return redirect()->back()->with('error', 'No grades found for this subject and EDP code.');
+    }
+     // Check if the parameters are not empty
+     if (empty($edp_code) || empty($subject)) {
+        Log::error('Missing parameters');
+        return redirect()->back()->with('error', 'Missing parameters.');
     }
 
     return view('publishgrade', [

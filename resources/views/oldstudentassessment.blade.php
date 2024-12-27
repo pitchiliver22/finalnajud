@@ -170,6 +170,23 @@
     }
 </style>
 
+@php
+$monthNames = [
+    1 => 'January',
+    2 => 'February',
+    3 => 'March',
+    4 => 'April',
+    5 => 'May',
+    6 => 'June',
+    7 => 'July',
+    8 => 'August',
+    9 => 'September',
+    10 => 'October',
+    11 => 'November',
+    12 => 'December',
+];
+@endphp
+
 <body>
     
 <div class="header-container">
@@ -195,6 +212,18 @@
                         @endforeach
                     </select>
                 </div>
+                
+                <div class="form-group">
+                    <label for="month">Select Month:</label>
+                    <select id="month" name="month" onchange="this.form.submit()">
+                        <option value="">All</option>
+                        @foreach(range(1, 12) as $month)
+                            <option value="{{ $month }}" {{ request('month') == $month ? 'selected' : '' }}>
+                                {{ date('F', mktime(0, 0, 0, $month, 1)) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
             </form>
 
             <div class="assessment-list-container">
@@ -209,6 +238,7 @@
                                 <p><strong>Grade Level:</strong> {{ $assessment->grade_level }}</p>
                                 <p><strong>Description:</strong> {{ $assessment->description }}</p>
                                 <p><strong>Assessment Date:</strong> {{ $assessment->assessment_date }}</p>
+                                <p><strong>Assessment Month:</strong> {{ $assessment->month_name }}</p>
                                 <p><strong>Assessment Time:</strong> {{ $assessment->assessment_time }}</p>
                                 <p><strong>Assessment Fee:</strong> Php {{ number_format($assessment->assessment_fee, 2) }}</p>
                             </div>

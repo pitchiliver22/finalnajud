@@ -17,7 +17,8 @@ class assessment extends Model
         'assessment_date',
         'assessment_time',
         'assessment_fee',
-        'status'
+        'status',
+        'month'
     ];
     const STATUS_PENDING = 'pending';
     const STATUS_APPROVED = 'published';

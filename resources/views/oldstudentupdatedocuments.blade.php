@@ -164,7 +164,6 @@
             <div id="additional-uploads"></div>
             <button type="button" class="add-upload-button" onclick="addAnotherUpload()">Add Another Upload</button>
             <button type="submit" name="submit" class="btn btn-success" id="submit-button">Upload</button>
-            <a href="/oldstudentenrollment" class="backbtn">Back to enrollment</a>
             
         </form>
     </div>

@@ -63,7 +63,7 @@ class Datacontroller extends Controller
             'password' => 'required|min:8|confirmed',
         ]);
     
-        // Check if the email already exists
+       
         if (register_form::where('email', $validateData['email'])->exists()) {
             return redirect()->back()->withErrors(['email' => 'The email has already been taken.'])->withInput();
         }
@@ -511,7 +511,6 @@ public function address_contactpost(Request $request)
             return redirect()->route('enrollment.step')->withErrors('Register form not found.');
         }
     
-        // Find the required documents based on the registerForm ID
         $requiredDocs = \App\Models\required_docs::where('required_id', $registerForm->id)->first();
     
         if ($this->documentsUploaded($request)) {
@@ -533,15 +532,12 @@ public function address_contactpost(Request $request)
         foreach ($validateData['documents'] as $index => $file) {
             $docType = $validateData['type'][$index];
 
-            // Check if the document type already exists
             if (in_array($docType, $uploadedTypes)) {
                 continue;
             }
 
-            // Store the uploaded document
             $filePath = $file->store('documents', 'public');
 
-            // Create a new record in required_docs
             required_docs::create([
                 'type' => $docType,
                 'documents' => $filePath,
@@ -580,25 +576,20 @@ public function address_contactpost(Request $request)
 
     public function updateDocuments(Request $request)
     {
-        // Validate the request data
         $request->validate([
             'required_id' => 'required|integer',
         ]);
 
-        // Retrieve the authenticated user's ID
         $userId = Auth::user()->id;
 
-        // Find the register form associated with the authenticated user
         $registerForm = \App\Models\register_form::where('user_id', $userId)->first();
 
         if (!$registerForm) {
             return redirect()->route('enrollment.step')->withErrors('Register form not found.');
         }
 
-        // Find the required documents based on the registerForm ID
         $requiredDocs = \App\Models\required_docs::where('required_id', $registerForm->id)->first();
 
-        // Call the approveExistingDocuments method, passing the request and the requiredDocs
         return $this->approveExistingDocuments($request, $request->required_id, $requiredDocs);
     }
 
@@ -691,28 +682,32 @@ public function address_contactpost(Request $request)
         ));
     }
 
-public function approvePayment($id)
-{
+    public function approvePayment($id)
+    {
+        $paymentForm = payment_form::find($id); 
     
-    $paymentForm = payment_form::find($id); 
-
-    if (!$paymentForm) {
-        return redirect('/cashierstudentfee')->with('error', 'Payment not found.');
+        if (!$paymentForm) {
+            return redirect('/cashierstudentfee')->with('error', 'Payment not found.');
+        }
+    
+        if ($paymentForm->status === 'pending') {
+            $paymentForm->status = 'approved';
+            $paymentForm->save();
+        }
+    
+        $student = register_form::find($paymentForm->payment_id);
+        
+        if (!$student) {
+            return redirect('/cashierstudentfee')->with('error', 'Student not found.');
+        }
+    
+        if ($student->email) { 
+            FacadesMail::to($student->email)->send(new ApprovePayment($student->toArray()));
+        }
+    
+        return redirect('/cashierstudentfee')->with('success', 'Payment approved successfully.');
     }
 
-    if ($paymentForm->status === 'pending') {
-        $paymentForm->status = 'approved';
-        $paymentForm->save();
-    }
-
-    $user = Auth::user();
-    if ($user instanceof User) {
-        $user->save();
-        FacadesMail::to($user->email)->send(new ApprovePayment($user->toArray()));
-    }
-
-    return redirect('/cashierstudentfee')->with('success', 'Payment approved successfully.');
-}
 
     //principal
 
@@ -733,14 +728,11 @@ public function approvePayment($id)
         'days' => 'required',
     ]);
 
-    // Get the teacher's ID from the validated data
     $teacherId = $validatedData['adviser'];
     $userId = Auth::id();
     $picture = Profile::where('user_id', $userId)->first(); 
-    // Retrieve the user_id of the teacher using the teacher's ID
     $userId = Teacher::where('id', $teacherId)->value('user_id');
     
-    // Retrieve the teacher's name
     $teacherName = Teacher::where('id', $teacherId)->value('name'); 
 
     $existingSchedules = Classes::where('grade', $validatedData['grade'])
@@ -761,7 +753,7 @@ public function approvePayment($id)
 
     $classData = [
         'grade' => $validatedData['grade'],
-        'teacher_id' => $userId,   // Use the user_id from the teacher
+        'teacher_id' => $userId,   
         'adviser' => $teacherName,    
         'section' => strtoupper($validatedData['section']),
         'edpcode' => strtoupper($validatedData['edpcode']),
@@ -851,6 +843,7 @@ public function principaleditassessmentpost(Request $request)
         'assessment_name' => 'required|string|max:255',
         'description' => 'nullable|string',
         'assessment_date' => 'required|date',
+        'month' => 'required',
         'assessment_time' => 'required|date_format:H:i',
         'assessment_fee' => 'required|numeric|min:0',
     ]);
@@ -863,12 +856,13 @@ public function principaleditassessmentpost(Request $request)
         'assessment_name' => $request->assessment_name,
         'description' => $request->description,
         'assessment_date' => $request->assessment_date,
+        'month' => $request->month,
         'assessment_time' => $request->assessment_time,
         'assessment_fee' => $request->assessment_fee,
         'status' => 'published', 
     ]);
 
-    FacadesMail::to('accounting@example.com')->send(new EditAssessment($assessment));
+    FacadesMail::to('accounting@gmail.com')->send(new EditAssessment($assessment));
 
     return redirect()->route('/principalassessment', $assessment->id) 
                      ->with('success', 'Assessment updated and email sent successfully!');
@@ -1110,63 +1104,63 @@ public function updateQuarters(Request $request)
         return response()->json(['success' => 'Profile updated successfully.']);
     }
 
-        public function gradesubmitpost(Request $request)
-        {
-            //  Log::info($request->all());
-        
-            try {
-                $validatedData = $request->validate([
-                    'edp_code.*' => 'required',
-                    'subject.*' => 'required',
-                    'grade_id.*' => 'required|integer|exists:payment_form,payment_id',
-                    'fullname.*' => 'required|string',
-                    'section.*' => 'required',
-                    'grades.*.1st_quarter' => 'nullable|numeric|min:0|max:100',
-                    'grades.*.2nd_quarter' => 'nullable|numeric|min:0|max:100',
-                    'grades.*.3rd_quarter' => 'nullable|numeric|min:0|max:100',
-                    'grades.*.4th_quarter' => 'nullable|numeric|min:0|max:100',
-                    'grades.*.overall_grade' => 'nullable|numeric|min:0|max:100',
-                ]);
-        
-                if (!$request->has('submit')) {
-                    throw new \Exception("Submit button not clicked.");
-                }
-        
-                foreach ($validatedData['edp_code'] as $index => $edp_code) {
-                    $gradesData = [
-                        'edp_code' => $edp_code,
-                        'subject' => $validatedData['subject'][$index],
-                        'grade_id' => $validatedData['grade_id'][$index],
-                        'fullname' => $validatedData['fullname'][$index],
-                        'section' => $validatedData['section'][$index],
-                        '1st_quarter' => $validatedData['grades'][$index]['1st_quarter'] ?? null,
-                        '2nd_quarter' => $validatedData['grades'][$index]['2nd_quarter'] ?? null,
-                        '3rd_quarter' => $validatedData['grades'][$index]['3rd_quarter'] ?? null,
-                        '4th_quarter' => $validatedData['grades'][$index]['4th_quarter'] ?? null,
-                        'overall_grade' => $validatedData['grades'][$index]['overall_grade'] ?? null,
-                        'status' => 'pending',
-                    ];
-        
-                    grade::updateOrCreate(
-                        [
-                            'edp_code' => $gradesData['edp_code'],
-                            'subject' => $gradesData['subject'],
-                            'grade_id' => $gradesData['grade_id'],
-                        ],
-                        $gradesData
-                    );
-                }
-
-                $assignments = Assign::where('teacher_id', Auth::id())->get();
-
-                FacadesMail::to('principal@example.com')->send(new GradeSubmit($assignments));
-        
-                return redirect('/teacherclassload')->with('success', 'Student Grades submitted successfully.');
-            } catch (\Exception $e) {
-                Log::error($e->getMessage());
-                return redirect()->back()->withInput()->withErrors(['Failed to submit grade: ' . $e->getMessage()]);
+    public function gradesubmitpost(Request $request)
+    {
+        //  Log::info($request->all());
+    
+        try {
+            $validatedData = $request->validate([
+                'edp_code.*' => 'required',
+                'subject.*' => 'required',
+                'grade_id.*' => 'required|integer|exists:payment_form,payment_id',
+                'fullname.*' => 'required|string',
+                'section.*' => 'required',
+                'grades.*.1st_quarter' => 'nullable|numeric|min:0|max:100',
+                'grades.*.2nd_quarter' => 'nullable|numeric|min:0|max:100',
+                'grades.*.3rd_quarter' => 'nullable|numeric|min:0|max:100',
+                'grades.*.4th_quarter' => 'nullable|numeric|min:0|max:100',
+                'grades.*.overall_grade' => 'nullable|numeric|min:0|max:100',
+            ]);
+    
+            if (!$request->has('submit')) {
+                throw new \Exception("Submit button not clicked.");
             }
+    
+            foreach ($validatedData['edp_code'] as $index => $edp_code) {
+                $gradesData = [
+                    'edp_code' => $edp_code,
+                    'subject' => $validatedData['subject'][$index],
+                    'grade_id' => $validatedData['grade_id'][$index],
+                    'fullname' => $validatedData['fullname'][$index],
+                    'section' => $validatedData['section'][$index],
+                    '1st_quarter' => $validatedData['grades'][$index]['1st_quarter'] ?? null,
+                    '2nd_quarter' => $validatedData['grades'][$index]['2nd_quarter'] ?? null,
+                    '3rd_quarter' => $validatedData['grades'][$index]['3rd_quarter'] ?? null,
+                    '4th_quarter' => $validatedData['grades'][$index]['4th_quarter'] ?? null,
+                    'overall_grade' => $validatedData['grades'][$index]['overall_grade'] ?? null,
+                    'status' => 'pending',
+                ];
+    
+                grade::updateOrCreate(
+                    [
+                        'edp_code' => $gradesData['edp_code'],
+                        'subject' => $gradesData['subject'],
+                        'grade_id' => $gradesData['grade_id'],
+                    ],
+                    $gradesData
+                );
+            }
+
+            $assignments = Assign::where('teacher_id', Auth::id())->get();
+
+            FacadesMail::to('principal@example.com')->send(new GradeSubmit($assignments));
+    
+            return redirect('/teacherclassload')->with('success', 'Student Grades submitted successfully.');
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return redirect()->back()->withInput()->withErrors(['Failed to submit grade: ' . $e->getMessage()]);
         }
+    }
     
     
     public function publish($id)
@@ -1358,22 +1352,19 @@ public function updateQuarters(Request $request)
         $approvedPayments = [];
     
         foreach ($paymentIds as $id) {
-            $paymentForm = payment_form::where('id', $id)->first();
+            $paymentForm = payment_form::find($id);
     
             if ($paymentForm && $paymentForm->status === 'pending') {
                 $paymentForm->status = 'approved';
                 $paymentForm->save();
     
+                $student = register_form::find($paymentForm->payment_id);
+                
+                if ($student && $student->email) { 
+                    FacadesMail::to($student->email)->send(new ApprovePayment($student->toArray()));
+                }
+    
                 $approvedPayments[] = $id;
-            }
-        }
-    
-        if (!empty($approvedPayments)) {
-            $user = Auth::user();
-            if ($user instanceof User) {
-                $user->save();
-    
-                FacadesMail::to($user->email)->send(new ApprovePayment($user->toArray()));
             }
         }
     
@@ -1483,7 +1474,8 @@ public function updateQuarters(Request $request)
             'assessment_name' => 'required|string|max:255',
             'description' => 'required|string',
             'assessment_date' => 'required|date',
-            'assessment_time' => 'required|date_format:H:i', // Validate as 24-hour format
+            'assessment_time' => 'required|date_format:H:i', 
+            'month' => 'required|integer|between:1,12',
             'assessment_fee' => 'required|numeric|min:0',
         ]);
     
@@ -1493,6 +1485,7 @@ public function updateQuarters(Request $request)
         $assessment->assessment_name = $validatedData['assessment_name'];
         $assessment->description = $validatedData['description'];
         $assessment->assessment_date = $validatedData['assessment_date'];
+        $assessment->month = $validatedData['month'];
     
         $assessment->assessment_time = Carbon::createFromFormat('H:i', $validatedData['assessment_time'])->format('h:i A');
         
@@ -1502,7 +1495,7 @@ public function updateQuarters(Request $request)
     
         $assessment->save();
     
-        FacadesMail::to('principal@example.com')->send(new AssessmentCreated($assessment));
+        FacadesMail::to('principal@gmail.com')->send(new AssessmentCreated($assessment));
 
         return redirect()->back()->with('success', 'Assessment created successfully!');
     }
@@ -1761,6 +1754,9 @@ public function updateQuarters(Request $request)
         if ($request->hasFile('payment-proof')) {
             $file = $request->file('payment-proof');
             $filePath = $file->store('payment_proofs', 'public'); 
+
+            $amount = 500;  
+            $feeType = 'Enrollment Fee'; 
     
             $payment = new payment_form();
             $payment->fee_type = 'Enrollment Fee'; 
@@ -1775,7 +1771,14 @@ public function updateQuarters(Request $request)
             // Log the upload (optional for debugging)
             // Log::info("File uploaded to: " . $filePath);
         }
-    
+        
+        $user = Auth::user();
+            if ($user instanceof User) {
+                $user->save();
+
+                FacadesMail::to($user->email)->send(new PendingPayment($user->toArray(), $amount, $feeType));
+            }
+
         return redirect('oldstudentenrollment')->with('success', 'Payment submitted successfully. Please wait for cashier approval');
     }
 

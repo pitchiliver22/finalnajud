@@ -145,6 +145,17 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="month">Select Month:</label>
+                    <select id="month" name="month" onchange="this.form.submit()">
+                        <option value="">All</option>
+                        @foreach(range(1, 12) as $month)
+                            <option value="{{ $month }}" {{ request('month') == $month ? 'selected' : '' }}>
+                                {{ date('F', mktime(0, 0, 0, $month, 1)) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
             </form>
 
             <div class="assessment-list-container">

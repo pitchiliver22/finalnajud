@@ -10,8 +10,10 @@ use App\Models\attendance;
 use App\Models\corevalues;
 use App\Models\grade;
 use App\Models\payment_form;
+use App\Models\User;
 use Barryvdh\DomPDF\PDF;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Log;
 
 class PDFController extends Controller
@@ -95,5 +97,69 @@ public function downloadReportCard($grade_id, $core_id, $attendance_id)
     $pdf->set_option('defaultFont', 'Arial'); 
 
     return $pdf->download('report_card_' . str_replace(' ', '_', $coreValues->fullname) . '.pdf');
+}
+
+public function generateReport() {
+    
+    $oldStudents = User::where('role', 'Oldstudent')->get(); 
+    $newStudents = User::where('role', 'Newstudent')->get(); 
+
+    $pdf = FacadePdf::loadView('student_report_pdf', compact('oldStudents', 'newStudents'));
+    return $pdf->download('students_report.pdf');
+}
+
+public function generateAccountingReport() {
+    $accountingStaff = User::where('role', 'Accounting')->get(); 
+    $totalAccounting = $accountingStaff->count(); 
+
+   
+    $pdf = FacadePdf::loadView('accounting_report_pdf', compact('accountingStaff', 'totalAccounting'));
+    
+   
+    return $pdf->download('accounting_staff_report.pdf');
+}
+
+public function generateTeacherReport() {
+    $teachers = User::where('role', 'Teacher')->get(); 
+    $totalteachers = $teachers->count(); 
+
+   
+    $pdf = FacadePdf::loadView('teacher_report_pdf', compact('teachers', 'totalteachers'));
+    
+   
+    return $pdf->download('Teacher_report.pdf');
+}
+
+public function generatePrincipalReport() {
+    $principals = User::where('role', 'Principal')->get();
+    $totalPrincipal = $principals->count();
+
+   
+    $pdf = FacadePdf::loadView('principal_report_pdf', compact('principals', 'totalPrincipal'));
+    
+   
+    return $pdf->download('Principal_report.pdf');
+}
+
+public function generateRecordReport() {
+    $totalRecord = User::where('role', 'Record')->get();
+    $countRecord = $totalRecord->count();
+
+   
+    $pdf = FacadePdf::loadView('record_report_pdf', compact('totalRecord', 'countRecord'));
+    
+   
+    return $pdf->download('Record_report.pdf');
+}
+
+public function generateCashierReport() {
+    $cashiers = User::where('role', 'Cashier')->get();
+    $totalCashiers = $cashiers->count();
+
+   
+    $pdf = FacadePdf::loadView('cashier_report_pdf', compact('cashiers', 'totalCashiers'));
+    
+   
+    return $pdf->download('Cashier_report.pdf');
 }
 }

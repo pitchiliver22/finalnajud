@@ -307,7 +307,7 @@
                         <td>{{ $schedule->days }}</td>
                         <td>
                             <a href="/update_class/{{ $schedule->id }}" class="btn btn-primary btn-sm">Edit</a>
-                            <a href="/delete_class/{{ $schedule->id }}" class="btn btn-danger btn-sm">Delete</a>
+                            <a href="/delete_class/{{ $schedule->id }}" class="btn btn-danger btn-sm" onclick="confirmDelete(event, '{{ $schedule->id }}')">Delete</a>
                         </td>
                     </tr>
                 @endforeach
@@ -317,6 +317,8 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 <script>
     let scheduleCount = {};
 
@@ -390,6 +392,27 @@
                 rows[i].style.display = "none";
             }
         }
+    }
+</script>
+
+
+<script>
+    function confirmDelete(event, scheduleId) {
+        event.preventDefault(); 
+        const deleteUrl = '/delete_class/' + scheduleId; 
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Once deleted, you will not be able to recover this schedule!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = deleteUrl; 
+            }
+        });
     }
 </script>
 

@@ -107,7 +107,7 @@
         <h1 class="headerbody">Assessment Creator</h1>
 
         <form action="{{ route('assessment.post') }}" method="POST" id="assessment-form" class="shadow p-4 rounded bg-light">
-            @csrf <!-- CSRF Token -->
+            @csrf 
 
             <div class="mb-3">
                 <label for="school-year" class="form-label fw-bold">School Year:</label>
@@ -120,17 +120,17 @@
                 <label for="grade-level" class="form-label fw-bold">Grade Level:</label>
                 <select id="grade-level" name="grade_level" class="form-select" required>
                     <option value="">Select Grade Level</option>
-                    <option value="kindergarten">Kindergarten</option>
-                    <option value="grade1">Grade 1</option>
-                    <option value="grade2">Grade 2</option>
-                    <option value="grade3">Grade 3</option>
-                    <option value="grade4">Grade 4</option>
-                    <option value="grade5">Grade 5</option>
-                    <option value="grade6">Grade 6</option>
-                    <option value="grade7">Grade 7</option>
-                    <option value="grade8">Grade 8</option>
-                    <option value="grade9">Grade 9</option>
-                    <option value="grade10">Grade 10</option>
+                    <option value="Kindergarten">Kindergarten</option>
+                    <option value="Grade 1">Grade 1</option>
+                    <option value="Grade 2">Grade 2</option>
+                    <option value="Grade 3">Grade 3</option>
+                    <option value="Grade 4">Grade 4</option>
+                    <option value="Grade 5">Grade 5</option>
+                    <option value="Grade 6">Grade 6</option>
+                    <option value="Grade 7">Grade 7</option>
+                    <option value="Grade 8">Grade 8</option>
+                    <option value="Grade 9">Grade 9</option>
+                    <option value="Grade 10">Grade 10</option>
                 </select>
             </div>
 
@@ -147,6 +147,25 @@
             <div class="mb-3">
                 <label for="assessment-date" class="form-label fw-bold">Assessment Date:</label>
                 <input type="date" id="assessment-date" name="assessment_date" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="assessment-month" class="form-label fw-bold">Assessment Month:</label>
+                <select id="assessment-month" name="month" class="form-select" required>
+                    <option value="">Select Month</option>
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
             </div>
 
             <div class="mb-3">

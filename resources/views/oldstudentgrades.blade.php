@@ -191,10 +191,18 @@
                 @endforeach
                 <tr>
                     <td><strong>General Average</strong></td>
-                    <td colspan="6"></td>
+                    <td></td>
+                    <td></td>
+                    <td><strong>{{ number_format($grades->avg('1st_quarter') + 0.00, 2) }}</strong></td>
+                    <td><strong>{{ number_format($grades->avg('2nd_quarter') + 0.00, 2) }}</strong></td>
+                    <td><strong>{{ number_format($grades->avg('3rd_quarter') + 0.00, 2) }}</strong></td>
+                    <td><strong>{{ number_format($grades->avg('4th_quarter') + 0.00, 2) }}</strong></td>
+
+                    <!-- <td colspan="6"></td> -->
                     <td><strong>{{ number_format($grades->avg('overall_grade'), 2) }}</strong></td>
                 </tr>
             </tbody>
+
         </table>
     <br>
         @if (!is_null($coreId) && !is_null($gradeId) && !is_null($attendanceId))
@@ -216,5 +224,20 @@
         </div>
     @endif
 </div>
+
+<script>
+function calculateFinalGrade(index) {
+    const firstQuarter = parseFloat(document.querySelector(`input[name="grades[${index}][1st_quarter]"]`).value) || 0;
+    const secondQuarter = parseFloat(document.querySelector(`input[name="grades[${index}][2nd_quarter]"]`).value) || 0;
+    const thirdQuarter = parseFloat(document.querySelector(`input[name="grades[${index}][3rd_quarter]"]`).value) || 0;
+    const fourthQuarter = parseFloat(document.querySelector(`input[name="grades[${index}][4th_quarter]"]`).value) || 0;
+
+    const total = firstQuarter + secondQuarter + thirdQuarter + fourthQuarter;
+    const count = [firstQuarter, secondQuarter, thirdQuarter, fourthQuarter].filter(grade => grade > 0).length;
+
+    const overallGrade = count > 0 ? (total / count).toFixed(2) : 0;
+    document.querySelector(`input[name="grades[${index}][overall_grade]"]`).value = overallGrade;
+}
+</script>
 
 @include('templates.oldstudentfooter')

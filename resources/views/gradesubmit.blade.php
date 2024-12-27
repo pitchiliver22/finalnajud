@@ -148,14 +148,15 @@
     }
 </style>
 
+
 <div class="header-container"> 
-        <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open(event)">&#9776;</button>
-        <h1>Teacher Grade Submission</h1>
-        <div class="w3-container" style="margin-left: auto;">
-            <label>{{ auth()->user()->firstname }}</label>
-        </div>
+    <button id="openNav" class="w3-button w3-xlarge nav-button" onclick="w3_open(event)">&#9776;</button>
+    <h1>Teacher Grade Submission</h1>
+    <div class="w3-container" style="margin-left: auto;">
+        <label>{{ auth()->user()->firstname }}</label>
     </div>
-    <div id="main" onclick="w3_close()">
+</div>
+<div id="main" onclick="w3_close()">
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
@@ -181,8 +182,7 @@
     
         <a href="{{ route('grades.template', ['edp_code' => $edpcode]) }}" class="download">Download Grades Template</a>
         
-        <br>
-        <br>
+        <br><br>
         <form action="{{ route('gradesubmitpost') }}" method="POST">            
             @csrf
     
@@ -208,6 +208,7 @@
                                 @if ($quartersEnabled['4th_quarter']) <th>4th Quarter</th> @endif
                                 <th>Overall Grade</th>
                             </tr>
+
                         </thead>
                         <tbody>
                             @foreach ($students as $index => $student)
@@ -223,7 +224,7 @@
                                                    step="0.01" 
                                                    oninput="calculateOverall(this)" 
                                                    value="{{ $importedGrades[$student->grade_id]['1st_quarter'] ?? '' }}" 
-                                                   >
+                                            >
                                         </td>
                                     @endif
     
@@ -235,7 +236,7 @@
                                                    step="0.01" 
                                                    oninput="calculateOverall(this)" 
                                                    value="{{ $importedGrades[$student->grade_id]['2nd_quarter'] ?? '' }}" 
-                                                   >
+                                            >
                                         </td>
                                     @endif
     
@@ -247,7 +248,7 @@
                                                    step="0.01" 
                                                    oninput="calculateOverall(this)" 
                                                    value="{{ $importedGrades[$student->grade_id]['3rd_quarter'] ?? '' }}" 
-                                                   >
+                                            >
                                         </td>
                                     @endif
     
@@ -259,7 +260,7 @@
                                                    step="0.01" 
                                                    oninput="calculateOverall(this)" 
                                                    value="{{ $importedGrades[$student->grade_id]['4th_quarter'] ?? '' }}" 
-                                                   >
+                                            >
                                         </td>
                                     @endif
     
@@ -268,9 +269,13 @@
                                                min="0" max="100" 
                                                step="0.01" 
                                                value="{{ $importedGrades[$student->grade_id]['overall_grade'] ?? '' }}" 
-                                               readonly >
+                                               readonly 
+                                        >
                                     </td>
+                                   
                                 </tr>
+
+                                
                             @endforeach
                         </tbody>
                     </table>
@@ -280,7 +285,7 @@
             <div class="hidden-center">
                 <button type="submit" name="submit" class="submitg">Submit Grades</button>
             </div>
-    <br>
+            <br>
             <div class="hidden-center">
                 <a href="{{ route('display.grade', ['edpcode' => $edpcode]) }}">
                     <button type="button" name="button" class="submitgg">Review Submitted Grades</button>
@@ -289,6 +294,35 @@
         </form>
     </div>
 </div>
+
+<script>
+    function calculateOverall(input) {
+        const row = input.closest('tr');
+        const quarterInputs = row.querySelectorAll('input[type="number"][name*="quarter"]');
+        let total = 0;
+        let count = 0;
+
+        quarterInputs.forEach(quarterInput => {
+            const value = parseFloat(quarterInput.value);
+            if (!isNaN(value)) {
+                total += value;
+                count++;
+            }
+        });
+
+        const overallGrade = count ? (total / count) : 0;
+        const overallGradeInput = row.querySelector('input[name*="[overall_grade]"]');
+        overallGradeInput.value = overallGrade.toFixed(2);
+    }
+
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('input', function() {
+            calculateOverall(input);
+        });
+    });
+</script>
+
+@include('templates.teacherfooter')
 
 <script>
     function calculateOverall(row) {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Total Accounting Staff Report</title>
+    <title>Total Teachers</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <style>
         body {
@@ -20,11 +20,9 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        h1, h2 {
+        h1 {
             color: #333;
             text-align: center;
-        }
-        h1 {
             border-bottom: 2px solid #007bff;
             padding-bottom: 10px;
             margin-bottom: 20px;
@@ -66,7 +64,7 @@
             transition: background-color 0.3s;
         }
         .btn-secondary {
-            background-color: #6c757d;
+            background-color: #6c757d; /* Gray for the Back button */
         }
         .btn:hover {
             background-color: #0056b3;
@@ -78,17 +76,11 @@
 </head>
 <body>
     <div class="container">
-        @if (!request()->has('pdf'))  <!-- Check if the request is for PDF download -->
-            <a href="{{ url('adminreport') }}" class="btn btn-secondary">Back</a>
-            <a href="{{ route('generate.accounting.report') }}" class="btn btn-primary">Generate Report</a>
-            <br><br> <!-- Added spacing before the report title -->
-        @endif
+      
 
-        <h1>Total Accounting Staff Report</h1>
+        <h1>Total Teachers</h1>
+        <p>Total Number of Teachers: {{ count($teachers) }}</p>
 
-        <p>Total Number of Accounting Staff: {{ $totalAccounting }}</p>
-
-        <h2>List of Accounting Staff</h2>
         <table>
             <thead>
                 <tr>
@@ -96,17 +88,19 @@
                     <th>Last Name</th>
                     <th>Middle Name</th>
                     <th>Suffix</th>
+                    <th>Role</th>
                     <th>Email</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($accountingStaff as $staff)
+                @foreach($teachers as $teacher)
                     <tr>
-                        <td>{{ $staff->firstname }}</td>
-                        <td>{{ $staff->lastname }}</td>
-                        <td>{{ $staff->middlename }}</td>
-                        <td>{{ $staff->suffix }}</td>
-                        <td>{{ $staff->email }}</td>
+                        <td>{{ $teacher->firstname }}</td>
+                        <td>{{ $teacher->lastname }}</td>
+                        <td>{{ $teacher->middlename }}</td>
+                        <td>{{ $teacher->suffix }}</td>
+                        <td>{{ $teacher->role }}</td>
+                        <td>{{ $teacher->email }}</td>
                     </tr>
                 @endforeach
             </tbody>

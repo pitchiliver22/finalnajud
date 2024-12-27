@@ -70,6 +70,25 @@
             <li>Assessment Name: {{ $assessment->assessment_name }}</li>
             <li>Description: {{ $assessment->description }}</li>
             <li>Assessment Date: {{ $assessment->assessment_date }}</li>
+            <li>Assessment Month: 
+                @php
+                    $monthNames = [
+                        1 => 'January',
+                        2 => 'February',
+                        3 => 'March',
+                        4 => 'April',
+                        5 => 'May',
+                        6 => 'June',
+                        7 => 'July',
+                        8 => 'August',
+                        9 => 'September',
+                        10 => 'October',
+                        11 => 'November',
+                        12 => 'December',
+                    ];
+                @endphp
+                {{ $monthNames[$assessment->month] ?? 'Unknown' }}
+            </li>
             <li>Assessment Time: {{ $assessment->assessment_time }}</li>
             <li>Assessment Fee: {{ $assessment->assessment_fee }}</li>
         </ul>

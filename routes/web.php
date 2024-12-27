@@ -31,7 +31,7 @@ Route::get('/studentdetails', [PageController::class, 'studentdetails'])->name('
 Route::post('studentdetails', [Datacontroller::class, 'studentdetailspost'])->middleware('auth');
 Route::get('studentdetails/{registerFormId}', [UserController::class, 'studentdetails'])->middleware('auth');
 
-Route::post('/update-profile', [Datacontroller::class, 'updateProfile'])->name('update.profile');
+Route::post('/update-profile', [Datacontroller::class, 'updateProfile'])->name('update.profile')->middleware('auth');
 
 
 Route::get('address_contact', [Pagecontroller::class, 'address_contact'])->middleware('auth');
@@ -144,6 +144,7 @@ Route::get('/delete_class/{id}', [UserController::class, 'delete_class']);
 Route::get('publishgrade', [Pagecontroller::class, 'publishgrade']);
 Route::get('/publishgrade', [Usercontroller::class, 'publishgrade'])->name('publishgrade');
 Route::post('/publishgrades', [Datacontroller::class, 'publishGrades'])->name('publishgrade.post');
+// Route::get('/publishgrade/{grade_id}/{edp_code}/{subject}', [Usercontroller::class, 'publishgrade'])->name('publishgrade1');
 
 Route::get('principalassessment', [Pagecontroller::class, 'principalassessment'])->name('/principalassessment');;
 Route::post('/assessment/publish/{id}', [Usercontroller::class, 'publishAssessment'])->name('assessment.publish');
@@ -160,7 +161,7 @@ Route::post('accountingeditprofile', [Datacontroller::class, 'accountingeditprof
 Route::get('accountingassessment', [Pagecontroller::class, 'accountingassessment']);
 Route::get('createassessment', [Pagecontroller::class, 'createassessment']);
 Route::post('/createassessment', [Datacontroller::class, 'assessmentpost'])->name('assessment.post');
-Route::post('/assessment/submit/{id}', [DataController::class, 'submitAssessment'])->name('assessment.submit');
+// Route::post('/assessment/submit/{id}', [DataController::class, 'submitAssessment'])->name('assessment.submit');
 
 //record
 Route::get('record', [Pagecontroller::class, 'record']);
@@ -209,7 +210,7 @@ Route::post('adminusers', [Datacontroller::class, 'adminuserspost']);
 Route::get('/updateusers/{id}', [UserController::class, 'edit'])->name('users.edit');
 Route::post('/updateusers/{id}', [UserController::class, 'update'])->name('users.update');
 
-Route::get('/delete_users/{id}', [UserController::class, 'deleteUser'])->name('users.delete');
+Route::post('/delete_users/{id}', [UserController::class, 'deleteUser'])->name('delete.user');
 
 Route::get('adminimportuser', [Pagecontroller::class, 'adminimportuser']);
 Route::post('adminimportuser', [Datacontroller::class, 'CoreUsersImport']);
@@ -355,8 +356,30 @@ Route::post('/cashierupdateprofile', [Datacontroller::class, 'cashierupdateprofi
 
 
 Route::get('/totalstudent', [Pagecontroller::class, 'totalstudent']);
+Route::get('/generate-report', [PDFController::class, 'generateReport'])->name('student.report');
+Route::get('/student_report_pdf', [Pagecontroller::class, 'showStudentReport'])->name('generate.student.report');
+
+
 Route::get('/totalteacher', [Pagecontroller::class, 'totalteacher']);
+Route::get('/generate-teacher-report', [PDFController::class, 'generateTeacherReport'])->name('teacher.report');
+Route::get('/teacher_report_pdf', [Pagecontroller::class, 'showTeacherReport'])->name('generate.teacher.report');
+
+
+
 Route::get('/totalprincipal', [Pagecontroller::class, 'totalprincipal']);
+Route::get('/generate-principal-report', [PDFController::class, 'generatePrincipalReport'])->name('principal.report');
+Route::get('/principal_report_pdf', [Pagecontroller::class, 'showPrincipalReport'])->name('generate.principal.report');
+
 Route::get('/totalrecord', [Pagecontroller::class, 'totalrecord']);
+Route::get('/generate-record-report', [PDFController::class, 'generateRecordReport'])->name('record.report');
+Route::get('/principal_report_pdf', [Pagecontroller::class, 'showRecordReport'])->name('generate.record.report');
+
+
 Route::get('/totalcashier', [Pagecontroller::class, 'totalcashier']);
+Route::get('/cashier_report_pdf', [Pagecontroller::class, 'showCashierReport'])->name('generate.cashier.report');
+Route::get('/generate-cashier-report', [PDFController::class, 'generateCashierReport'])->name('cashier.report');
+
+
 Route::get('/totalaccounting', [Pagecontroller::class, 'totalaccounting']);
+Route::get('/accounting_report_pdf', [Pagecontroller::class, 'showAccountingReport'])->name('accounting.report');
+Route::get('/generate-accounting-report', [PDFController::class, 'generateAccountingReport'])->name('generate.accounting.report');

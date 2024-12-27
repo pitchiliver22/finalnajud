@@ -158,6 +158,23 @@
     }
     </style>
 
+@php
+$monthNames = [
+    1 => 'January',
+    2 => 'February',
+    3 => 'March',
+    4 => 'April',
+    5 => 'May',
+    6 => 'June',
+    7 => 'July',
+    8 => 'August',
+    9 => 'September',
+    10 => 'October',
+    11 => 'November',
+    12 => 'December',
+];
+@endphp
+
 <div class="header-container">
         <button id="openNav" class="navvers" onclick="w3_open()">&#9776;</button>
         <h1>Assessments Overview</h1>
@@ -178,6 +195,7 @@
                 <th>Assessment Name</th>
                 <th>Description</th>
                 <th>Assessment Date</th>
+                <th>Assessment Month</th>
                 <th>Assessment Time</th>
                 <th>Assessment Fee</th>
                 <th>Status</th>
@@ -192,9 +210,10 @@
                     <td>{{ $assessment->assessment_name }}</td>
                     <td>{{ $assessment->description }}</td>
                     <td>{{ $assessment->assessment_date }}</td>
+                    <td>{{ $assessment->month_name }}</td>
                     <td>{{ $assessment->assessment_time }}</td>
                     <td>{{ $assessment->assessment_fee }}</td>
-                    <td>{{ $assessment->status }}</td> <!-- Add status column if applicable -->
+                    <td>{{ $assessment->status }}</td> 
                     <td>
                         <form action="{{ route('assessment.publish', $assessment->id) }}" method="POST" class="d-inline">
                             @csrf

@@ -301,38 +301,70 @@ public function studentgrades()
 public function studentassessment(Request $request)
 {
     $schoolYears = assessment::select('school_year')->distinct()->pluck('school_year');
-
-    $user = Auth::user();
-    if (Auth::check()) {
-        $userId = Auth::user()->id;
-        //Log::info("Authenticated User ID: " . $userId); // Log the user ID
-    } else {
-        //Log::info("No user is authenticated.");
-    }
-    $picture = Profile::where('user_id', $userId)->first();
-    $paymentId = $user ? $user->payment_id : null; // Safely get payment_id
-
-    $userPayment = payment_form::where('payment_id', $paymentId)->first();
-    $authGradeLevel = $userPayment ? strtolower(str_replace(' ', '', trim($userPayment->level))) : null;
-
-    // Start with published assessments
-    $assessments = assessment::where('status', 'Published');
-
-    // Filter assessments by school year if selected
-    if ($request->has('school_year') && $request->school_year !== '') {
-        $assessments = $assessments->where('school_year', $request->school_year);
-    }
-
-    // Filter by the authenticated user's grade level (exact match)
-    if ($authGradeLevel) {
-        $assessments = $assessments->where('grade_level', '=', $authGradeLevel); // Exact match
-    }
-
-    // Get all assessments
-    $assessments = $assessments->get();
-
-    // Return the view with assessments, school years, and the user's grade level
-    return view('studentassessment', compact('assessments', 'schoolYears', 'authGradeLevel', 'picture'));
+    
+        if (Auth::check()) {
+            $userId = Auth::user()->id;
+           // Log::info("Authenticated User ID: " . $userId);
+    
+            $registerForm = register_form::where('user_id', $userId)->first();
+    
+            if ($registerForm) {
+                $paymentForm = payment_form::where('payment_id', $registerForm->id)->first();
+    
+                if ($paymentForm) {
+                    $authGradeLevel = $paymentForm->level; // Fetch the grade level from payment_form
+                  //  Log::info("Authenticated User's Grade Level: " . $authGradeLevel);
+                } else {
+                   // Log::info("No payment record found for Register Form ID: " . $registerForm->id);
+                    $authGradeLevel = null;
+                }
+            } else {
+               // Log::info("No register form found for User ID: " . $userId);
+                $authGradeLevel = null;
+            }
+    
+            $picture = Profile::where('user_id', $userId)->first();
+        } else {
+            //Log::info("No user is authenticated.");
+            return redirect()->route('login');
+        }
+    
+        $assessments = assessment::where('status', 'Published');
+    
+        if ($request->has('school_year') && $request->school_year !== '') {
+            $assessments = $assessments->where('school_year', $request->school_year);
+        }
+    
+        if ($request->has('month') && $request->month !== '') {
+            $assessments = $assessments->where('month', $request->month);
+        }
+    
+        if (isset($authGradeLevel)) {
+            $assessments = $assessments->where('grade_level', '=', $authGradeLevel);
+        }
+    
+        $assessments = $assessments->get();
+    
+        $monthNames = [
+            1 => 'January',
+            2 => 'February',
+            3 => 'March',
+            4 => 'April',
+            5 => 'May',
+            6 => 'June',
+            7 => 'July',
+            8 => 'August',
+            9 => 'September',
+            10 => 'October',
+            11 => 'November',
+            12 => 'December',
+        ];
+    
+        foreach ($assessments as $assessment) {
+            $assessment->month_name = $monthNames[$assessment->month] ?? 'Unknown';
+        }
+    
+        return view('studentassessment', compact('assessments', 'schoolYears', 'authGradeLevel', 'picture'));
 }
 
     //teacher 
@@ -547,17 +579,40 @@ public function studentassessment(Request $request)
         return view('accounting', compact('picture'));
     }
 
-    public function accountingassessment()
+        public function accountingassessment()
     {
         $userId = Auth::id();
-        $assessments = assessment::all(); 
-        $picture = profile::where('user_id', $userId)->first();
+        $assessments = Assessment::all(); 
+        $picture = Profile::where('user_id', $userId)->first();
+        
+        $monthNames = [
+            1 => 'January',
+            2 => 'February',
+            3 => 'March',
+            4 => 'April',
+            5 => 'May',
+            6 => 'June',
+            7 => 'July',
+            8 => 'August',
+            9 => 'September',
+            10 => 'October',
+            11 => 'November',
+            12 => 'December',
+        ];
+
+        foreach ($assessments as $assessment) {
+            $assessment->month_name = $monthNames[$assessment->month] ?? 'Unknown';
+        }
+
         return view('accountingassessment', compact('assessments', 'picture'));
     }
 
     public function createassessment()
     {
-        return view('createassessment');
+        $user = Auth::user();
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first();
+        return view('createassessment', ['user' => $user, 'picture' => $picture]);
     }
     public function accountingprofile()
     {
@@ -734,6 +789,26 @@ public function principalassessment()
     $userId = Auth::id();
     $picture = Profile::where('user_id', $userId)->first();
     $assessments = Assessment::all(); 
+
+    $monthNames = [
+        1 => 'January',
+        2 => 'February',
+        3 => 'March',
+        4 => 'April',
+        5 => 'May',
+        6 => 'June',
+        7 => 'July',
+        8 => 'August',
+        9 => 'September',
+        10 => 'October',
+        11 => 'November',
+        12 => 'December',
+    ];
+
+    foreach ($assessments as $assessment) {
+        $assessment->month_name = $monthNames[$assessment->month] ?? 'Unknown';
+    }
+
     return view('principalassessment', compact('assessments', 'picture'));
 }
 
@@ -977,37 +1052,73 @@ public function principaleditprofile()
         return view('oldstudentpayment', compact('payment', 'registerForm'));
     }
 
-        public function oldstudentassessment(Request $request)
+    public function oldstudentassessment(Request $request)
     {
         $schoolYears = assessment::select('school_year')->distinct()->pluck('school_year');
-
+    
         if (Auth::check()) {
             $userId = Auth::user()->id;
-            Log::info("Authenticated User ID: " . $userId); // Log the user ID
+           // Log::info("Authenticated User ID: " . $userId);
+    
+            $registerForm = register_form::where('user_id', $userId)->first();
+    
+            if ($registerForm) {
+                $paymentForm = payment_form::where('payment_id', $registerForm->id)->first();
+    
+                if ($paymentForm) {
+                    $authGradeLevel = $paymentForm->level; // Fetch the grade level from payment_form
+                  //  Log::info("Authenticated User's Grade Level: " . $authGradeLevel);
+                } else {
+                   // Log::info("No payment record found for Register Form ID: " . $registerForm->id);
+                    $authGradeLevel = null;
+                }
+            } else {
+               // Log::info("No register form found for User ID: " . $userId);
+                $authGradeLevel = null;
+            }
+    
+            $picture = Profile::where('user_id', $userId)->first();
         } else {
-            Log::info("No user is authenticated.");
+            //Log::info("No user is authenticated.");
+            return redirect()->route('login');
         }
     
-        $user = Auth::user();
-        $paymentId = $user ? $user->payment_id : null; 
-        $picture = Profile::where('user_id', $userId)->first();
-   
-        $userPayment = payment_form::where('payment_id', $paymentId)->first();
-        $authGradeLevel = $userPayment ? strtolower(str_replace(' ', '', trim($userPayment->level))) : null;
-
         $assessments = assessment::where('status', 'Published');
-
+    
         if ($request->has('school_year') && $request->school_year !== '') {
             $assessments = $assessments->where('school_year', $request->school_year);
         }
-
-        if ($authGradeLevel) {
-            $assessments = $assessments->where('grade_level', '=', $authGradeLevel); // Exact match
+    
+        if ($request->has('month') && $request->month !== '') {
+            $assessments = $assessments->where('month', $request->month);
         }
-
+    
+        if (isset($authGradeLevel)) {
+            $assessments = $assessments->where('grade_level', '=', $authGradeLevel);
+        }
+    
         $assessments = $assessments->get();
-
-        return view('oldstudentassessment', compact('assessments', 'schoolYears', 'authGradeLevel' , 'picture'));
+    
+        $monthNames = [
+            1 => 'January',
+            2 => 'February',
+            3 => 'March',
+            4 => 'April',
+            5 => 'May',
+            6 => 'June',
+            7 => 'July',
+            8 => 'August',
+            9 => 'September',
+            10 => 'October',
+            11 => 'November',
+            12 => 'December',
+        ];
+    
+        foreach ($assessments as $assessment) {
+            $assessment->month_name = $monthNames[$assessment->month] ?? 'Unknown';
+        }
+    
+        return view('oldstudentassessment', compact('assessments', 'schoolYears', 'authGradeLevel', 'picture'));
     }
 
 
@@ -1405,18 +1516,48 @@ public function totalstudent()
 
     return view('totalstudent', compact('oldStudents', 'newStudents'));
 }
+public function showStudentReport()
+{
+    $oldStudents = User::where('role', 'Oldstudent')->get();
+    $newStudents = User::where('role', 'Newstudent')->get();
+
+    return view('student_report_pdf', compact('oldStudents', 'newStudents'));
+}
+
+
+
+
+
 public function totalteacher()
 {
     $teachers = User::where('role', 'Teacher')->get();
 
     return view('totalteacher', compact('teachers'));
 }
+public function showTeacherReport()
+{
+    $teachers = User::where('role', 'Teacher')->get();
+
+    return view('teacher_report_pdf', compact('teachers'));
+}
+
+
+
+
 public function totalprincipal()
 {
     $principals = User::where('role', 'Principal')->get();
     $totalPrincipal = $principals->count();
     return view('totalprincipal', compact('principals', 'totalPrincipal'));
 }
+public function showPrincipalReport()
+{
+    $principals = User::where('role', 'Principal')->get();
+    $totalPrincipal = $principals->count();
+    return view('principal_report_pdf', compact('principals', 'totalPrincipal'));
+}
+
+
 
 public function totalcashier()
 {
@@ -1425,6 +1566,16 @@ public function totalcashier()
 
     return view('totalcashier', compact('cashiers', 'totalCashiers'));
 }
+public function showCashierReport()
+{
+    $cashiers = User::where('role', 'Cashier')->get();
+    $totalCashiers = $cashiers->count();
+
+    return view('cashier_report_pdf', compact('cashiers', 'totalCashiers'));
+}
+
+
+
 
 public function totalaccounting()
 {
@@ -1433,6 +1584,18 @@ public function totalaccounting()
 
     return view('totalaccounting', compact('accountingStaff', 'totalAccounting'));
 }
+public function showAccountingReport()
+{
+    
+    $accountingStaff = User::where('role', 'Accounting')->get(); 
+    $totalAccounting = $accountingStaff->count(); 
+
+
+    return view('accounting_report_pdf', compact('accountingStaff', 'totalAccounting'));
+}
+
+
+
 
 public function totalrecord()
 {
@@ -1441,4 +1604,12 @@ public function totalrecord()
 
     return view('totalrecord', compact('totalRecord', 'countRecord'));
 }
+public function showRecordReport()
+{
+    $totalRecord = User::where('role', 'Record')->get();
+    $countRecord = $totalRecord->count();
+
+    return view('record_report_pdf', compact('totalRecord', 'countRecord'));
+}
+
 }

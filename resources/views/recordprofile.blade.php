@@ -141,7 +141,7 @@
                     <div class="text-center me-4">
                             @if ($picture)
                                 <img src="{{ asset('storage/' . $picture->profile_picture) }}" alt="Profile Image" class="profile-image img-fluid" onerror="this.onerror=null; this.src='{{ asset('path/to/default/image.png') }}';">
-                            @elsew
+                            @else
                                 <img src="{{ asset('path/to/default/image.png') }}" alt="Default Profile Image" class="profile-image img-fluid">
                             @endif
                         </div>
