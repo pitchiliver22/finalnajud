@@ -1,4 +1,4 @@
-    <style>
+<style>
     .report-card {
         width: 100%;
         max-width: 800px;
@@ -98,12 +98,7 @@ text-align:center;
         <div>   
             <strong>GRADE:</strong>
             <span><u>{{$level->level}}</u></span>
-            
-            <span>
-                <u>
-                    <a href="{{ route('generate.student.card', ['id' => $register->id]) }}" class="btn btn-primary">Generate Report</a>
-                </u>
-            </span>
+           
         </div>
     </div>
 
@@ -355,7 +350,5 @@ text-align:center;
         <p>Democratize quality education. Be the visionary and industry leader. Give hope and transform lives.</p>
     </div>
 
-    <a href="{{ url()->previous() }}" class="btn btn-secondary btn-sm" style="margin-bottom: 20px;">
-        Back
-    </a>
+   
 </div>

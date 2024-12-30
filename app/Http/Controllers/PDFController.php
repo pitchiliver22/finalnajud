@@ -10,6 +10,8 @@ use App\Models\attendance;
 use App\Models\corevalues;
 use App\Models\grade;
 use App\Models\payment_form;
+use App\Models\profile;
+use App\Models\studentdetails;
 use App\Models\User;
 use Barryvdh\DomPDF\PDF;
 use Illuminate\Support\Facades\Auth;
@@ -152,4 +154,36 @@ public function generateCashierReport() {
    
     return $pdf->download('Cashier_report.pdf');
 }
+
+
+
+
+
+public function generateStudentcard($id) {
+    
+
+    $userId = Auth::id();
+    $picture = profile::where('user_id', $userId)->first(); 
+
+    $register = register_form::findOrFail($id);
+
+    $student = studentdetails::where('details_id', $register->id)->first();
+
+    $level = payment_form::where('payment_id', $register->id)->first();
+
+    $subjects = assign::where('class_id', $register->id)->get();
+
+    $grades = grade::where('grade_id', $register->id)->get();
+
+    $corevalues = corevalues::where('core_id', $register->id)->get();
+    $attendance = attendance::where('attendance_id', $register->id)->get();
+   
+    $pdf = FacadePdf::loadView('student_card_pdf', compact('register', 'student','level','subjects','grades','corevalues','attendance','picture'
+
+));
+    
+   
+    return $pdf->download('student_card.pdf');
+}
+
 }

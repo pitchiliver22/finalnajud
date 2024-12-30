@@ -87,7 +87,13 @@ Route::get('teacherclassload', [Pagecontroller::class, 'teacherclassload'])->mid
 Route::get('reportcard', [Pagecontroller::class, 'reportcard'])->middleware('auth');
 Route::get('generatecard/{edp_code}/{teacher_id}', [Usercontroller::class, 'generatecard'])->name('generatecard');
 // Route::get('studentcard',[Pagecontroller::class, 'studentcard']);
+
 Route::get('/studentcard/{id}', [Usercontroller::class, 'studentcard']);
+Route::get('/student_card_pdf/{id}', [Usercontroller::class, 'studentcardpdf']);
+Route::get('/generate-student-card/{id}', [PDFController::class, 'generateStudentcard'])->name('generate.student.card');
+
+
+
 
 Route::get('/gradesubmit/{edp_code}/{teacher_id}', [Usercontroller::class, 'gradesubmit'])->name('gradesubmit');
 Route::post('/gradesubmit', [Datacontroller::class, 'gradesubmitpost'])->name('gradesubmitpost');
@@ -387,3 +393,4 @@ Route::get('/generate-cashier-report', [PDFController::class, 'generateCashierRe
 Route::get('/totalaccounting', [Pagecontroller::class, 'totalaccounting']);
 Route::get('/accounting_report_pdf', [Pagecontroller::class, 'showAccountingReport'])->name('accounting.report');
 Route::get('/generate-accounting-report', [PDFController::class, 'generateAccountingReport'])->name('generate.accounting.report');
+

@@ -845,5 +845,34 @@ public function deleteAssessment($id)
         return view('oldstudentupdateprevious', compact('school', 'registerForm'));
     }
 
+    public function studentcardpdf($id)
+    {
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
+    
+        $register = register_form::findOrFail($id);
+    
+        $student = studentdetails::where('details_id', $register->id)->first();
+    
+        $level = payment_form::where('payment_id', $register->id)->first();
+    
+        $subjects = assign::where('class_id', $register->id)->get();
+    
+        $grades = grade::where('grade_id', $register->id)->get();
+    
+        $corevalues = corevalues::where('core_id', $register->id)->get();
+        $attendance = attendance::where('attendance_id', $register->id)->get();
+    
+        return view('student_card_pdf', [
+            'register' => $register,
+            'student' => $student,
+            'level' => $level,
+            'subjects' => $subjects,
+            'grades' => $grades,
+            'corevalues' => $corevalues,
+            'attendance' => $attendance,
+            'picture' => $picture
+        ]);
+    }
 
 }
