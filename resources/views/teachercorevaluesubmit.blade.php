@@ -111,11 +111,10 @@
                                 <th>Fullname</th>
                                 <th>Section</th>
                                 <th>Grade Level</th>
-                                <th>Respect</th>
-                                <th>Excellence</th>
-                                <th>Teamwork</th>
-                                <th>Innovation</th>
-                                <th>Sustainability</th>
+                                <th>1st Quarter</th>
+                                <th>2nd Quarter</th>
+                                <th>3rd Quarter</th>
+                                <th>4th Quarter</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -124,7 +123,7 @@
                                     <td>{{ $studentDetail['student']->firstname }} {{ $studentDetail['student']->middlename }} {{ $studentDetail['student']->lastname }}</td>
                                     <td>{{ $studentDetail['section'] }}</td> 
                                     <td>{{ $studentDetail['grade_level'] ?? 'N/A' }}</td>
-                                    @foreach (['respect', 'excellence', 'teamwork', 'innovation', 'sustainability'] as $coreValue)
+                                    @foreach (['first', 'second', 'third', 'fourth'] as $coreValue)
                                         <td>
                                             <input type="text" class="form-control" name="core_values[{{ $studentDetail['student']->id }}][{{ $coreValue }}]" 
                                                    value="{{ old('core_values.' . $studentDetail['student']->id . '.' . $coreValue, '') }}" 

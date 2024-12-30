@@ -22,6 +22,7 @@ use tidy;
 use App\Http\Controllers\showAssessment;
 use App\Mail\PublishAssessment;
 use App\Models\attendance;
+use App\Models\corevalues;
 use App\Models\profile;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail as FacadesMail;
@@ -342,7 +343,6 @@ class Usercontroller extends Controller
 {
     $userId = Auth::id();
     $picture = Profile::where('user_id', $userId)->first(); 
-    // Fetch assignments based on the provided edp_code and teacher_id
     $assignments = Assign::where('edpcode', $edp_code)
                          ->where('teacher_id', $teacher_id)
                          ->get();
@@ -355,27 +355,23 @@ class Usercontroller extends Controller
 
     $classIds = $assignments->pluck('class_id')->unique();
 
-    // Fetch students registered in those classes
     $students = register_form::whereIn('id', $classIds)->get();
 
-    // Filter students based on assignments
     $studentsInSection = $students->filter(function($student) use ($assignments) {
         return $assignments->contains(function($assignment) use ($student) {
             return $assignment->class_id == $student->id;
         });
     });
 
-    // Create a mapping of student IDs to class IDs
     $studentClassIds = $studentsInSection->keyBy('id')->map(function($student) use ($assignments) {
         $assignment = $assignments->firstWhere('class_id', $student->id);
         return $assignment ? $assignment->class_id : null;
     });
 
-    // Create a detailed list of students with their core values information
     $studentsWithDetails = $studentsInSection->map(function($student) use ($assignments) {
         $assignment = $assignments->firstWhere('class_id', $student->id);
         return [
-            'student' => $student, // Keep it as an object
+            'student' => $student, 
             'edpcode' => $assignment ? $assignment->edpcode : null,
             'subject' => $assignment ? $assignment->subject : null,
             'section' => $assignment ? $assignment->section : null,
@@ -597,6 +593,76 @@ public function deleteUser($id)
     }
 
     
+    public function generatecard($edp_code, $teacher_id)
+    {
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first();
+    
+        $assignments = assign::where('edpcode', $edp_code)
+                             ->where('teacher_id', $teacher_id)
+                             ->get();
+    
+        if ($assignments->isEmpty()) {
+            return redirect()->back()->with('error', 'No assignments found for this EDP code and teacher.');
+        }
+    
+        $classIds = $assignments->pluck('class_id')->unique();
+    
+        $students = register_form::whereIn('id', $classIds)->get();
+    
+        $paymentForm = payment_form::where('payment_id', $teacher_id)->first();
+        $subjects = $assignments->pluck('subject')->unique();
+        $sections = $assignments->pluck('section')->unique();
+    
+        $fullNames = $students->map(function($student) {
+            return "{$student->firstname} {$student->middlename} {$student->lastname}";
+        })->toArray();
+    
+        $firstFullName = !empty($fullNames) ? $fullNames[0] : 'No student found';
+    
+        return view('generatecard', [
+            'assignments' => $assignments,
+            'paymentForm' => $paymentForm,
+            'students' => $students,
+            'edpcode' => $edp_code,
+            'subject' => $subjects->first(),
+            'section' => $sections->first(),
+            'firstFullName' => $firstFullName,
+            'picture' => $picture,
+        ]);
+    }
+
+    public function studentcard($id)
+    {
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
+    
+        $register = register_form::findOrFail($id);
+    
+        $student = studentdetails::where('details_id', $register->id)->first();
+    
+        $level = payment_form::where('payment_id', $register->id)->first();
+    
+        $subjects = assign::where('class_id', $register->id)->get();
+    
+        $grades = grade::where('grade_id', $register->id)->get();
+    
+        $corevalues = corevalues::where('core_id', $register->id)->get();
+        $attendance = attendance::where('attendance_id', $register->id)->get();
+    
+        return view('studentcard', [
+            'register' => $register,
+            'student' => $student,
+            'level' => $level,
+            'subjects' => $subjects,
+            'grades' => $grades,
+            'corevalues' => $corevalues,
+            'attendance' => $attendance,
+            'picture' => $picture
+        ]);
+    }
+
+
     public function submittedgrades()
     {
         return view('submittedgrades');
@@ -616,17 +682,15 @@ public function deleteUser($id)
 
     public function showStudentDetails($id)
 {
-    // Fetch the register form by primary key
     $register = register_form::findOrFail($id);
     $userId = Auth::id();
     $picture = profile::where('user_id', $userId)->first(); 
-    // Fetch related models based on the foreign keys that reference register_form
+
     $student = studentdetails::where('details_id', $register->id)->first();
     $address = address::where('id', $register->id)->first();
     $previous = previous_school::where('id', $register->id)->first();
     $require = required_docs::where('required_id', $register->id)->get();
 
-    // Return the view with the fetched data
     return view('showdetails', [
         'register' => $register,
         'student' => $student,

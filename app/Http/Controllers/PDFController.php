@@ -48,46 +48,37 @@ class PDFController extends Controller
 }
 
 
-public function downloadReportCard($grade_id, $core_id, $attendance_id)
+public function downloadReportCard($grade_id)
 {
-   
-    $authUserCoreId = Auth::user()->core_id;
-
-
-    $coreValues = corevalues::where('core_id', $core_id)->first();
-
-    if (!$coreValues) {
-        Log::info("Core values not found for core_id: {$core_id}");
-        return response()->json(['error' => 'Core values not found.'], 404);
-    }
-
-  
-    $grades = Grade::where('fullname', $coreValues->fullname)
-                   ->where('section', $coreValues->section)
+    // Fetch grades based on the grade_id
+    $grades = Grade::where('grade_id', $grade_id)
                    ->where('status', 'approved')
                    ->get();
 
     if ($grades->isEmpty()) {
-        Log::info("Grades not found for fullname: {$coreValues->fullname}");
+        Log::info("Grades not found for grade_id: {$grade_id}");
         return response()->json(['error' => 'Grades not found for the student.'], 404);
     }
 
-    $attendance = Attendance::where('fullname', $coreValues->fullname)
-                            ->where('section', $coreValues->section)
-                            ->get();
+    // Get student details from the first grade record
+    $student = $grades->first(); // Get the first record to fetch common data
+    $fullname = $student->fullname; // Adjust based on your actual structure
+    $section = $student->section; // Adjust based on your actual structure
+    $grade_level = $student->grade_level; // Adjust based on your actual structure
 
-    if ($attendance->isEmpty()) {
-        Log::info("Attendance records not found for fullname: {$coreValues->fullname}");
-        return response()->json(['error' => 'Attendance records not found for the student.'], 404);
+    // Fetch the level from the payment_form table
+    $level = payment_form::where('payment_id', $grade_id)->first();
+    if (!$level) {
+        Log::info("Level not found for grade_id: {$grade_id}");
+        return response()->json(['error' => 'Level not found for the student.'], 404);
     }
 
     $reportCardData = [
-        'fullname' => $coreValues->fullname,
-        'section' => $coreValues->section,
-        'grade_level' => $coreValues->grade_level,
+        'fullname' => $fullname,
+        'section' => $section,
+        'grade_level' => $grade_level,
         'grades' => $grades,
-        'attendance' => $attendance,
-        'core_values' => $coreValues,
+        'level' => $level->level, // Add the level to the report card data
     ];
 
     $pdf = FacadePdf::loadView('reportCardPDF', compact('reportCardData'));
@@ -96,9 +87,8 @@ public function downloadReportCard($grade_id, $core_id, $attendance_id)
     $pdf->set_option('isRemoteEnabled', true);
     $pdf->set_option('defaultFont', 'Arial'); 
 
-    return $pdf->download('report_card_' . str_replace(' ', '_', $coreValues->fullname) . '.pdf');
+    return $pdf->download('report_card_' . str_replace(' ', '_', $fullname) . '.pdf');
 }
-
 public function generateReport() {
     
     $oldStudents = User::where('role', 'Oldstudent')->get(); 

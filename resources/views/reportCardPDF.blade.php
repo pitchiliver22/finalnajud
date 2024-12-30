@@ -14,8 +14,8 @@
         .header {
             text-align: center;
             margin-bottom: 30px;
-            background-color: #007bff;
-            color: white;
+
+            color: rgb(0, 0, 0);
             padding: 20px;
             border-radius: 8px;
         }
@@ -28,6 +28,12 @@
             margin: 5px 0;
             font-weight: normal;
         }
+        .passed{
+background-color:#05fa19;
+}
+.failed{
+background-color:#fa0505;
+}
         .info {
             display: flex;
             justify-content: space-between;
@@ -54,10 +60,6 @@
             text-align: center;
             border: 1px solid #ddd;
         }
-        .table th {
-            background-color: #007bff;
-            color: white;
-        }
         .section {
             margin-top: 30px;
         }
@@ -66,6 +68,8 @@
             text-align: right;
             font-weight: bold;
         }
+       
+      
     </style>
     <title>Student Report Card</title>
 </head>
@@ -79,9 +83,9 @@
         <div>
             <strong>Student Name:</strong> {{ $reportCardData['fullname'] }}<br>
             <strong>Section:</strong> {{ $reportCardData['section'] }}<br>
-            <strong>Grade Level:</strong> {{ $reportCardData['grade_level'] }}
+            <strong>GRADE:</strong>
+            <span><u>{{ $reportCardData['level'] }}</u></span>
         </div>
-     
     </div>
 
     <div class="section">
@@ -94,81 +98,34 @@
                     <th>Q2</th>
                     <th>Q3</th>
                     <th>Q4</th>
-                    <th>Overall Grade</th>
+                    <th>Final Grade</th>
+                    <th>Remark</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($reportCardData['grades'] as $grade)
                     <tr>
                         <td>{{ $grade->subject }}</td>
-                        <td>{{ $grade->{'1st_quarter'} }}</td>
-                        <td>{{ $grade->{'2nd_quarter'} }}</td>
-                        <td>{{ $grade->{'3rd_quarter'} }}</td>
-                        <td>{{ $grade->{'4th_quarter'} }}</td>
-                        <td>{{ $grade->overall_grade }}</td>
+                        <td>{{ number_format($grade->{'1st_quarter'} ?? 0, 2) }}</td>
+                        <td>{{ number_format($grade->{'2nd_quarter'} ?? 0, 2) }}</td>
+                        <td>{{ number_format($grade->{'3rd_quarter'} ?? 0, 2) }}</td>
+                        <td>{{ number_format($grade->{'4th_quarter'} ?? 0, 2) }}</td>
+                        <td>{{ number_format($grade->overall_grade ?? 0, 2) }}</td>
+                        <td class="{{ ($grade->overall_grade ?? 0) < 75 ? 'faileds' : 'passeds' }}">
+                            {{ ($grade->overall_grade ?? 0) < 75 ? 'FAILED' : 'PASSED' }}
+                        </td>
                     </tr>
                 @endforeach
-            </tbody>
-        </table>
-    </div>
-
-    <div class="section">
-        <h2>Attendance</h2>
-        <table class="table">
-            <thead>
                 <tr>
-                    <th>Subject</th>
-                    <th>1st Quarter</th>
-                    <th>2nd Quarter</th>
-                    <th>3rd Quarter</th>
-                    <th>4th Quarter</th>
-                    <th>Overall Attendance</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($reportCardData['attendance'] as $attendance)
-                    <tr>
-                        <td>{{ $attendance->subject }}</td>
-                        <td>{{ $attendance->{'1st_quarter'} }}</td>
-                        <td>{{ $attendance->{'2nd_quarter'} }}</td>
-                        <td>{{ $attendance->{'3rd_quarter'} }}</td>
-                        <td>{{ $attendance->{'4th_quarter'} }}</td>
-                        <td>{{ $attendance->overall_attendance }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-
-    <div class="section">
-        <h2>Core Values</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Core Value</th>
-                    <th>Score</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Respect</td>
-                    <td>{{ $reportCardData['core_values']->respect }}</td>
-                </tr>
-                <tr>
-                    <td>Excellence</td>
-                    <td>{{ $reportCardData['core_values']->excellence }}</td>
-                </tr>
-                <tr>
-                    <td>Teamwork</td>
-                    <td>{{ $reportCardData['core_values']->teamwork }}</td>
-                </tr>
-                <tr>
-                    <td>Innovation</td>
-                    <td>{{ $reportCardData['core_values']->innovation }}</td>
-                </tr>
-                <tr>
-                    <td>Sustainability</td>
-                    <td>{{ $reportCardData['core_values']->sustainability }}</td>
+                    <td><strong>GENERAL AVERAGE</strong></td>
+                    <td><strong>{{ number_format($reportCardData['grades']->avg('1st_quarter'), 2) }}</strong></td>
+                    <td><strong>{{ number_format($reportCardData['grades']->avg('2nd_quarter'), 2) }}</strong></td>
+                    <td><strong>{{ number_format($reportCardData['grades']->avg('3rd_quarter'), 2) }}</strong></td>
+                    <td><strong>{{ number_format($reportCardData['grades']->avg('4th_quarter'), 2) }}</strong></td>
+                    <td><strong>{{ number_format($reportCardData['grades']->avg('overall_grade'), 2) }}</strong></td>
+                    <td class="{{ $reportCardData['grades']->avg('overall_grade') < 75 ? 'failed' : 'passed' }}">
+                        {{ $reportCardData['grades']->avg('overall_grade') < 75 ? 'FAILED' : 'PASSED' }}
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -178,5 +135,19 @@
         <p>Generated on: {{ date('Y-m-d') }}</p>
     </div>
 
+    <script>
+        function calculateFinalGrade(index) {
+            const firstQuarter = parseFloat(document.querySelector(`input[name="grade[${index}][1st_quarter]"]`).value) || 0;
+            const secondQuarter = parseFloat(document.querySelector(`input[name="grade[${index}][2nd_quarter]"]`).value) || 0;
+            const thirdQuarter = parseFloat(document.querySelector(`input[name="grade[${index}][3rd_quarter]"]`).value) || 0;
+            const fourthQuarter = parseFloat(document.querySelector(`input[name="grade[${index}][4th_quarter]"]`).value) || 0;
+
+            const total = firstQuarter + secondQuarter + thirdQuarter + fourthQuarter;
+            const count = [firstQuarter, secondQuarter, thirdQuarter, fourthQuarter].filter(grade => grade > 0).length;
+
+            const overallGrade = count > 0 ? (total / count).toFixed(2) : 0;
+            document.querySelector(`input[name="grade[${index}][overall_grade]"]`).value = overallGrade;
+        }
+    </script>
 </body>
 </html>

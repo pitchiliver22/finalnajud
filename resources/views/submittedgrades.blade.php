@@ -322,11 +322,18 @@
                                     <td>{{ $assign->grade }}</td>
                                     <td>
                                         @php
-    $url = route('publishgrade', ['edp_code' => $grade->edp_code, 'subject' => $grade->subject]);
-    Log::info('Generated URL for publishgrade: ' . $url);
-@endphp
+                                            $userId = auth()->id();
 
-<a href="{{ $url }}" class="btn btn-info btn-sm" title="View">View</a> </td>
+                                            $userProfile = \App\Models\Profile::where('user_id', $userId)->first();
+
+                                            if ($userProfile) {
+                                                $url = route('publishgrade', ['edp_code' => $grade->edp_code, 'subject' => $grade->subject]);
+                                                Log::info('Generated URL for publishgrade: ' . $url);
+                                                echo '<a href="' . $url . '" class="btn btn-info btn-sm" title="View">View</a>';
+                                            } else {
+                                                echo '<span class="text-danger">Profile not uploaded</span>';
+                                            }
+                                        @endphp
                                 </tr>
                             @endif
                         @endforeach

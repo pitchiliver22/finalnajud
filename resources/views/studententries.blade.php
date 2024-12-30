@@ -138,7 +138,7 @@
                     <td>{{ $student->middlename }}</td>
                     <td>{{ $student->lastname }}</td>
                     <td>
-                        @if ($student->register) <!-- Ensure the register relationship exists -->
+                        @if ($student->register) 
                             <a href="/showdetails/{{ $student->register->id }}" class="viewbtn" id="register-{{ $student->register->id }}">View Student Information</a>
                         @else
                             <span>No Register Found</span>

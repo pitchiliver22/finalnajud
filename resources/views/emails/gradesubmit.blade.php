@@ -68,7 +68,7 @@
         <p>I hope this message finds you well.</p>
         
         @foreach ($assignments as $assignment)
-            <p>I wanted to inform you that I have submitted the grades for the section {{ $assignment->section }} for the academic grade {{ $assignment->grade }}.</p>
+            <p>I wanted to inform you that I have submitted the grades for the section {{ $assignment->section }} for the academic {{ $assignment->grade }}.</p>
         @endforeach
         
         <p>Thank you for your continued support and guidance.</p>

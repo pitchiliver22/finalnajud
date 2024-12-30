@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('2nd_quarter');
             $table->string('3rd_quarter');
             $table->string('4th_quarter');
+            $table->string('month');
             $table->string('overall_attendance');
 
 

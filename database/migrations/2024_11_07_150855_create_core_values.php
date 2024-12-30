@@ -16,11 +16,10 @@ return new class extends Migration
             $table->string('fullname');
             $table->string('section');
             $table->string('grade_level');
-            $table->string('respect');
-            $table->string('excellence');
-            $table->string('teamwork');
-            $table->string('innovation');
-            $table->string('sustainability');
+            $table->string('first');
+            $table->string('second');
+            $table->string('third');
+            $table->string('fourth');
             $table->timestamps();
         });
     }

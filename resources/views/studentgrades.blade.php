@@ -149,7 +149,13 @@
                 @endforeach
                 <tr>
                     <td><strong>General Average</strong></td>
-                    <td colspan="6"></td>
+                    <td></td>
+                    <td></td>
+                    <td><strong>{{ number_format($grades->avg('1st_quarter') + 0.00, 2) }}</strong></td>
+                    <td><strong>{{ number_format($grades->avg('2nd_quarter') + 0.00, 2) }}</strong></td>
+                    <td><strong>{{ number_format($grades->avg('3rd_quarter') + 0.00, 2) }}</strong></td>
+                    <td><strong>{{ number_format($grades->avg('4th_quarter') + 0.00, 2) }}</strong></td>
+                    
                     <td><strong>{{ number_format($grades->avg('overall_grade'), 2) }}</strong></td>
                 </tr>
             </tbody>

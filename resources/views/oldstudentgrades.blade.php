@@ -198,24 +198,20 @@
                     <td><strong>{{ number_format($grades->avg('3rd_quarter') + 0.00, 2) }}</strong></td>
                     <td><strong>{{ number_format($grades->avg('4th_quarter') + 0.00, 2) }}</strong></td>
 
-                    <!-- <td colspan="6"></td> -->
                     <td><strong>{{ number_format($grades->avg('overall_grade'), 2) }}</strong></td>
                 </tr>
             </tbody>
 
         </table>
     <br>
-        @if (!is_null($coreId) && !is_null($gradeId) && !is_null($attendanceId))
-            <a href="{{ route('report.card.download', ['grade_id' => $gradeId, 'core_id' => $coreId, 'attendance_id' => $attendanceId]) }}" class="btn-report">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
-                    <path d="M.5 15a.5.5 0 0 0 .5.5h14a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5H1a.5.5 0 0 0-.5.5v1zM7.5 0a.5.5 0 0 1 .5.5v8.793l2.354-2.354a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7 9.293V.5a.5.5 0 0 1 .5-.5z"/>
-                </svg>
-                Download Report Card
-            </a>
-        @else
-            <div class="alert">
-                <strong>Notice:</strong> Attendance, core value, or grade is currently under processing by the teacher. Please check back later.
-            </div>
+    @if (!is_null($gradeId))
+    <a href="{{ route('report.card.download', ['grade_id' => $gradeId]) }}" class="btn-report">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+            <path d="M.5 15a.5.5 0 0 0 .5.5h14a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5H1a.5.5 0 0 0-.5.5v1zM7.5 0a.5.5 0 0 1 .5.5v8.793l2.354-2.354a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7 9.293V.5a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+        Download Report Card
+    </a>
+@else
         @endif
 
     @else

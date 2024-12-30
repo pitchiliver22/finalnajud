@@ -63,11 +63,12 @@
                                 <th>Grade Level</th>
                                 <th>EDP Code</th>
                                 <th>Subject</th>
-                                <th>1st Quarter</th>
-                                <th>2nd Quarter</th>
-                                <th>3rd Quarter</th>
-                                <th>4th Quarter</th>
-                                <th>Overall Attendance</th>
+                                <th>No. of School Days</th>
+                                <th>No. of School Days Present</th>
+                                <th>No. of Times Tardy</th>
+                                {{-- <th>4th Quarter</th> --}}
+                                <th>Month</th>
+                                <th>Total</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -99,13 +100,32 @@
                                                oninput="calculateOverallAttendance(this)" 
                                                required>
                                     </td>
-                                    <td>
+                                    <td style="display: none">
                                         <input type="number" class="form-control" 
                                                value="{{ old('4th_quarter.' . $studentDetail['student']->id, $studentClassIds[$studentDetail['student']->id]['4th_quarter'] ?? 0) }}" 
                                                name="4th_quarter[{{ $studentDetail['student']->id }}]" 
                                                oninput="calculateOverallAttendance(this)" 
                                                required>
                                     </td>
+                                    <td>
+                                        <select class="form-control" name="month[{{ $studentDetail['student']->id }}]" required>
+                                            <option value="">Select Month</option>
+                                            <option value="January">January</option>
+                                            <option value="February">February</option>
+                                            <option value="March">March</option>
+                                            <option value="April">April</option>
+                                            <option value="May">May</option>
+                                            <option value="June">June</option>
+                                            <option value="July">July</option>
+                                            <option value="August">August</option>
+                                            <option value="September">September</option>
+                                            <option value="October">October</option>
+                                            <option value="November">November</option>
+                                            <option value="December">December</option>
+                                        </select>
+                                    </td>
+                                    </td>
+                                    
                                     <td>
                                         <input type="text" class="form-control" 
                                                value="{{ old('overall_attendance.' . $studentDetail['student']->id, $studentClassIds[$studentDetail['student']->id]['overall_attendance'] ?? 0) }}" 

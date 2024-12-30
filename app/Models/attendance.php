@@ -19,6 +19,7 @@ class attendance extends Model
         '2nd_quarter',
         '3rd_quarter',
         '4th_quarter',
+        'month',
         'overall_attendance',
         'attendance_id',
     ];

@@ -84,6 +84,11 @@ Route::post('teachereditprofile', [Datacontroller::class, 'teachereditprofilepos
 
 Route::get('teacherclassload', [Pagecontroller::class, 'teacherclassload'])->middleware('auth');
 
+Route::get('reportcard', [Pagecontroller::class, 'reportcard'])->middleware('auth');
+Route::get('generatecard/{edp_code}/{teacher_id}', [Usercontroller::class, 'generatecard'])->name('generatecard');
+// Route::get('studentcard',[Pagecontroller::class, 'studentcard']);
+Route::get('/studentcard/{id}', [Usercontroller::class, 'studentcard']);
+
 Route::get('/gradesubmit/{edp_code}/{teacher_id}', [Usercontroller::class, 'gradesubmit'])->name('gradesubmit');
 Route::post('/gradesubmit', [Datacontroller::class, 'gradesubmitpost'])->name('gradesubmitpost');
 
@@ -144,7 +149,6 @@ Route::get('/delete_class/{id}', [UserController::class, 'delete_class']);
 Route::get('publishgrade', [Pagecontroller::class, 'publishgrade']);
 Route::get('/publishgrade', [Usercontroller::class, 'publishgrade'])->name('publishgrade');
 Route::post('/publishgrades', [Datacontroller::class, 'publishGrades'])->name('publishgrade.post');
-// Route::get('/publishgrade/{grade_id}/{edp_code}/{subject}', [Usercontroller::class, 'publishgrade'])->name('publishgrade1');
 
 Route::get('principalassessment', [Pagecontroller::class, 'principalassessment'])->name('/principalassessment');;
 Route::post('/assessment/publish/{id}', [Usercontroller::class, 'publishAssessment'])->name('assessment.publish');
@@ -272,7 +276,7 @@ Route::get('oldstudentclassload', [Pagecontroller::class, 'oldstudentclassload']
 
 Route::get('oldstudentgrades', [PageController::class, 'oldstudentgrades'])->middleware('auth');
 
-Route::get('/report-card/{core_id}/{grade_id}/{attendance_id}', [PDFController::class, 'downloadReportCard'])
+Route::get('/report-card/{grade_id}', [PDFController::class, 'downloadReportCard'])
     ->name('report.card.download');
 
 Route::get('oldstudentassessment', [Pagecontroller::class, 'oldstudentassessment']);

@@ -409,22 +409,18 @@ public function studentassessment(Request $request)
         $authUserId = Auth::id();
         $userId = Auth::id();
         $picture = Profile::where('user_id', $userId)->first(); 
-        // Fetch classes where teacher_id matches the authenticated user's ID
         $classes = Classes::where('teacher_id', $authUserId)
             ->select('section', 'edpcode', 'subject', 'grade', 'teacher_id')
             ->get();
     
-        // Log the assigned classes for the authenticated teacher
         Log::info('Assigned Classes for Authenticated Teacher: ', $classes->toArray());
     
         if ($classes->isEmpty()) {
             Log::warning('No classes found for the authenticated teacher ID.');
         }
     
-        // Fetch proofs where level is not null
         $proofs = payment_form::whereNotNull('level')->get(); 
     
-        // Return the view with the classes and proofs
         return view('teacherclassload', [
             'title' => 'Teacher Class Load',
             'classes' => $classes,
@@ -490,6 +486,31 @@ public function studentassessment(Request $request)
             'title' => 'Teacher Class Load',
             'classes' => $classes,
             'proofs' => $proofs,
+            'picture' => $picture
+        ]);
+    }
+
+    public function reportcard()
+    {
+        $authUserId = Auth::id();
+        $userId = Auth::id();
+        $picture = Profile::where('user_id', $userId)->first(); 
+        $classes = Classes::where('teacher_id', $authUserId)
+            ->select('section', 'edpcode', 'subject', 'grade', 'teacher_id')
+            ->get();
+    
+        // Log::info('Assigned Classes for Authenticated Teacher: ', $classes->toArray());
+    
+        if ($classes->isEmpty()) {
+            // Log::warning('No classes found for the authenticated teacher ID.');
+        }
+    
+        $proofs = payment_form::whereNotNull('level')->get(); 
+    
+        return view('reportcard', [
+            'title' => 'Teacher Generate Report Card',
+            'classes' => $classes,
+            'proofs' => $proofs ,
             'picture' => $picture
         ]);
     }
@@ -691,14 +712,12 @@ public function studentassessment(Request $request)
         $userId = Auth::id();
         $picture = Profile::where('user_id', $userId)->first(); 
         
-        $studentDetails = studentdetails::with('register')->get(); // Eager load register
+        $studentDetails = studentdetails::with('register')->get(); 
     
-        // Your other datasets
         $previousSchools = previous_school::all();
         $addresses = address::all();
         $requiredDocs = required_docs::all();
     
-        // Pass all datasets to the view
         return view('studententries', compact('studentDetails', 'previousSchools','picture', 'addresses', 'requiredDocs'));
     }
 

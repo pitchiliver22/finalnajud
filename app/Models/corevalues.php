@@ -14,11 +14,10 @@ class corevalues extends Model
         'fullname',
         'section',
         'grade_level',
-        'respect',
-        'excellence',
-        'teamwork',
-        'innovation',
-        'sustainability',
+        'first',
+        'second',
+        'third', 
+        'fourth',
         'core_id',
     ];
 }
